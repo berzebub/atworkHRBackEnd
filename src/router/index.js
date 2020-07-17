@@ -53,6 +53,12 @@ Vue.mixin({
             });
           });
       });
+    },
+    logOut() {
+      auth
+        .signOut()
+        .then(() => this.$router.push("/"))
+        .catch(function(error) {});
     }
   }
 });
