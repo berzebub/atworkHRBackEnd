@@ -1,7 +1,41 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <q-toolbar class="bg-blue-10"></q-toolbar>
+      <q-toolbar class="bg-blue-10">
+        <!-- KPI -->
+        <div v-if="$route.name == 'kpi'" class="q-ml-sm text-h6">KPI</div>
+        <!-- รายงาน -->
+        <div v-if="$route.name == 'report'" class="q-ml-sm text-h6">รายงาน</div>
+        <!-- พนักงาน -->
+        <div v-if="$route.name == 'employee'" class="q-ml-sm text-h6">พนักงาน</div>
+        <!-- รางวัล -->
+        <div v-if="$route.name == 'reward'" class="q-ml-sm text-h6">วางวัล</div>
+        <!-- ฝ่ายบุคคล -->
+        <div v-if="$route.name == 'departmentMain'" class="q-ml-sm text-h6">ฝ่ายบุคคล</div>
+        <!-- เพิ่มพนักงาน -->
+        <div v-if="$route.name == 'departmentAdd'" class="q-ml-sm text-h6">
+          <div class="row">
+            <div class="cursor-pointer" @click="$router.push('/departmentMain')">
+              <u>ฝ่ายบุคคล</u>
+            </div>
+            <div class="q-mx-sm">></div>
+            <div>เพิ่มพนักงาน</div>
+          </div>
+        </div>
+        <!-- แก้ไขพนักงาน -->
+        <div v-if="$route.name == 'departmentEdit'" class="q-ml-sm text-h6">
+          <div class="row">
+            <div class="cursor-pointer" @click="$router.push('/departmentMain')">
+              <u>ฝ่ายบุคคล</u>
+            </div>
+            <div class="q-mx-sm">></div>
+            <div>แก้ไขพนักงาน</div>
+          </div>
+        </div>
+
+        <!-- ตั้งค่า -->
+        <div v-if="$route.name == 'setting'" class="q-ml-sm text-h6">ตั้งต่า</div>
+      </q-toolbar>
     </q-header>
     <q-drawer
       v-model="drawer"
@@ -89,7 +123,7 @@
       </div>
       <!-- ตั้งค่า -->
       <div
-        @click="$route.name != 'report' ? $router.push('/report') : null"
+        @click="$route.name != 'setting' ? $router.push('/setting') : null"
         class="cursor-pointer relative-position"
         align="center"
         v-ripple

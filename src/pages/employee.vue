@@ -1,7 +1,4 @@
 <template>
-<<<<<<< Updated upstream
-  <div>employee</div>
-=======
   <q-page>
     <div class="container">
       <div class="row">
@@ -60,7 +57,6 @@
       </div>
     </div>
   </q-page>
->>>>>>> Stashed changes
 </template>
 
 <script>

@@ -57,6 +57,12 @@ const routes = [
         path: "/reward",
         name: "reward",
         component: () => import("pages/reward.vue")
+      },
+      //ตั้งค่า
+      {
+        path: "/setting",
+        name: "setting",
+        component: () => import("pages/setting.vue")
       }
     ]
   },
