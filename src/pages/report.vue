@@ -36,9 +36,29 @@
         </div>
       </div>
       <!-- ตาราง -->
-
-      <div class="q-pt-lg">
-        <q-table :data="dataReport" :columns="columnsReport" row-key="name" hide-bottom></q-table>
+      <!-- ตาราง -->
+      <div
+        class="row q-mt-md bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
+        style="border-radius: 10px 10px 0px 0px"
+      >
+        <div class="col-5">
+          ชื่อ-นามสกุล
+          <i class="fas fa-sort"></i>
+        </div>
+        <div class="col-5" align="center">
+          ความก้าวหน้า
+          <i class="fas fa-sort"></i>
+        </div>
+        <div class="col-2" align="center">
+          ดาว
+          <i class="fas fa-sort"></i>
+        </div>
+      </div>
+      <!-- เนื้อหา -->
+      <div class="row bg-white text-black text-subtitle1 q-px-md q-py-sm">
+        <div class="col-5">Parichat lalati</div>
+        <div class="col-5" align="center">10%</div>
+        <div class="col-2" align="center">20%</div>
       </div>
     </div>
   </q-page>
@@ -51,37 +71,7 @@ export default {
       departmentSelect: "",
       departmentoptions: [],
       monthSelect: "",
-      monthOptions: [],
-      dataReport: [
-        {
-          name: "Parichat Klayklow",
-          progress: "50%",
-          star: "70%"
-        }
-      ],
-      columnsReport: [
-        {
-          name: "name",
-          align: "letf",
-          label: "ชื่อ - นามสกุล",
-          sortable: "true",
-          field: "name"
-        },
-        {
-          name: "progress",
-          align: "center",
-          label: "ความก้าวหน้า",
-          sortable: "true",
-          field: "progress"
-        },
-        {
-          name: "star",
-          align: "center",
-          label: "ดาว",
-          sortable: "true",
-          field: "star"
-        }
-      ]
+      monthOptions: []
     };
   }
 };
