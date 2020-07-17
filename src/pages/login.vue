@@ -22,7 +22,7 @@
           </q-input>
         </div>
         <!-- FORGET PASSWORD TEXT SECTION -->
-        <div class="q-pt-md" align="right">
+        <div @click="forgetPassword()" class="q-pt-md cursor-pointer" align="right">
           <u>ลืมรหัสผ่าน?</u>
         </div>
         <!-- LOGIN BTN SECTION -->
@@ -42,6 +42,11 @@ export default {
       email: "",
       password: ""
     };
+  },
+  methods: {
+    forgetPassword() {
+      this.$router.push("/forgetPassword");
+    }
   }
 };
 </script>
