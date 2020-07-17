@@ -33,7 +33,7 @@ export default {
   methods: {
     // ส่งข้อมูล
     welcomeBack() {
-      this.$router.push("/practiceList");
+      this.$router.push("/kpi");
     },
     toLoginPage() {
       this.logOut();
