@@ -1,5 +1,9 @@
 <template>
-  <div>SETTING</div>
+  <div>
+    <div class="absolute-center cursor-pointer">
+      <q-btn @click="$router.push('/')" label=" TEST LOGOUT" color="red" size="50px" />
+    </div>
+  </div>
 </template>
 
 <script>
