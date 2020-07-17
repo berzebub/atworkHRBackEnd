@@ -1,10 +1,11 @@
 <template>
-  <div></div>
+  <div>employee Print</div>
 </template>
 
 <script>
 export default {};
 </script>
 
-<style lang="scss" scoped>
+<style lang="sass" scoped>
+
 </style>

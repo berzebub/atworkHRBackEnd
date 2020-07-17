@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div>Report Print</div>
 </template>
 
 <script>

@@ -51,8 +51,26 @@ const routes = [
         path: "/kpi",
         name: "kpi",
         component: () => import("pages/kpi.vue")
+      },
+      //reward - วางวัล
+      {
+        path: "/reward",
+        name: "reward",
+        component: () => import("pages/reward.vue")
       }
     ]
+  },
+  // พนักงานปริ้น
+  {
+    path: "/employeePrint",
+    name: "employeePrint",
+    component: () => import("pages/employeePrint.vue")
+  },
+  // รายงานปริ้น
+  {
+    path: "/reportPrint",
+    name: "reportPrint",
+    component: () => import("pages/reportPrint.vue")
   },
 
   // Always leave this as last one,
