@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import { db, auth } from "../router";
 import IndexVue from "./Index.vue";
 export default {
   data() {
