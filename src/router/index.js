@@ -40,6 +40,19 @@ Vue.mixin({
     },
     loadingHide() {
       this.$q.loading.hide();
+    },
+    async getUserInfo(uid) {
+      return new Promise((a, b) => {
+        db.collection("user_admin")
+          .where("uid", "==", uid)
+          .get()
+          .then(data => {
+            a({
+              ...data.docs[0].data(),
+              userId: data.docs[0].id
+            });
+          });
+      });
     }
   }
 });
