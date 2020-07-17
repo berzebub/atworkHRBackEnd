@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center">
-  
+    <q-btn @click="test()"></q-btn>
   </q-page>
 </template>
 

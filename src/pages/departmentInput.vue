@@ -1,10 +1,88 @@
 <template>
-  <div></div>
+  <q-page class="container">
+    <div align="center">
+      <div class="q-pa-md text-left" style="max-width:328px">
+        <div>
+          <span>ชื่อ นามสกุล</span>
+          <q-input dense outlined v-model="department.name" :rules="[val => !!val]" />
+        </div>
+        <div>
+          <span>อีเมล</span>
+          <q-input dense outlined v-model="department.gmail" :rules="[val => !!val]" />
+        </div>
+        <div>
+          <span>รหัสผ่าน</span>
+          <div class="text-grey-6">ไม่ต่ำกว่า 6 ตัวอักษร</div>
+          <q-input dense outlined v-model="department.password" :rules="[val => !!val]" />
+        </div>
+        <div class="row">
+          <div class="self-center">สิทธิ์การใช้งาน</div>
+          <div class="q-gutter-sm">
+            <q-checkbox color="cyan-8" @input="sanctionAll()" v-model="all" label="ทั้งหมด" />
+          </div>
+        </div>
+        <div style="margin-left:-10px">
+          <q-option-group
+            color="cyan-8"
+            v-model="sanctionGroup"
+            :options="sanctionOptions"
+            type="checkbox"
+          />
+        </div>
+        <div class="text-center q-gutter-lg q-pt-md">
+          <q-btn outline color="cyan-8" class="boxSave" label="ยกเลิก" />
+          <q-btn color="cyan-8" class="boxSave" label="บันทึก" />
+        </div>
+      </div>
+    </div>
+  </q-page>
 </template>
-
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      all: false,
+      department: { name: "", gmail: "", password: "" },
+      sanctionGroup: [],
+      sanctionOptions: [
+        {
+          label: "KPI",
+          value: "KPI"
+        },
+        {
+          label: "รายงาน",
+          value: "report"
+        },
+        {
+          label: "พนักงาน",
+          value: "person"
+        },
+        {
+          label: "รางวัล",
+          value: "reward"
+        }
+      ]
+    };
+  },
+  methods: {
+    sanctionAll() {
+      if (this.all) {
+        this.sanctionOptions.filter(x => {
+          this.sanctionGroup.push(x.value);
+        });
+      } else {
+        this.sanctionOptions.filter(x => {
+          this.sanctionGroup = [];
+        });
+      }
+    }
+  }
+};
 </script>
 
 <style scoped>
+.boxSave {
+  max-width: 120px;
+  width: 100%;
+}
 </style>
