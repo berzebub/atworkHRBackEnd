@@ -35,6 +35,12 @@ const routes = [
         path: "/employee",
         name: "employee",
         component: () => import("pages/employee.vue")
+      },
+      // KPI
+      {
+        path: "/kpi",
+        name: "kpi",
+        component: () => import("pages/kpi.vue")
       }
     ]
   },
