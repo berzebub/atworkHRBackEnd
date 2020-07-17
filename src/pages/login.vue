@@ -11,7 +11,13 @@
         <!-- PASSWORD SECTION -->
         <div class="q-pt-md">
           <span>รหัสผ่าน</span>
-          <q-input v-model="password" :type="isPwd ? 'password' : 'text'" outlined dense>
+          <q-input
+            @keyup.enter="login()"
+            v-model="password"
+            :type="isPwd ? 'password' : 'text'"
+            outlined
+            dense
+          >
             <template v-slot:append>
               <q-icon
                 :name="isPwd ? 'visibility_off' : 'visibility'"
@@ -27,7 +33,12 @@
         </div>
         <!-- LOGIN BTN SECTION -->
         <div class="q-pt-md" align="center">
-          <q-btn class="bg-cyan-8 text-white" style="width:190px" label="เข้าสู่ระบบ"></q-btn>
+          <q-btn
+            @click="login()"
+            class="bg-indigo-12 text-white"
+            style="width:190px"
+            label="เข้าสู่ระบบ"
+          ></q-btn>
         </div>
       </div>
     </q-card>
@@ -46,7 +57,8 @@ export default {
   methods: {
     forgetPassword() {
       this.$router.push("/forgetPassword");
-    }
+    },
+    login() {}
   }
 };
 </script>

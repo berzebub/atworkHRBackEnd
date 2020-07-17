@@ -28,6 +28,21 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 export const db = firebase.firestore();
+Vue.mixin({
+  data() {
+    return {};
+  },
+  methods: {
+    loadingShow() {
+      this.$q.loading.show({
+        delay: 400
+      });
+    },
+    loadingHide() {
+      this.$q.loading.hide();
+    }
+  }
+});
 
 if (location.hostname === "localhost") {
   db.settings({ host: "localhost:4005", ssl: false });
