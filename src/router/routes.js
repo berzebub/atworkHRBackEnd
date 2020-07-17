@@ -24,6 +24,16 @@ const routes = [
         name: "departmentMain",
         component: () => import("pages/departmentMain.vue")
       },
+      {
+        path: "/departmentAdd",
+        name: "departmentAdd",
+        component: () => import("pages/departmentInput.vue")
+      },
+      {
+        path: "/departmentEdit",
+        name: "departmentEdit",
+        component: () => import("pages/departmentInput.vue")
+      },
       // รายงาน
       {
         path: "/report",
