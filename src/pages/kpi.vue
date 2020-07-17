@@ -56,7 +56,7 @@
           v-for="(items , index) in departmentName "
           :key="items"
           class="row items-center q-py-md text-subtitle1"
-          :class="index % 2 != 0? 'bg-grey-3':'bg-white'"
+          :class="index % 2 == 0? 'bg-grey-3':'bg-white'"
         >
           <div class="q-pl-md col-4">{{items.name}}</div>
           <div class="col-2" align="center">{{}}</div>
@@ -85,7 +85,7 @@
         </q-card-section>
 
         <q-card-section>
-          <div align="center" class="text-h6">"แผนกทำความสะอาด"</div>
+          <div align="center" class="text-h6">"{{departmentName.name}}"</div>
           <div class="q-mt-md text-subtitle1">
             <div>จำนวนแบบฝึกหัด</div>
             <div>
@@ -161,7 +161,7 @@ import { db } from "../router";
 export default {
   data() {
     return {
-      departmentName: [],
+      departmentName: "",
       dialogKpi: false,
       dialogAllKpi: false,
       month: "",
@@ -261,7 +261,7 @@ export default {
         .get()
         .then(data => {
           data.forEach(element => {
-            this.departmentName = element.data();
+            this.departmentName = { ...element.data(), id: element.id };
             console.log(this.departmentName);
           });
         });
