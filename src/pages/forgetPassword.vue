@@ -1,80 +1,94 @@
 <template>
-  <div>
-    <div align="center" class="absolute-center" style="width:300px">
-      <div class="q-mb-md text-h6">ลืมรหัสผ่าน</div>
-      <div
-        class="q-mb-md text-subtitle1"
-        style="width:255px"
-      >กรุณากรอกอีเมลในช่องข้างล่างเพื่อเริ่มการตั้งค่ารหัสผ่านใหม่</div>
-      <div>
-        <div class="q-mb-md">
-          <div align="left" class="text-subtitle1">อีเมล</div>
-          <!-- กล่อง input email -->
-          <div>
-            <q-input @keyup.enter="sendEmail()" v-model="email" outlined dense />
+  <div style="width:100%;height:100vh" class="backgroundImg">
+    <q-card
+      class="absolute-center bg-white q-py-lg"
+      align="center"
+      style="max-width:450px;width:100%;margin:auto"
+    >
+      <div class="q-pa-md">
+        <div class="q-mb-md text-h6 text-blue-grey-10">ลืมรหัสผ่าน</div>
+        <div
+          class="q-mb-md text-subtitle1 text-blue-grey-10"
+          style="width:308px"
+        >กรุณากรอกอีเมลเพื่อเริ่มการตั้งค่ารหัสผ่านใหม่</div>
+        <div>
+          <div class="q-mb-md" style="width:300px">
+            <div align="left" class="text-subtitle1 text-blue-grey-10">อีเมล</div>
+            <!-- กล่อง input email -->
+            <div>
+              <q-input @keyup.enter="sendEmail()" v-model="email" outlined dense />
+            </div>
+          </div>
+          <!-- ปุ่มส่งข้อมูล -->
+          <div class="q-mb-xl">
+            <q-btn
+              @click="sendEmail()"
+              class="text-subtitle1"
+              label="ส่งข้อมูล"
+              color="indigo-12"
+              style="width:300px"
+            />
+          </div>
+          <!-- ปุ่มย้อนกลับ -->
+          <div @click="toLoginPage()" class="text-blue-grey-10 text-subtitle1 cursor-pointer">
+            <u>ย้อนกลับ</u>
           </div>
         </div>
-        <!-- ปุ่มส่งข้อมูล -->
-        <div class="q-mb-xl">
-          <q-btn
-            @click="sendEmail()"
-            class="text-subtitle1"
-            label="ส่งข้อมูล"
-            color="indigo-12"
-            style="width:300px"
-          />
-        </div>
-        <!-- ปุ่มย้อนกลับ -->
-        <div @click="toLoginPage()" class="text-indigo-12 text-subtitle1 cursor-pointer">
-          <u>ย้อนกลับ</u>
-        </div>
       </div>
-    </div>
+    </q-card>
     <!-- -------------------------------------------dialog------------------------------------------ -->
     <!-- correct Email -->
     <q-dialog v-model="openCorrectDialogEmail">
-      <q-card style="width:330px; height:160px">
-        <div align="left" class="q-pa-md">
-          <div class="row items-center">
+      <q-card align="center" style="width:400px; height:200px">
+        <div class="q-pa-md">
+          <div class="row items-center" style="width:fit-content">
             <div>
-              <q-icon color="secondary" size="sm" name="far fa-check-circle" />
+              <q-icon color="blue-10" size="md" name="far fa-check-circle" />
             </div>
-            <div class="q-ml-sm text-subtitle1">
+            <div class="q-ml-sm text-h6">
               <b>สำเร็จ</b>
             </div>
           </div>
           <div
+            style="width:280px"
             class="q-mt-sm text-subtitle1"
           >เราทำการส่งอีเมลสำหรับการตั้งค่ารหัสผ่านใหม่ไปยังอีเมลของคุณแล้ว</div>
-          <div align="right">
-            <div
+          <div align="center">
+            <q-btn
               @click="confirmEmail()"
-              class="text-subtitle1 text-indigo-12 cursor-pointer"
+              class="q-mt-md text-subtitle1 text-white cursor-pointer"
               label="ตกลง"
-            >ตกลง</div>
+              color="cyan-8"
+              style="width:120px"
+            />
           </div>
         </div>
       </q-card>
     </q-dialog>
     <!-- wrong Email -->
     <q-dialog v-model="openWrongDialogEmail">
-      <q-card style="width:330px; height:160px">
-        <div align="left" class="q-pa-md">
-          <div class="row items-center">
+      <q-card align="center" style="width:400px; height:200px">
+        <div class="q-pa-md">
+          <div class="row items-center q-mt-md" style="width:fit-content">
             <div>
-              <q-icon color="negative" size="sm" name="far fa-times-circle" />
+              <q-icon color="negative" size="md" name="far fa-times-circle" />
             </div>
-            <div class="q-ml-sm text-subtitle1">
-              <b>ไม่พบอีเมลผู้ใช้ในระบบ</b>
+            <div class="q-ml-sm text-h6">
+              <b>ไม่พบอีเมลผู้ใช้งานในระบบ</b>
             </div>
           </div>
-          <div class="q-mt-md text-body2">อีเมลที่คุณใส่ไม่พบในระบบกรุณาลองอีกครั้ง</div>
-          <div align="right">
-            <div
-              style="width: fit-content"
-              class="q-mt-lg text-subtitle1 text-indigo-12 cursor-pointer"
-              @click="openWrongDialogEmail = false"
-            >ตกลง</div>
+          <div
+            style="width:280px"
+            class="q-mt-sm text-subtitle1"
+          >กรุณาลองอีกครั้งหรือติดต่อฝ่ายบุคคล</div>
+          <div align="conter">
+            <q-btn
+              @click="confirmEmail()"
+              class="q-mt-md text-subtitle1 text-white cursor-pointer"
+              label="ตกลง"
+              color="cyan-8"
+              style="width:120px"
+            />
           </div>
         </div>
       </q-card>

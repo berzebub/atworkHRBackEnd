@@ -10,6 +10,10 @@ const routes = [
     component: () => import("pages/forgetPassword.vue")
   },
   {
+    path: "/welcomeBack",
+    component: () => import("pages/welcomeBack.vue")
+  },
+  {
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
     children: [

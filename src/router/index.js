@@ -28,6 +28,14 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 export const db = firebase.firestore();
+
+if (location.hostname === "localhost") {
+  db.settings({ host: "localhost:4005", ssl: false });
+}
+const storage = firebase.storage();
+export const st = storage.ref();
+export const auth = firebase.auth();
+// export const axios = require("axios").default;
 Vue.mixin({
   data() {
     return {};
@@ -62,14 +70,6 @@ Vue.mixin({
     }
   }
 });
-
-if (location.hostname === "localhost") {
-  db.settings({ host: "localhost:4005", ssl: false });
-}
-const storage = firebase.storage();
-export const st = storage.ref();
-export const auth = firebase.auth();
-// export const axios = require("axios").default;
 
 export default function(/* { store, ssrContext } */) {
   const Router = new VueRouter({
