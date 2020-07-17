@@ -57,8 +57,13 @@
         <q-separator class />
       </div>
       <!-- รางวัล -->
-      <!-- @click="$route.name != 'report' ? $router.push('/report') : null" -->
-      <div class="cursor-pointer relative-position" align="center" v-ripple>
+
+      <div
+        @click="$route.name != 'reward' ? $router.push('/reward') : null"
+        class="cursor-pointer relative-position"
+        align="center"
+        v-ripple
+      >
         <div class="q-pa-sm">
           <div>
             <q-icon class="q-pt-sm" size="md" color="white" name="fas fa-gift" />
