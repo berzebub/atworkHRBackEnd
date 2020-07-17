@@ -1,1 +1,15 @@
 /* app global css */
+.brx {
+  border: 1px solid red;
+}
+.container {
+  max-width: 1000px;
+  width: 100%;
+  margin: auto;
+}
+.backgroundImg {
+  background-image: url("../../public/statics/bg.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
