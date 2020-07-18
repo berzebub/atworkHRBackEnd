@@ -1,10 +1,10 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-
+import ToggleButton from "vue-js-toggle-button";
 import routes from "./routes";
 
 Vue.use(VueRouter);
-
+Vue.use(ToggleButton);
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -66,12 +66,12 @@ Vue.mixin({
       auth
         .signOut()
         .then(() => this.$router.push("/"))
-        .catch(function(error) {});
+        .catch(function (error) { });
     }
   }
 });
 
-export default function(/* { store, ssrContext } */) {
+export default function (/* { store, ssrContext } */) {
   const Router = new VueRouter({
     scrollBehavior: () => ({ x: 0, y: 0 }),
     routes,

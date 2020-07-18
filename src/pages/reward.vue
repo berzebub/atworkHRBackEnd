@@ -1,7 +1,23 @@
 <template>
   <q-page class="container">
     <div class="q-pa-md">
-      <div class="text-right">การใช้งานระบบรางวัล</div>
+      <div class="text-right">
+        <div>
+          <span class="q-px-lg">การใช้งานระบบรางวัล</span>
+          <toggle-button
+            :labels="{ checked: 'เปิดใช้งาน', unchecked: 'ปิดใช้งาน' }"
+            :height="40"
+            :width="140"
+            :color="{
+          checked: ['#0097A7'  ],
+          unchecked: ['#909090']
+        }"
+            :font-size="16"
+            v-model="status"
+            @change="loadRewardList()"
+          />
+        </div>
+      </div>
     </div>
     <div class="q-mx-md row justify-between">
       <div class="row modeBox brx q-mb-md">
@@ -30,7 +46,7 @@
         </div>
       </div>
     </div>
-    <div class="q-px-md">
+    <div class="q-px-md relative-position">
       <q-table :data="rewardList" :columns="columnsAll" row-key="name" binary-state-sort>
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -45,7 +61,8 @@
               <q-btn icon="fas fa-file-alt" round color="cyan-8" />
             </q-td>
             <q-td key="reward" :props="props">
-              <q-btn round color="cyan-8" />
+              <q-btn icon="fas fa-trash-alt" round color="cyan-8" />
+              <q-btn v-if="!status" class="absolute-center backDrop"></q-btn>
             </q-td>
             <q-td key="edit" :props="props">
               <q-btn icon="fas fa-trash-alt" round color="cyan-8" />
@@ -67,6 +84,7 @@
 export default {
   data() {
     return {
+      status: true,
       showMode: "person",
       department: "ชื่อพนักงาน",
       departmentOptions: [
@@ -123,6 +141,9 @@ export default {
     };
   },
   methods: {
+    loadRewardList() {
+      console.log("www");
+    },
     mode() {
       if (this.showMode == "person") {
         this.rewardList = [
@@ -171,10 +192,12 @@ export default {
   height: 40px;
   border: 1px solid #9e9e9e;
 }
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+.backDrop {
+  width: 40px;
+  height: 40px;
+  background-color: black;
+  opacity: 0.3;
+  z-index: 10;
+  border-radius: 100%;
 }
 </style>
