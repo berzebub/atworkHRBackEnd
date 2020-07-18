@@ -29,9 +29,9 @@ firebase.initializeApp(firebaseConfig);
 
 export const db = firebase.firestore();
 
-if (location.hostname === "localhost") {
-  db.settings({ host: "localhost:4005", ssl: false });
-}
+// if (location.hostname === "localhost") {
+//   db.settings({ host: "localhost:4005", ssl: false });
+// }
 const storage = firebase.storage();
 export const st = storage.ref();
 export const auth = firebase.auth();
@@ -66,12 +66,12 @@ Vue.mixin({
       auth
         .signOut()
         .then(() => this.$router.push("/"))
-        .catch(function (error) { });
+        .catch(function(error) {});
     }
   }
 });
 
-export default function (/* { store, ssrContext } */) {
+export default function(/* { store, ssrContext } */) {
   const Router = new VueRouter({
     scrollBehavior: () => ({ x: 0, y: 0 }),
     routes,

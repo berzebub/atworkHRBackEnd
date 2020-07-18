@@ -85,7 +85,8 @@ export default {
       password: "",
       openWrongDialogEmail: false,
       isKey: false,
-      loginKey: ""
+      loginKey: "",
+      authLogin: ""
     };
   },
   methods: {
@@ -105,6 +106,13 @@ export default {
         .then(() => {
           return auth
             .signInWithEmailAndPassword(this.email, this.password)
+            .then(async result => {
+              console.log(result.user.uid);
+              this.$q.localStorage.set("uid", result.user.uid);
+              await this.getLoginKey(result.user.uid);
+              this.loadingHide();
+              this.$router.push("/kpi");
+            })
             .catch(error => {
               this.wrongPasswordDialog();
               this.loadingHide();
@@ -130,14 +138,13 @@ export default {
           });
       });
     },
-    checkUserLogin() {
+    async checkUserLogin() {
       this.loadingShow();
-      auth.onAuthStateChanged(async user => {
+      this.authLogin = await auth.onAuthStateChanged(async user => {
         if (user) {
           this.$q.localStorage.set("uid", user.uid);
           await this.getLoginKey(user.uid);
           this.$router.push("/welcomeBack");
-
           this.loadingHide();
         } else {
           this.$q.localStorage.clear();
@@ -147,7 +154,14 @@ export default {
     }
   },
   async mounted() {
-    this.checkUserLogin();
+    if (this.$q.localStorage.has("uid")) {
+      this.checkUserLogin();
+    }
+  },
+  beforeDestroy() {
+    if (typeof this.authLogin == "function") {
+      this.authLogin();
+    }
   }
 };
 </script>

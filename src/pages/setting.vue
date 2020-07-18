@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="absolute-center cursor-pointer">
-      <q-btn @click="$router.push('/')" label=" TEST LOGOUT" color="red" size="50px" />
+      <q-btn @click="logOut()" label=" TEST LOGOUT" color="red" size="50px" />
     </div>
   </div>
 </template>
