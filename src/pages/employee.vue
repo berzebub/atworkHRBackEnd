@@ -12,26 +12,34 @@
           ></q-select>
         </div>
         <!-- ค้นหา -->
-        <q-input
-          label="ค้นหา"
-          dense
-          v-model="search"
-          filled
-          outlined
-          type="search"
-          style="width:300px"
-        >
-          <template v-slot:prepend>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-        <div class="col" align="right">
-          <q-btn round color="secondary" icon="fas fa-print" />
+        <div class="col " align="right">
+          <q-input
+            label="ค้นหา"
+            dense
+            v-model="search"
+            rounded
+            outlined
+            type="search"
+            style="width:300px"
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </div>
+
+        <div class="col-1" align="right">
+          <q-btn
+            @click="goToPrint()"
+            round
+            color="secondary"
+            icon="fas fa-print"
+          />
         </div>
       </div>
       <!-- ตาราง -->
       <div
-        class="row q-mt-md bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
+        class="row q-mt-lg bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
         style="border-radius: 10px 10px 0px 0px"
       >
         <div class="col-5">
@@ -48,7 +56,7 @@
         </div>
       </div>
       <!-- เนื้อหา -->
-      <div class="row bg-white text-black text-subtitle1 q-px-md q-py-sm">
+      <div class="row bg-white text-black text-subtitle1 q-px-md q-py-sm brx">
         <div class="col-5">Parichat lalati</div>
         <div class="col-5" align="center">parichat@gmail.com</div>
         <div class="col-2" align="center">
@@ -67,9 +75,13 @@ export default {
       departmentoptions: [],
       search: ""
     };
+  },
+  methods: {
+    goToPrint() {
+      this.$router.push("/employeePrint");
+    }
   }
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

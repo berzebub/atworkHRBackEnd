@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="absolute-center cursor-pointer">
-      <q-btn @click="logOut()" label=" TEST LOGOUT" color="red" size="50px" />
+      <q-btn @click="$router.push('/')" label=" TEST LOGOUT" color="red" size="50px" />
     </div>
   </div>
 </template>
@@ -10,5 +10,4 @@
 export default {};
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

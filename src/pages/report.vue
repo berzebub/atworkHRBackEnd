@@ -1,36 +1,38 @@
 <template>
   <q-page>
     <div class="container">
-      <div class="row">
-        <div class="q-pr-md col-4">
+      <div class="row q-pt-lg">
+        <div class="q-pr-md " style="width:300px">
           <q-select
             outlined
             v-model="departmentSelect"
             :options="departmentoptions"
             dense
-            style="width:300px"
           ></q-select>
         </div>
-        <div class="q-pr-md col-2">
+        <div class="q-pr-md " style="width:150px">
           <q-select
             outlined
             v-model="monthSelect"
             :options="monthOptions"
             dense
-            style="width:150px"
           ></q-select>
         </div>
-        <div class="col-2">
+        <div class="" style="width:100px">
           <q-select
             outlined
             v-model="monthSelect"
             :options="monthOptions"
             dense
-            style="width:100px"
           ></q-select>
         </div>
         <div class="col" align="right">
-          <q-btn class="q-mx-md" round color="secondary" icon="fas fa-file-download" />
+          <q-btn
+            class="q-mx-md"
+            round
+            color="secondary"
+            icon="fas fa-file-download"
+          />
 
           <q-btn round color="secondary" icon="fas fa-print" />
         </div>
@@ -77,5 +79,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
