@@ -1,5 +1,5 @@
 <template>
-  <q-page class="container">
+  <q-page class="container text-subtitle1">
     <div class="q-pa-md">
       <div class="text-right">
         <div>
@@ -35,7 +35,7 @@
         </div>
       </div>
       <div>
-        <div class="q-mb-md">
+        <div v-if="!status" class="q-mb-md">
           <q-select
             style="width:330px"
             outlined
@@ -43,6 +43,19 @@
             v-model="department"
             :options="departmentOptions"
           />
+        </div>
+        <div>
+          <q-btn
+            @click="addBtn()"
+            style="width:158px;height:40px"
+            color="cyan-8"
+            v-if="status"
+            icon
+          >
+            <q-icon size="21px" name="fas fa-plus">
+              <span class="text-subtitle1 q-px-md">เพิ่มของรางวัล</span>
+            </q-icon>
+          </q-btn>
         </div>
       </div>
     </div>
@@ -58,10 +71,10 @@
             </q-td>
             <q-td key="number" :props="props">{{ props.row.number }}</q-td>
             <q-td key="history" :props="props">
-              <q-btn icon="fas fa-file-alt" round color="cyan-8" />
+              <q-btn @click="isShowHistory = true" icon="fas fa-file-alt" round color="cyan-8" />
             </q-td>
             <q-td key="reward" :props="props">
-              <q-btn icon="fas fa-trash-alt" round color="cyan-8" />
+              <q-btn icon="fas fa-gift" round color="cyan-8" />
               <q-btn v-if="!status" class="absolute-center backDrop"></q-btn>
             </q-td>
             <q-td key="edit" :props="props">
@@ -71,12 +84,56 @@
               <q-btn icon="fas fas fa-edit" round color="cyan-8" />
             </q-td>
             <q-td key="status" :props="props">
-              <q-btn icon="fas fa-file-alt" round color="cyan-8" />
+              <toggle-button
+                :labels="{ checked: 'เปิด', unchecked: 'ปิด' }"
+                :height="30"
+                :width="67"
+                :color="{
+          checked: ['#0097A7'  ],
+          unchecked: ['#909090']
+        }"
+                :font-size="16"
+                v-model="status"
+                @change="loadRewardList()"
+              />
             </q-td>
           </q-tr>
         </template>
       </q-table>
     </div>
+    <q-dialog v-model="isShowHistory">
+      <q-card style="max-width:400px;width:100%">
+        <q-card-section align="center" class="bg-primary text-white">
+          <div class="text-h6">ประวัติการแลก</div>
+        </q-card-section>
+        <q-scroll-area style="width:100%;height:400px" class="bg-white text-subtitle1 q-px-md">
+          <div class="q-pt-md">
+            <span>นันทนา เศรษฐี :</span>
+            <span>แผนกความสะอาด</span>
+            <q-separator class="q-my-sm" />
+            <span>
+              <div>วันที่ 22 มิ.ย. 2563</div>
+              <div class="row justify-between">
+                <span>คูปอง 100 บาท</span>
+                <span>150 ดาว</span>
+              </div>
+            </span>
+            <q-separator class="q-my-sm" />
+            <span>
+              <div>วันที่ 22 มิ.ย. 2563</div>
+              <div class="row justify-between">
+                <span>คูปอง 100 บาท</span>
+                <span>150 ดาว</span>
+              </div>
+            </span>
+          </div>
+        </q-scroll-area>
+
+        <q-card-section align="center">
+          <q-btn style="width:120px" v-close-popup color="cyan-8" label="ปิด" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -137,7 +194,8 @@ export default {
           label: "เปิด/ปิด",
           align: "center"
         }
-      ]
+      ],
+      isShowHistory: false
     };
   },
   methods: {
@@ -178,8 +236,10 @@ export default {
         ];
         this.columnsAll = this.columnsReward;
       }
-    }
+    },
+    addBtn() {}
   },
+
   mounted() {
     this.mode();
   }

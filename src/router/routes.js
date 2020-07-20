@@ -30,7 +30,7 @@ const routes = [
         component: () => import("pages/departmentInput.vue")
       },
       {
-        path: "/departmentEdit",
+        path: "/departmentEdit/:key",
         name: "departmentEdit",
         component: () => import("pages/departmentInput.vue")
       },

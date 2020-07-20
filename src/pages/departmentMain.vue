@@ -27,16 +27,17 @@
             <div class="row">
               <div class="col text-body2">
                 {{item.gmail}}
-                <div class="q-mt-xs">
-                  <span class="statusUser q-px-xs">พนักงาน</span>
+                <div class="q-mt-xs q-gutter-sm">
+                  <span v-for="i in item.sanctionGroup" :key="i">
+                    <span class="statusUser q-px-xs">{{i}}</span>
+                  </span>
                 </div>
               </div>
-
               <div>
                 <q-btn color="cyan-8" icon="fas fa-trash-alt" class="q-mx-md" round />
               </div>
               <div>
-                <q-btn @click="editBtn()" color="cyan-8" icon="fas fa-edit" round />
+                <q-btn @click="editBtn(item.id)" color="cyan-8" icon="fas fa-edit" round />
               </div>
             </div>
           </div>
@@ -55,31 +56,29 @@ export default {
   data() {
     return {
       nameArr: [],
-      departmentList: [
-        { name: "กะรัต นิตยานิล", gmail: "acornversion@gmail.com" },
-        {
-          name: "เกศลิน กาลปาศ",
-          gmail: "acornversioawdawdawdawdawdawdn@gmail.com"
-        },
-        {
-          name: "นศลิน กาลปาศ",
-          gmail: "acornversioawdawdawdawdawdawdn@gmail.com"
-        },
-        { name: "เปาจรีย์ กิตติ", gmail: "acornversion@gmail.com" },
-        { name: "ข", gmail: "acornversion@gmail.com" },
-        { name: "ปาจรีย์ กิตติ", gmail: "pajaree.eduinn@gmail.com" },
-        { name: "กัศลิน กาลปาศ", gmail: "acornversion@gmail.com" },
-        { name: "เข", gmail: "acornversion@gmail.com" },
-        {
-          name: "บลิน กาลปาศ",
-          gmail: "acornversioawdawdawdawdawdawdn@gmail.com"
-        },
-        { name: "กิศลิน กาลปาศ", gmail: "acornversion@gmail.com" },
-        { name: "ไกศลิน กาลปาศ", gmail: "acornversion@gmail.com" }
-      ]
+      departmentList: []
     };
   },
   methods: {
+    loadDepartmentList() {
+      db.collection("user_admin")
+        .where("uid", "==", "test")
+        .get()
+        .then(doc => {
+          doc.forEach(element => {
+            let dataKey = {
+              id: element.id
+            };
+            let final = {
+              ...dataKey,
+              ...element.data()
+            };
+
+            this.departmentList.push(final);
+          });
+          this.departmentSort();
+        });
+    },
     departmentSort() {
       let nameArr = [];
       let array = [];
@@ -99,13 +98,13 @@ export default {
     addBtn() {
       this.$router.push("/departmentAdd");
     },
-    editBtn() {
-      this.$router.push("/departmentEdit");
+    editBtn(val) {
+      this.$router.push("/departmentEdit/" + val);
     }
   },
 
   mounted() {
-    this.departmentSort();
+    this.loadDepartmentList();
   }
 };
 </script>

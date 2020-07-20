@@ -35,7 +35,7 @@
         </div>
         <div style="margin-left:-10px">
           <q-option-group
-            @input="isEroorOptions = false "
+            @input="checkAll(), isEroorOptions = false "
             :keep-color="isEroorOptions"
             :color="!isEroorOptions?'cyan-8':'negative'"
             v-model="department.sanctionGroup"
@@ -56,13 +56,20 @@
   </q-page>
 </template>
 <script>
-import { db, auth } from "../router/index";
+import { db, auth } from "../router";
 export default {
   data() {
     return {
       all: false,
       isEroorOptions: false,
-      department: { name: "", gmail: "", password: "", sanctionGroup: [] },
+      department: {
+        name: "",
+        gmail: "",
+        password: "",
+        sanctionGroup: [],
+        loginKey: "",
+        uid: "test"
+      },
 
       sanctionOptions: [
         {
@@ -85,6 +92,28 @@ export default {
     };
   },
   methods: {
+    loadEdit() {
+      db.collection("user_admin")
+        .doc(this.$route.params.key)
+        .get()
+        .then(doc => {
+          doc.data().sanctionGroup.filter((x, index) => {
+            if (index == 3) {
+              this.all = true;
+            }
+          });
+          this.department = doc.data();
+        });
+    },
+    checkAll() {
+      this.department.sanctionGroup.filter((x, index) => {
+        if (index == 3) {
+          this.all = true;
+        } else {
+          this.all = false;
+        }
+      });
+    },
     sanctionAll() {
       if (this.all) {
         this.isEroorOptions = false;
@@ -114,7 +143,19 @@ export default {
         this.isEroorOptions = true;
         return;
       }
-      db.collection("user_admin").add(this.department);
+
+      if (this.$route.name == "departmentAdd") {
+        db.collection("user_admin").add(this.department);
+      } else {
+        db.collection("user_admin")
+          .doc(this.$route.params.key)
+          .set(this.department);
+      }
+    }
+  },
+  mounted() {
+    if (this.$route.name == "departmentEdit") {
+      this.loadEdit();
     }
   }
 };
