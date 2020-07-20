@@ -107,7 +107,6 @@ export default {
           return auth
             .signInWithEmailAndPassword(this.email, this.password)
             .then(async result => {
-              console.log(result.user.uid);
               this.$q.localStorage.set("uid", result.user.uid);
               await this.getLoginKey(result.user.uid);
               this.loadingHide();
@@ -126,7 +125,7 @@ export default {
     },
     async getLoginKey(uid) {
       return new Promise((a, b) => {
-        db.collection("user_admin")
+        db.collection("user_hr")
           .where("uid", "==", uid)
           .get()
           .then(getUserId => {

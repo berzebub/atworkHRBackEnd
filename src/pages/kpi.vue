@@ -6,13 +6,13 @@
           <!-- MONTH -->
           <div>
             <q-select
+              @input="loadKpiLogData()"
               class="text-subtitle1"
               style="width:150px"
               dense
               outlined
               v-model="month"
               :options="monthOption"
-              label="มกราคม"
             />
           </div>
           <!-- YEAR -->
@@ -22,9 +22,8 @@
               style="width:100px"
               dense
               outlined
-              v-model="years"
+              v-model="year"
               :options="yearsOption"
-              label="2563"
             />
           </div>
         </div>
@@ -53,24 +52,26 @@
           <div class="col-2" align="center">ตั้งค่า</div>
         </div>
         <div
-          v-for="(items , index) in departmentName "
-          :key="items"
+          v-for="(item , index) in departmentNameList "
+          :key="index"
           class="row items-center q-py-md text-subtitle1"
-          :class="index % 2 == 0? 'bg-grey-3':'bg-white'"
+          :class="index % 2 != 0? 'bg-grey-3':'bg-white'"
         >
-          <div class="q-pl-md col-4">{{items.name}}</div>
-          <div class="col-2" align="center">{{}}</div>
-          <div class="col-2" align="center">{{}}</div>
-          <div class="col-2" align="center">{{}}</div>
-          <div class="col-2" align="center">
-            <q-btn
-              @click="openDialogKpiSetting()"
-              color="cyan-8"
-              text-color="white"
-              round
-              size="sm"
-              icon="fas fa-edit"
-            />
+          <div class="q-pl-md col-4">{{item.name}}</div>
+          <div v-for="(item2 , index2) in kpiLogList" :key="index2" class="row col">
+            <div class="col" align="center">{{practiceStarter}}</div>
+            <div class="col" align="center">{{item2.numOfPractice}}</div>
+            <div class="col" align="center">{{item2.numOfStar}}</div>
+            <div class="col" align="center">
+              <q-btn
+                @click="openDialogKpiSetting(index)"
+                color="cyan-8"
+                text-color="white"
+                round
+                size="sm"
+                icon="fas fa-edit"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -85,7 +86,7 @@
         </q-card-section>
 
         <q-card-section>
-          <div align="center" class="text-h6">"{{departmentName.name}}"</div>
+          <div align="center" class="text-h6">"{{getDepartmentName}}"</div>
           <div class="q-mt-md text-subtitle1">
             <div>จำนวนแบบฝึกหัด</div>
             <div>
@@ -161,11 +162,13 @@ import { db } from "../router";
 export default {
   data() {
     return {
-      departmentName: "",
+      departmentNameList: "",
+      getDepartmentName: "",
+      kpiLogList: "",
       dialogKpi: false,
       dialogAllKpi: false,
-      month: "",
-      years: "",
+      month: "มกราคม",
+      year: "2563",
       numOfPractice: "",
       numOfStar: "",
       practiceStarter: "ข้าวมันไก่",
@@ -177,48 +180,7 @@ export default {
         "ส้มตำปูปลาร้า",
         "สเต็กหมูพริกไทยดำ"
       ],
-      departmentList: [
-        {
-          hotelId: "123",
-          departmentId: "999",
-          numOfPractice: 254,
-          numOfStar: 254,
-          departMonth: "มกราคม",
-          departYear: "2536"
-        },
-        {
-          hotelId: "963",
-          departmentId: "888",
-          numOfPractice: 6262,
-          numOfStar: 555,
-          departMonth: "มกราคม",
-          departYear: "2571"
-        },
-        {
-          hotelId: "852",
-          departmentId: "777",
-          numOfPractice: 6262,
-          numOfStar: 555,
-          departMonth: "มกราคม",
-          departYear: "2555"
-        },
-        {
-          hotelId: "741",
-          departmentId: "444",
-          numOfPractice: 7856,
-          numOfStar: 144,
-          departMonth: "มกราคม",
-          departYear: "2539"
-        },
-        {
-          hotelId: "655",
-          departmentId: "124",
-          numOfPractice: 3326,
-          numOfStar: 128,
-          departMonth: "มกราคม",
-          departYear: "2539"
-        }
-      ],
+
       monthOption: [
         "มกราคม",
         "กุมภาพันธ์",
@@ -250,20 +212,38 @@ export default {
     };
   },
   methods: {
-    openDialogKpiSetting() {
+    openDialogKpiSetting(index) {
       this.dialogKpi = true;
+      this.getDepartmentName = this.departmentNameList[index].name;
     },
     openDialogALLKpiSetting() {
       this.dialogAllKpi = true;
     },
     loadDepartmentData() {
-      db.collection("department")
+      let temp = [];
+      let kpiLogTemp = [];
+      db.collection("kpiLog")
+        .where("month", "==", this.month)
+        .where("year", "==", this.year)
         .get()
         .then(data => {
           data.forEach(element => {
-            this.departmentName = { ...element.data(), id: element.id };
-            console.log(this.departmentName);
+            kpiLogTemp.push({ ...element.data(), id: element.id });
           });
+          this.kpiLogList = kpiLogTemp;
+          // console.log(this.kpiLogList);
+        });
+
+      db.collection("department")
+        .where("hotelId", "==", "a") //+++++++
+        .get()
+        .then(data => {
+          data.forEach(element => {
+            // console.log(element.data().name);
+            temp.push({ ...element.data(), id: element.id });
+          });
+          this.departmentNameList = temp;
+          console.log(this.departmentNameList[0].name);
         });
     }
   },

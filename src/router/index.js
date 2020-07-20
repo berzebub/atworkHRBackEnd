@@ -30,7 +30,7 @@ firebase.initializeApp(firebaseConfig);
 export const db = firebase.firestore();
 
 if (location.hostname === "localhost") {
-  db.settings({ host: "localhost:4005", ssl: false });
+  db.settings({ host: "localhost:4006", ssl: false });
 }
 const storage = firebase.storage();
 export const st = storage.ref();
@@ -51,7 +51,7 @@ Vue.mixin({
     },
     async getUserInfo(uid) {
       return new Promise((a, b) => {
-        db.collection("user_admin")
+        db.collection("user_hr")
           .where("uid", "==", uid)
           .get()
           .then(data => {

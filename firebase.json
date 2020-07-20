@@ -15,7 +15,7 @@
   },
   "emulators": {
     "firestore": {
-      "port": 4005
+      "port": 4006
     },
     "ui": {
       "enabled": true
