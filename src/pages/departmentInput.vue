@@ -8,7 +8,15 @@
         </div>
         <div>
           <span>อีเมล</span>
-          <q-input ref="gmail" dense outlined v-model="department.gmail" :rules="[val => !!val]" />
+          <q-input
+            ref="gmail"
+            :readonly="$route.name=='departmentEdit'"
+            dense
+            outlined
+            v-model="department.email"
+            :rules="[val => !!val 
+          ,isCheckEmail,isValidEmail]"
+          />
         </div>
         <div>
           <span>รหัสผ่าน</span>
@@ -56,7 +64,7 @@
   </q-page>
 </template>
 <script>
-import { db, auth } from "../router";
+import { db, axios } from "../router";
 export default {
   data() {
     return {
@@ -64,17 +72,15 @@ export default {
       isEroorOptions: false,
       department: {
         name: "",
-        gmail: "",
+        email: "",
         password: "",
         sanctionGroup: [],
-        loginKey: "",
         uid: "test"
       },
-
       sanctionOptions: [
         {
           label: "KPI",
-          value: "KPI"
+          value: "kpi"
         },
         {
           label: "รายงาน",
@@ -129,7 +135,20 @@ export default {
     cancelBtn() {
       this.$router.push("/departmentMain");
     },
-    saveBtn() {
+    isValidEmail(val) {
+      const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
+      return emailPattern.test(val) || "รูปแบบ E-mail ไม่ถูกต้อง";
+    },
+    async isCheckEmail(val) {
+      if (this.$route.name != "userEdit") {
+        let doc = await db
+          .collection("user_admin")
+          .where("email", "==", val)
+          .get();
+        return !doc.size || "E-mail นี้มีผู้ใช้งานแล้ว";
+      }
+    },
+    async saveBtn() {
       this.$refs.name.validate();
       this.$refs.gmail.validate();
       this.$refs.password.validate();
@@ -139,17 +158,44 @@ export default {
         this.$refs.password.hasError
       ) {
       }
-      if (this.department.sanctionGroup == "") {
-        this.isEroorOptions = true;
+      if (
+        this.department.name == "" ||
+        this.department.email == "" ||
+        this.department.password == ""
+      ) {
+        if (this.department.sanctionGroup == "") {
+          this.isEroorOptions = true;
+          return;
+        }
         return;
       }
 
       if (this.$route.name == "departmentAdd") {
+        // let jsonString = JSON.stringify(this.department);
+        // const url = ``;
+
+        // let getCreateUser = await axios.get(url);
+
+        // let newDataUser = { ...this.dataUser };
+        // delete newDataUser.password;
+        // this.department.uid = getCreateUser.data.uid;
+        // let genCode = Math.random()
+        //   .toString(36)
+        //   .substring(7);
+        // this.department.loginKey = genCode;
+
         db.collection("user_admin").add(this.department);
+        this.$router.push("/departmentMain");
       } else {
+        if (this.all) {
+          this.department.sanctionGroup = ["kpi", "report", "person", "reward"];
+        }
         db.collection("user_admin")
           .doc(this.$route.params.key)
-          .set(this.department);
+          .set(this.department)
+          .then(() => {
+            this.$router.push("/departmentMain");
+          });
       }
     }
   },

@@ -26,10 +26,15 @@
             <div class="q-pt-sm text-subtitle1">{{item.name}}</div>
             <div class="row">
               <div class="col text-body2">
-                {{item.gmail}}
+                {{item.email}}
                 <div class="q-mt-xs q-gutter-sm">
                   <span v-for="i in item.sanctionGroup" :key="i">
-                    <span class="statusUser q-px-xs">{{i}}</span>
+                    <span class="statusUser q-px-xs">
+                      <span v-if="i =='kpi'">KPI</span>
+                      <span v-if="i =='report'">รายงาน</span>
+                      <span v-if="i =='person'">พนักงาน</span>
+                      <span v-if="i =='reward'">รางวัล</span>
+                    </span>
                   </span>
                 </div>
               </div>
@@ -73,7 +78,6 @@ export default {
               ...dataKey,
               ...element.data()
             };
-
             this.departmentList.push(final);
           });
           this.departmentSort();
