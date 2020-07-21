@@ -3,10 +3,22 @@
     <div class="q-pa-md">
       <div class="row justify-between">
         <div v class="row">
-          <!-- MONTH -->
+          <!-- DEPARTMENT -->
           <div>
             <q-select
-              @input="loadKpiLogData()"
+              @input="loadDepartmentData()"
+              class="text-subtitle1"
+              style="width:250px"
+              dense
+              outlined
+              v-model="departmentSelect"
+              :options="departmentNameList"
+            />
+          </div>
+          <!-- MONTH -->
+          <div class="q-ml-md">
+            <q-select
+              @input="loadDepartmentData()"
               class="text-subtitle1"
               style="width:150px"
               dense
@@ -25,6 +37,10 @@
               v-model="year"
               :options="yearsOption"
             />
+          </div>
+          <!-- YEAR -->
+          <div class="q-ml-md">
+            <q-btn @click="genData()" color="negative">ฝาก GEN</q-btn>
           </div>
         </div>
         <!-- KPI ALL  -->
@@ -45,21 +61,21 @@
           class="row items-center q-py-md bg-blue-10 text-white text-subtitle1"
           style="border-radius:10px 10px 0px 0px"
         >
-          <div class="q-pl-md col-4">แผนก</div>
+          <div class="q-pl-md col-4">ชื่อ สกุล</div>
           <div class="col-2" align="center">บทเรียนเริ่มต้น</div>
           <div class="col-2" align="center">จำนวนแบบฝึกหัด</div>
           <div class="col-2" align="center">จำนวนดาว</div>
           <div class="col-2" align="center">ตั้งค่า</div>
         </div>
         <div
-          v-for="(item , index) in departmentNameList "
+          v-for="(item , index) in employeeList "
           :key="index"
           class="row items-center q-py-md text-subtitle1"
           :class="index % 2 != 0? 'bg-grey-3':'bg-white'"
         >
           <div class="q-pl-md col-4">{{item.name}}</div>
           <div v-for="(item2 , index2) in kpiLogList" :key="index2" class="row col">
-            <div class="col" align="center">{{practiceStarter}}</div>
+            <div class="col" align="center">{{levelStart}}</div>
             <div class="col" align="center">{{item2.numOfPractice}}</div>
             <div class="col" align="center">{{item2.numOfStar}}</div>
             <div class="col" align="center">
@@ -88,6 +104,19 @@
         <q-card-section>
           <div align="center" class="text-h6">"{{getDepartmentName}}"</div>
           <div class="q-mt-md text-subtitle1">
+            <div>บทเรียนเริ่มต้น</div>
+            <div>
+              <q-select
+                map-options
+                emit-value
+                v-model="levelStart"
+                :options="levelList"
+                outlined
+                dense
+              />
+            </div>
+          </div>
+          <div class="q-mt-md text-subtitle1">
             <div>จำนวนแบบฝึกหัด</div>
             <div>
               <q-input v-model="numOfPractice" outlined dense />
@@ -97,12 +126,6 @@
             <div>จำนวนแบบดาว</div>
             <div>
               <q-input v-model="numOfStar" outlined dense />
-            </div>
-          </div>
-          <div class="q-mt-md text-subtitle1">
-            <div>บทเรียนเริ่มต้น</div>
-            <div>
-              <q-select v-model="practiceStarter" :options="practiceStartOption" outlined dense />
             </div>
           </div>
         </q-card-section>
@@ -128,6 +151,19 @@
 
         <q-card-section>
           <div align="center" class="text-h6">"ทุกแผนก"</div>
+          <div class="q-mt-md text-subtitle1">
+            <div>บทเรียนเริ่มต้น</div>
+            <div>
+              <q-select
+                emit-value
+                map-options
+                v-model="levelStart"
+                :options="levelList"
+                outlined
+                dense
+              />
+            </div>
+          </div>
           <div class="q-mt-md text-subtitle1">
             <div>จำนวนแบบฝึกหัด</div>
             <div>
@@ -163,23 +199,18 @@ export default {
   data() {
     return {
       departmentNameList: "",
+      departmentSelect: "",
       getDepartmentName: "",
+      employeeList: "",
       kpiLogList: "",
+      levelList: "",
       dialogKpi: false,
       dialogAllKpi: false,
       month: "มกราคม",
       year: "2563",
       numOfPractice: "",
       numOfStar: "",
-      practiceStarter: "ข้าวมันไก่",
-      practiceStartOption: [
-        "ข้าวมันไก่",
-        "ข้าวขาหมู",
-        "เตี๋ยวไก่มะระ",
-        "ข้าวต้มปลา",
-        "ส้มตำปูปลาร้า",
-        "สเต็กหมูพริกไทยดำ"
-      ],
+      levelStart: "",
 
       monthOption: [
         "มกราคม",
@@ -212,16 +243,43 @@ export default {
     };
   },
   methods: {
+    loademployeeList() {
+      let employeeTemp = [];
+      db.collection("employee")
+        // .where("departmentId", "==", this.departmentSelect)
+        .get()
+        .then(data => {
+          data.forEach(element => {
+            employeeTemp.push({ ...element.data(), id: element.id });
+          });
+          this.employeeList = employeeTemp;
+        });
+    },
+    loadLevelData() {
+      let levelTemp = [];
+      db.collection("level")
+        .get()
+        .then(data => {
+          data.forEach(element => {
+            let newData = {
+              label: element.data().name,
+              value: element.id
+            };
+            levelTemp.push(newData);
+          });
+          this.levelList = levelTemp;
+        });
+    },
     openDialogKpiSetting(index) {
       this.dialogKpi = true;
-      this.getDepartmentName = this.departmentNameList[index].name;
+      this.getDepartmentName = this.employeeList[index].name;
     },
     openDialogALLKpiSetting() {
       this.dialogAllKpi = true;
     },
     loadDepartmentData() {
-      let temp = [];
       let kpiLogTemp = [];
+      let departmentTemp = [];
       db.collection("kpiLog")
         .where("month", "==", this.month)
         .where("year", "==", this.year)
@@ -231,7 +289,6 @@ export default {
             kpiLogTemp.push({ ...element.data(), id: element.id });
           });
           this.kpiLogList = kpiLogTemp;
-          // console.log(this.kpiLogList);
         });
 
       db.collection("department")
@@ -239,16 +296,23 @@ export default {
         .get()
         .then(data => {
           data.forEach(element => {
-            // console.log(element.data().name);
-            temp.push({ ...element.data(), id: element.id });
+            let newData = {
+              label: element.data().name,
+              value: element.id
+            };
+            departmentTemp.push(newData);
           });
-          this.departmentNameList = temp;
-          console.log(this.departmentNameList[0].name);
+          this.departmentNameList = departmentTemp;
         });
+    },
+    genData() {
+      this.$router.push("/genEmulators");
     }
   },
   mounted() {
     this.loadDepartmentData();
+    this.loadLevelData();
+    this.loademployeeList();
   }
 };
 </script>

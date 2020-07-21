@@ -156,6 +156,18 @@ export default {
     if (this.$q.localStorage.has("uid")) {
       this.checkUserLogin();
     }
+
+    if (location.hostname === "localhost") {
+      db.collection("user_hr")
+        .doc("8SiWHTYgYy1zcXtVmi1V")
+        .set({
+          uid: "svJzHjFCe5PHUKEI1TLNieCziUE2",
+          email: "admin@admin.com",
+          userGroup: ["practice", "level", "personel", "admin"],
+          name: "Admin",
+          loginKey: "y482bw"
+        });
+    }
   },
   beforeDestroy() {
     if (typeof this.authLogin == "function") {
