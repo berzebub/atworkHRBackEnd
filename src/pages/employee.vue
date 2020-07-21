@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div class="container">
-      <div class="row">
+      <div class="row q-pt-lg">
         <div class="q-pr-md col-4">
           <q-select
             outlined
@@ -12,7 +12,7 @@
           ></q-select>
         </div>
         <!-- ค้นหา -->
-        <div class="col " align="right">
+        <div class="col" align="right">
           <q-input
             label="ค้นหา"
             dense
@@ -29,12 +29,7 @@
         </div>
 
         <div class="col-1" align="right">
-          <q-btn
-            @click="goToPrint()"
-            round
-            color="secondary"
-            icon="fas fa-print"
-          />
+          <q-btn @click="goToPrint()" round color="secondary" icon="fas fa-print" />
         </div>
       </div>
       <!-- ตาราง -->

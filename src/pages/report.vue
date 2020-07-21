@@ -2,42 +2,22 @@
   <q-page>
     <div class="container">
       <div class="row q-pt-lg">
-        <div class="q-pr-md " style="width:300px">
-          <q-select
-            outlined
-            v-model="departmentSelect"
-            :options="departmentoptions"
-            dense
-          ></q-select>
+        <div class="q-pr-md" style="width:300px">
+          <q-select outlined v-model="departmentSelect" :options="departmentoptions" dense></q-select>
         </div>
-        <div class="q-pr-md " style="width:150px">
-          <q-select
-            outlined
-            v-model="monthSelect"
-            :options="monthOptions"
-            dense
-          ></q-select>
+        <div class="q-pr-md" style="width:150px">
+          <q-select outlined v-model="monthSelect" :options="monthOptions" dense></q-select>
         </div>
-        <div class="" style="width:100px">
-          <q-select
-            outlined
-            v-model="monthSelect"
-            :options="monthOptions"
-            dense
-          ></q-select>
+        <div class style="width:100px">
+          <q-select outlined v-model="yearSelect" :options="yaerOptions" dense></q-select>
         </div>
         <div class="col" align="right">
-          <q-btn
-            class="q-mx-md"
-            round
-            color="secondary"
-            icon="fas fa-file-download"
-          />
+          <q-btn class="q-mx-md" round color="secondary" icon="fas fa-file-download" />
 
           <q-btn round color="secondary" icon="fas fa-print" />
         </div>
       </div>
-      <!-- ตาราง -->
+
       <!-- ตาราง -->
       <div
         class="row q-mt-md bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
@@ -72,8 +52,36 @@ export default {
     return {
       departmentSelect: "",
       departmentoptions: [],
-      monthSelect: "",
-      monthOptions: []
+      monthSelect: "มกราคม",
+      monthOptions: [
+        "มกราคม",
+        "กุมภาพันธ์",
+        "มีนาคม",
+        "เมษายน",
+        "พฤษภาคม",
+        "มิถุนายน",
+        "กรกฎาคม",
+        "สิงหาคม",
+        "กันยายน",
+        "ตุลาคม",
+        "พฤศจิกายน",
+        "ธันวาคม"
+      ],
+      yearSelect: "2563",
+      yaerOptions: [
+        2563,
+        2564,
+        2565,
+        2566,
+        2567,
+        2568,
+        2569,
+        2570,
+        2571,
+        2572,
+        2573,
+        2574
+      ]
     };
   }
 };
