@@ -140,7 +140,7 @@ export default {
       return emailPattern.test(val) || "รูปแบบ E-mail ไม่ถูกต้อง";
     },
     async isCheckEmail(val) {
-      if (this.$route.name != "userEdit") {
+      if (this.$route.name != "departmentEdit") {
         let doc = await db
           .collection("user_admin")
           .where("email", "==", val)
@@ -179,11 +179,10 @@ export default {
         // let newDataUser = { ...this.dataUser };
         // delete newDataUser.password;
         // this.department.uid = getCreateUser.data.uid;
-        // let genCode = Math.random()
-        //   .toString(36)
-        //   .substring(7);
-        // this.department.loginKey = genCode;
-
+        let genCode = Math.random()
+          .toString(36)
+          .substring(7);
+        this.department.loginKey = genCode;
         db.collection("user_admin").add(this.department);
         this.$router.push("/departmentMain");
       } else {
@@ -192,10 +191,8 @@ export default {
         }
         db.collection("user_admin")
           .doc(this.$route.params.key)
-          .set(this.department)
-          .then(() => {
-            this.$router.push("/departmentMain");
-          });
+          .set(this.department);
+        this.$router.push("/departmentMain");
       }
     }
   },

@@ -13,7 +13,7 @@
           unchecked: ['#909090']
         }"
             :font-size="16"
-            v-model="status"
+            v-model="mode"
             @change="loadRewardList()"
           />
         </div>
@@ -24,18 +24,24 @@
         <div class="q-px-md col self-center">
           <q-radio
             color="cyan-8"
-            @input="mode"
+            @input="changeMode"
             v-model="showMode"
             val="person"
             label="ชื่อพนักงาน"
           />
         </div>
         <div class="q-px-md col self-center">
-          <q-radio color="cyan-8" @input="mode" v-model="showMode" val="reward" label="ของรางวัล" />
+          <q-radio
+            color="cyan-8"
+            @input="changeMode"
+            v-model="showMode"
+            val="reward"
+            label="ของรางวัล"
+          />
         </div>
       </div>
       <div>
-        <div v-if="!status" class="q-mb-md">
+        <div v-if="showMode == 'person'" class="q-mb-md">
           <q-select
             style="width:330px"
             outlined
@@ -46,10 +52,10 @@
         </div>
         <div>
           <q-btn
-            @click="addBtn()"
+            @click="addReward()"
             style="width:158px;height:40px"
             color="cyan-8"
-            v-if="status"
+            v-if="showMode == 'reward'"
             icon
           >
             <q-icon size="21px" name="fas fa-plus">
@@ -84,7 +90,7 @@
       </div>
       <!-- เนื้อหา -->
       <div
-        v-for="item in rewardList"
+        v-for="item in userList"
         :key="item.id"
         class="row bg-white text-black text-subtitle1 q-px-md q-py-sm brx"
       >
@@ -94,8 +100,8 @@
           <q-btn @click="isShowHistory = true" icon="fas fa-file-alt" round color="cyan-8" />
         </div>
         <div style="width:120px" class="col-2 self-center relative-position" align="center">
-          <q-btn icon="fas fa-gift" round color="cyan-8" />
-          <q-btn v-if="!status" class="absolute-center backDrop"></q-btn>
+          <q-btn @click="isReward = true" icon="fas fa-gift" round color="cyan-8" />
+          <q-btn v-if="!mode" class="absolute-center backDrop"></q-btn>
         </div>
       </div>
     </div>
@@ -106,7 +112,7 @@
         style="border-radius: 10px 10px 0px 0px"
       >
         <div class="col-2">
-          ชื่อ-นามสกุล
+          ของรางวัล
           <i class="fas fa-sort"></i>
         </div>
         <div class="col" align="center">
@@ -136,7 +142,7 @@
         :key="item.id"
         class="row bg-white text-black text-subtitle1 q-px-md q-py-sm brx"
       >
-        <div class="col-2 brx self-center">{{item.name}}</div>
+        <div class="col-2 brx self-center">{{item.reward}}</div>
         <div class="col" align="center">
           <div class="row justify-center">
             <div class="brx" style="width:180px;height:180px"></div>
@@ -160,8 +166,7 @@
           unchecked: ['#909090']
         }"
               :font-size="16"
-              v-model="status"
-              @change="loadRewardList()"
+              v-model="statusUser"
             />
           </span>
         </div>
@@ -209,9 +214,10 @@
         </template>
       </q-table>
     </div>-->
+    <!-- ประวัติการแลก  -->
     <q-dialog v-model="isShowHistory">
       <q-card style="max-width:400px;width:100%">
-        <q-card-section align="center" class="bg-primary text-white">
+        <q-card-section align="center" class="bg-blue-10 text-white">
           <div class="text-h6">ประวัติการแลก</div>
         </q-card-section>
         <q-scroll-area style="width:100%;height:400px" class="bg-white text-subtitle1 q-px-md">
@@ -242,6 +248,50 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <!-- แลกรางวัล  -->
+    <q-dialog v-model="isReward">
+      <q-card style="max-width:400px;width:100%">
+        <q-card-section align="center" class="bg-blue-10 text-white">
+          <div class="text-h6">แลกรางวัล</div>
+        </q-card-section>
+        <q-scroll-area style="width:100%;height:350px" class="bg-white text-subtitle1 q-px-md">
+          <div class="q-pt-md">
+            <span>นันทนา เศรษฐี :</span>
+            <span>แผนกความสะอาด</span>
+            <q-separator class="q-my-sm" />
+            <span>
+              <div>รางวัลที่แลก</div>
+              <div>
+                <q-select
+                  outlined
+                  dense
+                  v-model="reward = rewardOptions[0]"
+                  :options="rewardOptions"
+                />
+              </div>
+            </span>
+            <span>
+              <div class="q-py-sm row justify-between">
+                <span>ดาวปัจจุบันที่มี</span>
+                <span>200</span>
+              </div>
+              <div class="q-py-sm row justify-between">
+                <span>ดาวที่ต้องใช้แลก</span>
+                <span>150</span>
+              </div>
+              <div class="q-py-sm row justify-between">
+                <span>ดาวที่จะเหลือ</span>
+                <span>50</span>
+              </div>
+            </span>
+          </div>
+        </q-scroll-area>
+
+        <q-card-section align="center">
+          <q-btn style="width:120px" v-close-popup color="cyan-8" label="ปิด" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -249,7 +299,8 @@
 export default {
   data() {
     return {
-      status: true,
+      statusUser: true,
+      mode: true,
       showMode: "person",
       department: "ชื่อพนักงาน",
       departmentOptions: [
@@ -262,57 +313,71 @@ export default {
           value: "reward"
         }
       ],
+      reward: "",
+      rewardOptions: [
+        {
+          label: "คูปอง 100",
+          value: "person"
+        },
+        {
+          label: "คูปอง 200",
+          value: "reward"
+        }
+      ],
       columnsAll: [],
+
       rewardList: [],
-      columnsPerson: [
-        { name: "name", label: "ชื่อ-สกุล", align: "left" },
-        { name: "number", label: "จำนวนดาว", align: "center" },
-        {
-          style: "width: 120px",
-          name: "history",
-          label: "ประวัติการแลก",
-          align: "center"
-        },
-        {
-          style: "width: 120px",
-          name: "reward",
-          label: "แลกรางวัล",
-          align: "center"
-        }
-      ],
-      columnsReward: [
-        { name: "name", label: "ของรางวัล", align: "left" },
-        { name: "photo", label: "รูป", align: "center" },
-        { name: "number", label: "จำนวนดาว", align: "center" },
-        {
-          style: "width: 120px",
-          name: "delete",
-          label: "ลบ",
-          align: "center"
-        },
-        {
-          style: "width: 120px",
-          name: "edit",
-          label: "แก้ไข",
-          align: "center"
-        },
-        {
-          style: "width: 120px",
-          name: "status",
-          label: "เปิด/ปิด",
-          align: "center"
-        }
-      ],
-      isShowHistory: false
+      userList: [],
+      // columnsPerson: [
+      //   { name: "name", label: "ชื่อ-สกุล", align: "left" },
+      //   { name: "number", label: "จำนวนดาว", align: "center" },
+      //   {
+      //     style: "width: 120px",
+      //     name: "history",
+      //     label: "ประวัติการแลก",
+      //     align: "center"
+      //   },
+      //   {
+      //     style: "width: 120px",
+      //     name: "reward",
+      //     label: "แลกรางวัล",
+      //     align: "center"
+      //   }
+      // ],
+      // columnsReward: [
+      //   { name: "name", label: "ของรางวัล", align: "left" },
+      //   { name: "photo", label: "รูป", align: "center" },
+      //   { name: "number", label: "จำนวนดาว", align: "center" },
+      //   {
+      //     style: "width: 120px",
+      //     name: "delete",
+      //     label: "ลบ",
+      //     align: "center"
+      //   },
+      //   {
+      //     style: "width: 120px",
+      //     name: "edit",
+      //     label: "แก้ไข",
+      //     align: "center"
+      //   },
+      //   {
+      //     style: "width: 120px",
+      //     name: "status",
+      //     label: "เปิด/ปิด",
+      //     align: "center"
+      //   }
+      // ],
+      isShowHistory: false,
+      isReward: false
     };
   },
   methods: {
     loadRewardList() {
       console.log("www");
     },
-    mode() {
+    changeMode() {
       if (this.showMode == "person") {
-        this.rewardList = [
+        this.userList = [
           {
             name: "นันทนา เศรษฐี",
             number: 337,
@@ -326,30 +391,30 @@ export default {
             reward: "7%"
           }
         ];
-        this.columnsAll = this.columnsPerson;
+        // this.columnsAll = this.columnsPerson;
       } else {
         this.rewardList = [
           {
-            name: "awdwdawd",
+            status: false,
             number: 337,
-            edit: "6%",
-            reward: "7%"
+            reward: "คูปอง 100 บาท"
           },
           {
-            name: "qqqqqqq",
+            status: true,
             number: 337,
-            edit: "6%",
-            delete: "7%"
+            reward: "คูปอง 200 บาท"
           }
         ];
-        this.columnsAll = this.columnsReward;
+        // this.columnsAll = this.columnsReward;
       }
     },
-    addBtn() {}
+    addReward() {
+      console.log("5555");
+    }
   },
 
   mounted() {
-    this.mode();
+    this.changeMode();
   }
 };
 </script>
