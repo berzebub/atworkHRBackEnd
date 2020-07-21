@@ -6,11 +6,13 @@
           <!-- DEPARTMENT -->
           <div>
             <q-select
-              @input="loadDepartmentData()"
+              @input="loadEmployeeData()"
               class="text-subtitle1"
               style="width:250px"
               dense
               outlined
+              emit-value
+              map-options
               v-model="departmentSelect"
               :options="departmentNameList"
             />
@@ -18,7 +20,7 @@
           <!-- MONTH -->
           <div class="q-ml-md">
             <q-select
-              @input="loadDepartmentData()"
+              @input="loadEmployeeData()"
               class="text-subtitle1"
               style="width:150px"
               dense
@@ -30,6 +32,7 @@
           <!-- YEAR -->
           <div class="q-ml-md">
             <q-select
+              @input="loadEmployeeData()"
               class="text-subtitle1"
               style="width:100px"
               dense
@@ -38,9 +41,13 @@
               :options="yearsOption"
             />
           </div>
-          <!-- YEAR -->
+          <!-- GEN -->
           <div class="q-ml-md">
             <q-btn @click="genData()" color="negative">ฝาก GEN</q-btn>
+          </div>
+          <!-- OUT -->
+          <div class="q-ml-md">
+            <q-btn @click="logOut()" color="orange">OUT</q-btn>
           </div>
         </div>
         <!-- KPI ALL  -->
@@ -74,20 +81,21 @@
           :class="index % 2 != 0? 'bg-grey-3':'bg-white'"
         >
           <div class="q-pl-md col-4">{{item.name}}</div>
-          <div v-for="(item2 , index2) in kpiLogList" :key="index2" class="row col">
-            <div class="col" align="center">{{levelStart}}</div>
-            <div class="col" align="center">{{item2.numOfPractice}}</div>
-            <div class="col" align="center">{{item2.numOfStar}}</div>
-            <div class="col" align="center">
-              <q-btn
-                @click="openDialogKpiSetting(index)"
-                color="cyan-8"
-                text-color="white"
-                round
-                size="sm"
-                icon="fas fa-edit"
-              />
-            </div>
+
+          <div class="col" align="center">
+            <span v-if="isLoadEmployee == true">{{item.startLevelId}}</span>
+          </div>
+          <div class="col" align="center">{{item.numOfPractice}}</div>
+          <div class="col" align="center">{{item.numOfStar}}</div>
+          <div class="col" align="center">
+            <q-btn
+              @click="openDialogKpiSetting(index)"
+              color="cyan-8"
+              text-color="white"
+              round
+              size="sm"
+              icon="fas fa-edit"
+            />
           </div>
         </div>
       </div>
@@ -133,6 +141,7 @@
         <q-card-actions align="center" class="q-mb-sm">
           <q-btn dense style="width:120px" outline color="cyan-8" label="ยกเลิก" v-close-popup />
           <q-btn
+            @click="savePersonalKpi()"
             dense
             class="bg-cyan-8 text-white"
             style="width:120px"
@@ -198,9 +207,10 @@ import { db } from "../router";
 export default {
   data() {
     return {
-      departmentNameList: "",
+      departmentNameList: [],
       departmentSelect: "",
       getDepartmentName: "",
+      getEmployeeId: "",
       employeeList: "",
       kpiLogList: "",
       levelList: "",
@@ -211,6 +221,8 @@ export default {
       numOfPractice: "",
       numOfStar: "",
       levelStart: "",
+      isLoadLevel: true,
+      isLoadEmployee: false,
 
       monthOption: [
         "มกราคม",
@@ -227,72 +239,96 @@ export default {
         "ธันวาคม"
       ],
       yearsOption: [
-        2563,
-        2564,
-        2565,
-        2566,
-        2567,
-        2568,
-        2569,
-        2570,
-        2571,
-        2572,
-        2573,
-        2574
+        "2563",
+        "2564",
+        "2565",
+        "2566",
+        "2567",
+        "2568",
+        "2569",
+        "2570",
+        "2571",
+        "2572",
+        "2573",
+        "2574"
       ]
     };
   },
   methods: {
-    loademployeeList() {
+    async loadEmployeeData() {
       let employeeTemp = [];
+      let kpiTemp = [];
+      await this.loadLevelData();
       db.collection("employee")
-        // .where("departmentId", "==", this.departmentSelect)
+        .where("departmentId", "==", this.departmentSelect)
         .get()
         .then(data => {
           data.forEach(element => {
-            employeeTemp.push({ ...element.data(), id: element.id });
+            employeeTemp.push({
+              ...element.data(),
+              employeeId: element.id
+            });
           });
-          this.employeeList = employeeTemp;
+          db.collection("kpiLog")
+            .where("departmentId", "==", this.departmentSelect)
+            .where("hotelId", "==", "A4W7WwvOoRR7g0OaIJ0F")
+            .where("month", "==", this.month)
+            .where("year", "==", this.year)
+            .get()
+            .then(data => {
+              data.forEach(element => {
+                kpiTemp.push({ ...element.data(), kpiId: element.id });
+              });
+
+              employeeTemp.forEach(element => {
+                let filterData = kpiTemp.filter(
+                  x =>
+                    x.employeeId == element.employeeId &&
+                    x.year == this.year &&
+                    x.month == this.month
+                );
+                console.log(filterData.length);
+                if (filterData.length > 0) {
+                  element.numOfPractice = filterData[0].numOfPractice;
+                  element.numOfStar = filterData[0].numOfStar;
+                  element.startLevelId = this.levelList.filter(
+                    x => x.value == filterData[0].levelId
+                  )[0].label;
+                  element.kpiId = filterData[0].kpiId;
+                } else {
+                  element.numOfPractice = "ยังไม่ตั้งค่า";
+                  element.numOfStar = "ยังไม่ตั้งค่า";
+                  element.startLevelId = "ยังไม่ตั้งค่า";
+                }
+              });
+              this.employeeList = employeeTemp;
+              this.isLoadEmployee = true;
+            });
         });
     },
     loadLevelData() {
-      let levelTemp = [];
-      db.collection("level")
-        .get()
-        .then(data => {
-          data.forEach(element => {
-            let newData = {
-              label: element.data().name,
-              value: element.id
-            };
-            levelTemp.push(newData);
+      return new Promise((a, b) => {
+        let levelTemp = [];
+        db.collection("level")
+          .get()
+          .then(data => {
+            data.forEach(element => {
+              let newData = {
+                label: element.data().name,
+                value: element.id
+              };
+              levelTemp.push(newData);
+            });
+            this.levelList = levelTemp;
+            this.isLoadLevel = true;
+            a();
           });
-          this.levelList = levelTemp;
-        });
-    },
-    openDialogKpiSetting(index) {
-      this.dialogKpi = true;
-      this.getDepartmentName = this.employeeList[index].name;
-    },
-    openDialogALLKpiSetting() {
-      this.dialogAllKpi = true;
+      });
     },
     loadDepartmentData() {
-      let kpiLogTemp = [];
       let departmentTemp = [];
-      db.collection("kpiLog")
-        .where("month", "==", this.month)
-        .where("year", "==", this.year)
-        .get()
-        .then(data => {
-          data.forEach(element => {
-            kpiLogTemp.push({ ...element.data(), id: element.id });
-          });
-          this.kpiLogList = kpiLogTemp;
-        });
-
       db.collection("department")
-        .where("hotelId", "==", "a") //+++++++
+        .where("hotelId", "==", "A4W7WwvOoRR7g0OaIJ0F") //+++++++
         .get()
         .then(data => {
           data.forEach(element => {
@@ -303,16 +339,46 @@ export default {
             departmentTemp.push(newData);
           });
           this.departmentNameList = departmentTemp;
+          this.departmentSelect = departmentTemp[0].value;
+          this.loadEmployeeData();
         });
     },
+    openDialogKpiSetting(index) {
+      this.dialogKpi = true;
+      this.getDepartmentName = this.employeeList[index].name;
+      this.levelStart = this.levelList[index].value;
+      this.getEmployeeId = this.employeeList[index].id;
+    },
+    openDialogALLKpiSetting() {
+      this.dialogAllKpi = true;
+    },
+    savePersonalKpi() {
+      db.collection("employee")
+        .doc(this.getEmployeeId)
+        .update({ startLevelId: this.levelStart })
+        .then(() => {
+          db.collection("kpiLog")
+            .where("employeeId", "==", this.getEmployeeId)
+            .where("levelId", "==", this.levelStart)
+            .where("month", "==", this.month)
+            .where("year", "==", this.year)
+            .get()
+            .then(data => {
+              data.forEach(element => {
+                console.log(element.data());
+              });
+            });
+        });
+    },
+
     genData() {
       this.$router.push("/genEmulators");
     }
   },
   mounted() {
     this.loadDepartmentData();
-    this.loadLevelData();
-    this.loademployeeList();
+    // this.loadLevelData();
+    // this.loadEmployeeData();
   }
 };
 </script>

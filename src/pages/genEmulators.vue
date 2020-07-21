@@ -42,8 +42,8 @@ export default {
       let genKpiLogTemp = {
         hotelId: "ITNxdT5zAb0Mq6AyhPfd",
         departmentId: "IoCA4OEte02K8dZUkMnW",
-        numOfPractice: 1,
-        numOfStar: 1,
+        numOfPractice: 0,
+        numOfStar: 0,
         month: "มกราคม",
         year: "2563",
         filter: ""

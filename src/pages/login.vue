@@ -163,9 +163,10 @@ export default {
         .set({
           uid: "svJzHjFCe5PHUKEI1TLNieCziUE2",
           email: "admin@admin.com",
-          userGroup: ["practice", "level", "personel", "admin"],
+          userGroup: ["kpi", "report", "personel", "reward", "admin"],
           name: "Admin",
-          loginKey: "y482bw"
+          loginKey: "y482bw",
+          hotelId: "A4W7WwvOoRR7g0OaIJ0F"
         });
     }
   },
