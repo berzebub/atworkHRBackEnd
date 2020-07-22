@@ -10,6 +10,7 @@
           <span>อีเมล</span>
           <q-input
             ref="gmail"
+            type="email"
             :readonly="$route.name=='departmentEdit'"
             dense
             outlined
@@ -26,8 +27,17 @@
             dense
             outlined
             v-model="department.password"
-            :rules="[val => !!val]"
-          />
+            :type="isPwd ? 'password' : 'text'"
+            :rules="[val => !!val,isCheckPassword]"
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
         </div>
         <div class="row">
           <div class="self-center">สิทธิ์การใช้งาน</div>
@@ -46,7 +56,7 @@
             @input="checkAll(), isEroorOptions = false "
             :keep-color="isEroorOptions"
             :color="!isEroorOptions?'cyan-8':'negative'"
-            v-model="department.sanctionGroup"
+            v-model="department.userGroup"
             :options="sanctionOptions"
             type="checkbox"
           />
@@ -68,13 +78,15 @@ import { db, axios } from "../router";
 export default {
   data() {
     return {
+      isPwd: true,
       all: false,
+      isPasswordEroor: false,
       isEroorOptions: false,
       department: {
         name: "",
         email: "",
         password: "",
-        sanctionGroup: [],
+        userGroup: [],
         uid: "test"
       },
       sanctionOptions: [
@@ -88,7 +100,7 @@ export default {
         },
         {
           label: "พนักงาน",
-          value: "person"
+          value: "personel"
         },
         {
           label: "รางวัล",
@@ -99,11 +111,11 @@ export default {
   },
   methods: {
     loadEdit() {
-      db.collection("user_admin")
+      db.collection("user_hr")
         .doc(this.$route.params.key)
         .get()
         .then(doc => {
-          doc.data().sanctionGroup.filter((x, index) => {
+          doc.data().userGroup.filter((x, index) => {
             if (index == 3) {
               this.all = true;
             }
@@ -112,7 +124,7 @@ export default {
         });
     },
     checkAll() {
-      this.department.sanctionGroup.filter((x, index) => {
+      this.department.userGroup.filter((x, index) => {
         if (index == 3) {
           this.all = true;
         } else {
@@ -124,11 +136,11 @@ export default {
       if (this.all) {
         this.isEroorOptions = false;
         this.sanctionOptions.filter(x => {
-          this.department.sanctionGroup.push(x.value);
+          this.department.userGroup.push(x.value);
         });
       } else {
         this.sanctionOptions.filter(x => {
-          this.department.sanctionGroup = [];
+          this.department.userGroup = [];
         });
       }
     },
@@ -142,10 +154,15 @@ export default {
     async isCheckEmail(val) {
       if (this.$route.name != "departmentEdit") {
         let doc = await db
-          .collection("user_admin")
+          .collection("user_hr")
           .where("email", "==", val)
           .get();
         return !doc.size || "E-mail นี้มีผู้ใช้งานแล้ว";
+      }
+    },
+    isCheckPassword(val) {
+      if (val.length < 6) {
+        return val.length >= 6 || "";
       }
     },
     async saveBtn() {
@@ -161,9 +178,10 @@ export default {
       if (
         this.department.name == "" ||
         this.department.email == "" ||
+        this.department.password.length < 6 ||
         this.department.password == ""
       ) {
-        if (this.department.sanctionGroup == "") {
+        if (this.department.userGroup == "") {
           this.isEroorOptions = true;
           return;
         }
@@ -183,13 +201,13 @@ export default {
           .toString(36)
           .substring(7);
         this.department.loginKey = genCode;
-        db.collection("user_admin").add(this.department);
+        db.collection("user_hr").add(this.department);
         this.$router.push("/departmentMain");
       } else {
         if (this.all) {
-          this.department.sanctionGroup = ["kpi", "report", "person", "reward"];
+          this.department.userGroup = ["kpi", "report", "person", "reward"];
         }
-        db.collection("user_admin")
+        db.collection("user_hr")
           .doc(this.$route.params.key)
           .set(this.department);
         this.$router.push("/departmentMain");

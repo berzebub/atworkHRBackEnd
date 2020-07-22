@@ -14,7 +14,6 @@
         }"
             :font-size="16"
             v-model="mode"
-            @change="loadRewardList()"
           />
         </div>
       </div>
@@ -52,7 +51,7 @@
         </div>
         <div>
           <q-btn
-            @click="addReward()"
+            @click="addRewardBtn()"
             style="width:158px;height:40px"
             color="cyan-8"
             v-if="showMode == 'reward'"
@@ -95,12 +94,22 @@
         class="row bg-white text-black text-subtitle1 q-px-md q-py-sm brx"
       >
         <div class="col self-center">{{item.name}}</div>
-        <div class="col self-center" align="center">{{item.number}}</div>
+        <div class="col self-center" align="center">{{item.star}}</div>
         <div style="width:120px" class="col-2 self-center" align="center">
-          <q-btn @click="isShowHistory = true" icon="fas fa-file-alt" round color="cyan-8" />
+          <q-btn
+            @click="historyBtn(item.name,item.key)"
+            icon="fas fa-file-alt"
+            round
+            color="cyan-8"
+          />
         </div>
         <div style="width:120px" class="col-2 self-center relative-position" align="center">
-          <q-btn @click="isReward = true" icon="fas fa-gift" round color="cyan-8" />
+          <q-btn
+            @click="rewardBtn(item.name,item.star,item.key)"
+            icon="fas fa-gift"
+            round
+            color="cyan-8"
+          />
           <q-btn v-if="!mode" class="absolute-center backDrop"></q-btn>
         </div>
       </div>
@@ -148,12 +157,12 @@
             <div class="brx" style="width:180px;height:180px"></div>
           </div>
         </div>
-        <div style="width:120px" class="col-2 brx self-center" align="center">{{item.number}}</div>
+        <div style="width:120px" class="col-2 brx self-center" align="center">{{item.star}}</div>
         <div style="width:120px" class="col-2 self-center" align="center">
-          <q-btn icon="fas fa-trash-alt" round color="cyan-8" />
+          <q-btn @click="deleteBtn(item.key)" icon="fas fa-trash-alt" round color="cyan-8" />
         </div>
         <div style="width:120px" class="col-2 self-center" align="center">
-          <q-btn icon="fas fas fa-edit" round color="cyan-8" />
+          <q-btn @click="editBtn(item.key)" icon="fas fas fa-edit" round color="cyan-8" />
         </div>
         <div style="width:120px" class="col-2 self-center" align="center">
           <span>
@@ -166,83 +175,40 @@
           unchecked: ['#909090']
         }"
               :font-size="16"
-              v-model="statusUser"
+              v-model="statusReward"
+              @change="updateStatusReward(item.key)"
             />
           </span>
         </div>
       </div>
     </div>
-    <!-- <div class="q-px-md relative-position">
-      <q-table :data="rewardList" :columns="columnsAll" row-key="name" binary-state-sort>
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-            <q-td key="photo" :props="props">
-              <div class="row justify-center">
-                <div class="brx" style="width:180px;height:180px"></div>
-              </div>
-            </q-td>
-            <q-td key="number" :props="props">{{ props.row.number }}</q-td>
-            <q-td key="history" :props="props">
-              <q-btn @click="isShowHistory = true" icon="fas fa-file-alt" round color="cyan-8" />
-            </q-td>
-            <q-td key="reward" :props="props">
-              <q-btn icon="fas fa-gift" round color="cyan-8" />
-              <q-btn v-if="!status" class="absolute-center backDrop"></q-btn>
-            </q-td>
-            <q-td key="edit" :props="props">
-              <q-btn icon="fas fa-trash-alt" round color="cyan-8" />
-            </q-td>
-            <q-td key="delete" :props="props">
-              <q-btn icon="fas fas fa-edit" round color="cyan-8" />
-            </q-td>
-            <q-td key="status" :props="props">
-              <toggle-button
-                :labels="{ checked: 'เปิด', unchecked: 'ปิด' }"
-                :height="30"
-                :width="67"
-                :color="{
-          checked: ['#0097A7'  ],
-          unchecked: ['#909090']
-        }"
-                :font-size="16"
-                v-model="status"
-                @change="loadRewardList()"
-              />
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
-    </div>-->
     <!-- ประวัติการแลก  -->
     <q-dialog v-model="isShowHistory">
       <q-card style="max-width:400px;width:100%">
         <q-card-section align="center" class="bg-blue-10 text-white">
           <div class="text-h6">ประวัติการแลก</div>
         </q-card-section>
-        <q-scroll-area style="width:100%;height:400px" class="bg-white text-subtitle1 q-px-md">
-          <div class="q-pt-md">
-            <span>นันทนา เศรษฐี :</span>
-            <span>แผนกความสะอาด</span>
-            <q-separator class="q-my-sm" />
-            <span>
-              <div>วันที่ 22 มิ.ย. 2563</div>
-              <div class="row justify-between">
-                <span>คูปอง 100 บาท</span>
-                <span>150 ดาว</span>
-              </div>
-            </span>
-            <q-separator class="q-my-sm" />
-            <span>
-              <div>วันที่ 22 มิ.ย. 2563</div>
-              <div class="row justify-between">
-                <span>คูปอง 100 บาท</span>
-                <span>150 ดาว</span>
-              </div>
-            </span>
-          </div>
-        </q-scroll-area>
-
+        <div class="q-pa-md">
+          <span>{{rewardUser.name}}</span>
+          <span class="q-px-sm">:</span>
+          <span>{{}}</span>
+          <q-separator class="q-my-sm" />
+          <span>
+            <div>วันที่ 22 มิ.ย. 2563</div>
+            <div class="row justify-between">
+              <span>คูปอง 100 บาท</span>
+              <span>150 ดาว</span>
+            </div>
+          </span>
+          <q-separator class="q-my-sm" />
+          <span>
+            <div>วันที่ 22 มิ.ย. 2563</div>
+            <div class="row justify-between">
+              <span>คูปอง 100 บาท</span>
+              <span>150 ดาว</span>
+            </div>
+          </span>
+        </div>
         <q-card-section align="center">
           <q-btn style="width:120px" v-close-popup color="cyan-8" label="ปิด" />
         </q-card-section>
@@ -254,52 +220,117 @@
         <q-card-section align="center" class="bg-blue-10 text-white">
           <div class="text-h6">แลกรางวัล</div>
         </q-card-section>
-        <q-scroll-area style="width:100%;height:350px" class="bg-white text-subtitle1 q-px-md">
-          <div class="q-pt-md">
-            <span>นันทนา เศรษฐี :</span>
-            <span>แผนกความสะอาด</span>
-            <q-separator class="q-my-sm" />
-            <span>
-              <div>รางวัลที่แลก</div>
-              <div>
-                <q-select
-                  outlined
-                  dense
-                  v-model="reward = rewardOptions[0]"
-                  :options="rewardOptions"
-                />
-              </div>
-            </span>
-            <span>
-              <div class="q-py-sm row justify-between">
-                <span>ดาวปัจจุบันที่มี</span>
-                <span>200</span>
-              </div>
-              <div class="q-py-sm row justify-between">
-                <span>ดาวที่ต้องใช้แลก</span>
-                <span>150</span>
-              </div>
-              <div class="q-py-sm row justify-between">
-                <span>ดาวที่จะเหลือ</span>
-                <span>50</span>
-              </div>
-            </span>
-          </div>
-        </q-scroll-area>
+        <div class="q-pa-md">
+          <span>{{rewardUser.name}}</span>
+          <span class="q-px-sm">:</span>
+          <span>{{}}</span>
+          <q-separator class="q-my-sm" />
+          <span>
+            <div>รางวัลที่แลก</div>
+            <div>
+              <q-select
+                outlined
+                dense
+                v-model="reward "
+                @input="changeStar"
+                :options="rewardOptions"
+              />
+            </div>
+          </span>
+          <span>
+            <div class="q-py-sm row justify-between">
+              <span>ดาวปัจจุบันที่มี</span>
+              <span>{{rewardUser.star}}</span>
+            </div>
+            <div class="q-py-sm row justify-between">
+              <span>ดาวที่ต้องใช้แลก</span>
+              <span>{{rewardUser.starAll}}</span>
+            </div>
+            <div class="q-py-sm row justify-between">
+              <span>ดาวที่จะเหลือ</span>
+              <span>{{rewardUser.starBalance}}</span>
+            </div>
+          </span>
+        </div>
 
-        <q-card-section align="center">
-          <q-btn style="width:120px" v-close-popup color="cyan-8" label="ปิด" />
+        <div align="center" class="q-pa-md">
+          <q-btn
+            dense
+            class="q-mx-sm"
+            outline
+            style="width:120px"
+            v-close-popup
+            color="cyan-8"
+            label="ยกเลิก"
+          />
+          <q-btn
+            dense
+            class="q-mx-sm"
+            style="width:120px"
+            @click="rewardRedemption()"
+            color="cyan-8"
+            label="แลกของรางวัล"
+          />
+        </div>
+      </q-card>
+    </q-dialog>
+    <!-- เพิ่มของรางวัล  -->
+    <q-dialog v-model="isAddReward">
+      <q-card class="text-subtitle2" style="max-width:400px;width:100%">
+        <q-card-section align="center" class="bg-blue-10 text-white">
+          <div v-if="!modeAdd" class="text-h6">เพิ่มของรางวัล</div>
+          <div v-if="modeAdd" class="text-h6">แก้ไขของรางวัล</div>
         </q-card-section>
+        <div class="q-pa-md">
+          <div class="q-py-sm">
+            <span>ชื่อของรางวัล</span>
+            <q-input outlined v-model="addReward.reward" dense />
+          </div>
+          <div class="q-py-sm">
+            <span>จำนวนดาวที่ใช้แลก</span>
+            <q-input outlined v-model="addReward.star" dense />
+          </div>
+          <div class="q-py-sm">
+            <span>ไฟล์รูปภาพ</span>
+            <span class="text-body2 q-px-md">ไฟล์ jpg ขนาด 300x300 px เท่านั้น</span>
+            <q-input outlined dense />
+          </div>
+          <div align="center" class="q-pt-sm">
+            <q-btn
+              dense
+              class="q-mx-sm"
+              outline
+              style="width:120px"
+              v-close-popup
+              color="cyan-8"
+              label="ยกเลิก"
+            />
+            <q-btn
+              dense
+              class="q-mx-sm"
+              style="width:120px"
+              @click="saveReward()"
+              color="cyan-8"
+              label="บันทึก"
+            />
+          </div>
+        </div>
       </q-card>
     </q-dialog>
   </q-page>
 </template>
 
 <script>
+import { db } from "../router";
 export default {
   data() {
     return {
-      statusUser: true,
+      uploadImg: "",
+      addReward: {
+        reward: "",
+        star: ""
+      },
+      statusReward: false,
       mode: true,
       showMode: "person",
       department: "ชื่อพนักงาน",
@@ -314,106 +345,186 @@ export default {
         }
       ],
       reward: "",
-      rewardOptions: [
-        {
-          label: "คูปอง 100",
-          value: "person"
-        },
-        {
-          label: "คูปอง 200",
-          value: "reward"
-        }
-      ],
+      rewardOptions: [],
       columnsAll: [],
-
+      userId: "",
       rewardList: [],
       userList: [],
-      // columnsPerson: [
-      //   { name: "name", label: "ชื่อ-สกุล", align: "left" },
-      //   { name: "number", label: "จำนวนดาว", align: "center" },
-      //   {
-      //     style: "width: 120px",
-      //     name: "history",
-      //     label: "ประวัติการแลก",
-      //     align: "center"
-      //   },
-      //   {
-      //     style: "width: 120px",
-      //     name: "reward",
-      //     label: "แลกรางวัล",
-      //     align: "center"
-      //   }
-      // ],
-      // columnsReward: [
-      //   { name: "name", label: "ของรางวัล", align: "left" },
-      //   { name: "photo", label: "รูป", align: "center" },
-      //   { name: "number", label: "จำนวนดาว", align: "center" },
-      //   {
-      //     style: "width: 120px",
-      //     name: "delete",
-      //     label: "ลบ",
-      //     align: "center"
-      //   },
-      //   {
-      //     style: "width: 120px",
-      //     name: "edit",
-      //     label: "แก้ไข",
-      //     align: "center"
-      //   },
-      //   {
-      //     style: "width: 120px",
-      //     name: "status",
-      //     label: "เปิด/ปิด",
-      //     align: "center"
-      //   }
-      // ],
+      modeAdd: false,
       isShowHistory: false,
-      isReward: false
+      isReward: false,
+      isAddReward: false,
+      rewardUser: {
+        name: "",
+        star: "",
+        starAll: 0,
+        starBalance: 0
+      }
     };
   },
   methods: {
-    loadRewardList() {
-      console.log("www");
+    // แลกของรางวัล
+    rewardRedemption() {
+      // let history = {
+      //   id: this.userId,
+      //   name: this.rewardUser.name,
+      //   rewardId: [this.reward.value]
+      // };
+      // db.collection("reward_history")
+      //   .get()
+      //   .then(doc => {
+      //     doc.forEach(element => {
+      //       if (this.userId == element.data().id) {
+      //         db.collection("reward_history")
+      //           .doc(element.id)
+      //           .delete();
+      //       } else {
+      //         db.collection("reward_history").add(history);
+      //       }
+      //     });
+      //   });
     },
+    //  โหลดพนักงาน
+    loadUser() {
+      this.userList = [];
+      db.collection("user_hr")
+        .get()
+        .then(doc => {
+          doc.forEach(element => {
+            let dataKey = {
+              key: element.id
+            };
+            let final = {
+              ...dataKey,
+              ...element.data()
+            };
+            this.userList.push(final);
+          });
+        });
+    },
+    // โหลดรางวัล
+    loadReward() {
+      this.rewardList = [];
+      this.rewardOptions = [];
+      db.collection("reward")
+        .get()
+        .then(doc => {
+          doc.forEach(element => {
+            let dataKey = {
+              key: element.id
+            };
+
+            let final = {
+              ...dataKey,
+              ...element.data()
+            };
+            this.rewardOptions.push({
+              label:
+                "." +
+                " " +
+                element.data().reward +
+                " - " +
+                element.data().star +
+                " " +
+                "ดาว",
+              value: element.id
+            });
+            this.reward = this.rewardOptions[0];
+            this.statusReward = element.data().status;
+            this.rewardList.push(final);
+          });
+        });
+    },
+    // เปลี่ยน mode พนักงาน กับ รางวัล
     changeMode() {
       if (this.showMode == "person") {
-        this.userList = [
-          {
-            name: "นันทนา เศรษฐี",
-            number: 337,
-            history: "6%",
-            reward: "7%"
-          },
-          {
-            name: "นันทนา เศรษฐี",
-            number: 337,
-            history: "6%",
-            reward: "7%"
-          }
-        ];
-        // this.columnsAll = this.columnsPerson;
+        this.modeAdd = false;
+        this.loadReward();
+        this.userList;
       } else {
-        this.rewardList = [
-          {
-            status: false,
-            number: 337,
-            reward: "คูปอง 100 บาท"
-          },
-          {
-            status: true,
-            number: 337,
-            reward: "คูปอง 200 บาท"
-          }
-        ];
-        // this.columnsAll = this.columnsReward;
+        this.rewardList;
       }
     },
-    addReward() {
-      console.log("5555");
+    // ประวัติรางวัล
+    historyBtn(name, val) {
+      this.rewardUser.name = name;
+      this.isShowHistory = true;
+    },
+    // แลกรางวัล
+    rewardBtn(name, star, val) {
+      this.userId = val;
+      this.rewardUser.name = name;
+      this.rewardUser.star = star;
+      this.isReward = true;
+    },
+    //  เลือกรางวัล
+    changeStar(val) {
+      db.collection("reward")
+        .get()
+        .then(doc => {
+          doc.forEach(element => {
+            if (val.value == element.id) {
+              this.rewardUser.starAll = element.data().star;
+            }
+          });
+          this.rewardUser.starBalance =
+            Number(this.rewardUser.star) - Number(this.rewardUser.starAll);
+        });
+    },
+    chengOptions(val) {},
+    // แก้ไขรางวัล
+    editBtn(val) {
+      this.addReward = {};
+      this.userId = val;
+      this.modeAdd = true;
+      this.isAddReward = true;
+      db.collection("reward")
+        .get()
+        .then(doc => {
+          doc.forEach(element => {
+            if (element.id == val) {
+              this.addReward = element.data();
+            }
+          });
+        });
+    },
+    // ลบรางวัล
+    deleteBtn(val) {
+      this.rewardList = [];
+      db.collection("reward")
+        .doc(val)
+        .delete();
+      this.loadReward();
+    },
+    addRewardBtn() {
+      this.addReward = {};
+      this.modeAdd = false;
+      this.isAddReward = true;
+    },
+    saveReward() {
+      this.rewardList = [];
+      if (!this.modeAdd) {
+        this.addReward.status = true;
+        db.collection("reward").add(this.addReward);
+      } else {
+        db.collection("reward")
+          .doc(this.userId)
+          .set(this.addReward);
+      }
+      this.isAddReward = false;
+      this.modeAdd = false;
+      this.loadReward();
+    },
+    // อัพเดท การปิดเปิด
+    updateStatusReward(val) {
+      db.collection("reward")
+        .doc(val)
+        .update({ status: this.statusReward });
     }
   },
 
   mounted() {
+    this.loadUser();
     this.changeMode();
   }
 };

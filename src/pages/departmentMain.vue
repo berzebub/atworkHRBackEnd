@@ -28,11 +28,11 @@
               <div class="col text-body2">
                 {{item.email}}
                 <div class="q-mt-xs q-gutter-sm">
-                  <span v-for="i in item.sanctionGroup" :key="i">
+                  <span v-for="i in item.userGroup" :key="i">
                     <span class="statusUser q-px-xs">
                       <span v-if="i =='kpi'">KPI</span>
                       <span v-if="i =='report'">รายงาน</span>
-                      <span v-if="i =='person'">พนักงาน</span>
+                      <span v-if="i =='personel'">พนักงาน</span>
                       <span v-if="i =='reward'">รางวัล</span>
                     </span>
                   </span>
@@ -66,7 +66,7 @@ export default {
   },
   methods: {
     loadDepartmentList() {
-      db.collection("user_admin")
+      db.collection("user_hr")
         .where("uid", "==", "test")
         .get()
         .then(doc => {
