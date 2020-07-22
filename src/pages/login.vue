@@ -86,7 +86,7 @@ export default {
       openWrongDialogEmail: false,
       isKey: false,
       loginKey: "",
-      authLogin: ""
+      authLogin: "",
     };
   },
   methods: {
@@ -106,18 +106,16 @@ export default {
         .then(() => {
           return auth
             .signInWithEmailAndPassword(this.email, this.password)
-            .then(async result => {
-              this.$q.localStorage.set("uid", result.user.uid);
-              await this.getLoginKey(result.user.uid);
+            .then(async (result) => {
               this.loadingHide();
               this.$router.push("/kpi");
             })
-            .catch(error => {
+            .catch((error) => {
               this.wrongPasswordDialog();
               this.loadingHide();
             });
         })
-        .catch(error => {});
+        .catch((error) => {});
     },
     // เปิด dialog password ผิด
     wrongPasswordDialog() {
@@ -128,7 +126,7 @@ export default {
         db.collection("user_hr")
           .where("uid", "==", uid)
           .get()
-          .then(getUserId => {
+          .then((getUserId) => {
             this.$q.localStorage.set(
               "loginKey",
               getUserId.docs[0].data().loginKey
@@ -139,10 +137,8 @@ export default {
     },
     async checkUserLogin() {
       this.loadingShow();
-      this.authLogin = await auth.onAuthStateChanged(async user => {
+      this.authLogin = await auth.onAuthStateChanged(async (user) => {
         if (user) {
-          this.$q.localStorage.set("uid", user.uid);
-          await this.getLoginKey(user.uid);
           this.$router.push("/welcomeBack");
           this.loadingHide();
         } else {
@@ -150,31 +146,31 @@ export default {
           this.loadingHide();
         }
       });
-    }
+    },
   },
   async mounted() {
-    if (this.$q.localStorage.has("uid")) {
-      this.checkUserLogin();
-    }
-
-    if (location.hostname === "localhost") {
-      db.collection("user_hr")
-        .doc("8SiWHTYgYy1zcXtVmi1V")
-        .set({
-          uid: "svJzHjFCe5PHUKEI1TLNieCziUE2",
-          email: "admin@admin.com",
-          userGroup: ["kpi", "report", "personel", "reward", "admin"],
-          name: "Admin",
-          loginKey: "y482bw",
-          hotelId: "A4W7WwvOoRR7g0OaIJ0F"
-        });
-    }
+    this.checkUserLogin();
+    // if (this.$q.localStorage.has("uid")) {
+    //   this.checkUserLogin();
+    // }
+    // if (location.hostname === "localhost") {
+    //   db.collection("user_hr")
+    //     .doc("8SiWHTYgYy1zcXtVmi1V")
+    //     .set({
+    //       uid: "svJzHjFCe5PHUKEI1TLNieCziUE2",
+    //       email: "admin@admin.com",
+    //       userGroup: ["kpi", "report", "personel", "reward", "admin"],
+    //       name: "Admin",
+    //       loginKey: "y482bw",
+    //       hotelId: "A4W7WwvOoRR7g0OaIJ0F",
+    //     });
+    // }
   },
   beforeDestroy() {
     if (typeof this.authLogin == "function") {
       this.authLogin();
     }
-  }
+  },
 };
 </script>
 

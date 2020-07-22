@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="container">
+    <div class="container q-pa-md">
       <div class="row q-pt-lg">
         <div class="q-pr-md col-4">
           <q-select
@@ -9,6 +9,7 @@
             :options="departmentoptions"
             dense
             style="width:300px"
+            @input="filterEmployeeData()"
           ></q-select>
         </div>
         <!-- ค้นหา -->
@@ -21,6 +22,7 @@
             outlined
             type="search"
             style="width:300px"
+            @keyup="filterData()"
           >
             <template v-slot:prepend>
               <q-icon name="search" />
@@ -51,13 +53,26 @@
         </div>
       </div>
       <!-- เนื้อหา -->
-      <div class="row bg-white text-black text-subtitle1 q-px-md q-py-sm brx">
-        <div class="col-5">Parichat lalati</div>
-        <div class="col-5" align="center">parichat@gmail.com</div>
-        <div class="col-2" align="center">
-          <q-btn @click="resetPassword()" round color="secondary" icon="fas fa-redo" size="10px" />
+      <q-card class="bg-white text-black text-subtitle1 q-py-sm">
+        <div
+          class="row q-pa-sm"
+          v-for="(item,index) in employeeListShow"
+          :key="index"
+          :class="index % 2 == 0 ? 'bg-white' : 'bg-grey-3'"
+        >
+          <div class="col-5">{{ item.name }}</div>
+          <div class="col-5" align="center">{{ item.email }}</div>
+          <div class="col-2" align="center">
+            <q-btn
+              @click="resetPassword(item)"
+              round
+              color="secondary"
+              icon="fas fa-redo"
+              size="10px"
+            />
+          </div>
         </div>
-      </div>
+      </q-card>
       <!-- dialog reset password-->
       <div>
         <q-dialog v-model="isResetPasswordDialog">
@@ -112,7 +127,7 @@
 </template>
 
 <script>
-import { db } from "../router";
+import { db, auth } from "../router";
 
 export default {
   data() {
@@ -121,22 +136,35 @@ export default {
       departmentoptions: [],
       search: "",
       isResetPasswordDialog: false,
-      isSavedDialog: false
+      isSavedDialog: false,
+      employeeData: "",
+      employeeListShow: "",
+      currentEmployeeActive: "",
     };
   },
   methods: {
+    filterData() {
+      if (this.search == "") {
+        this.filterEmployeeData();
+      } else {
+        this.employeeListShow = this.employeeData.filter(
+          (x) =>
+            x.name.startsWith(this.search) || x.email.startsWith(this.search)
+        );
+      }
+    },
     goToPrint() {
       this.$router.push("/employeePrint");
     },
     loadDepartment() {
       db.collection("department")
         .get()
-        .then(doc => {
+        .then((doc) => {
           let temp = [];
-          doc.forEach(element => {
+          doc.forEach((element) => {
             temp.push({
               value: element.id,
-              label: element.data().name
+              label: element.data().name,
             });
           });
           temp.sort((a, b) => {
@@ -144,10 +172,12 @@ export default {
           });
           this.departmentoptions = temp;
           this.departmentSelect = this.departmentoptions[0];
+          this.loadEmployeeData();
         });
     },
-    resetPassword() {
+    resetPassword(item) {
       this.isResetPasswordDialog = true;
+      this.currentEmployeeActive = item;
     },
     cancelResetPassword() {
       this.isResetPasswordDialog = false;
@@ -156,12 +186,42 @@ export default {
       this.isSavedDialog = false;
     },
     confirmResetPassword() {
+      this.isResetPasswordDialog = false;
+      auth
+        .sendPasswordResetEmail(this.currentEmployeeActive.email)
+        .then(function () {
+          // Email sent.
+          this.isSavedDialog = true;
+        })
+        .catch(function (error) {
+          console.log(error);
+          // An error happened.
+        });
+
       this.isSavedDialog = true;
-    }
+    },
+    loadEmployeeData() {
+      db.collection("employee")
+        .where("hotelId", "==", "ITNxdT5zAb0Mq6AyhPfd")
+        .get()
+        .then((doc) => {
+          let temp = [];
+          doc.forEach((element) => {
+            temp.push({ ...element.data(), employeeId: element.id });
+          });
+          this.employeeData = temp;
+          this.filterEmployeeData();
+        });
+    },
+    filterEmployeeData() {
+      this.employeeListShow = this.employeeData.filter(
+        (x) => x.departmentId == this.departmentSelect.value
+      );
+    },
   },
   mounted() {
     this.loadDepartment();
-  }
+  },
 };
 </script>
 
