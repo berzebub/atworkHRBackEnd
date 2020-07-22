@@ -179,7 +179,8 @@ export default {
         this.department.name == "" ||
         this.department.email == "" ||
         this.department.password.length < 6 ||
-        this.department.password == ""
+        this.department.password == "" ||
+        this.department.userGroup == ""
       ) {
         if (this.department.userGroup == "") {
           this.isEroorOptions = true;
@@ -204,10 +205,6 @@ export default {
         db.collection("user_hr").add(this.department);
         this.$router.push("/departmentMain");
       } else {
-        if (this.department.userGroup == "") {
-          this.isEroorOptions = true;
-          return;
-        }
         if (this.all) {
           this.department.userGroup = ["kpi", "report", "personel", "reward"];
         }
