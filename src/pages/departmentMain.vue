@@ -66,6 +66,7 @@ export default {
   },
   methods: {
     loadDepartmentList() {
+      this.departmentList = [];
       db.collection("user_hr")
         .where("uid", "==", "test")
         .get()

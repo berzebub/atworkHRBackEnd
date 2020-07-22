@@ -204,8 +204,12 @@ export default {
         db.collection("user_hr").add(this.department);
         this.$router.push("/departmentMain");
       } else {
+        if (this.department.userGroup == "") {
+          this.isEroorOptions = true;
+          return;
+        }
         if (this.all) {
-          this.department.userGroup = ["kpi", "report", "person", "reward"];
+          this.department.userGroup = ["kpi", "report", "personel", "reward"];
         }
         db.collection("user_hr")
           .doc(this.$route.params.key)
