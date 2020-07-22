@@ -16,7 +16,7 @@
             outlined
             v-model="department.email"
             :rules="[val => !!val 
-          ,isCheckEmail,isValidEmail]"
+          ,isValidEmail]"
           />
         </div>
         <div>
@@ -87,26 +87,26 @@ export default {
         email: "",
         password: "",
         userGroup: [],
-        uid: "test"
+        uid: "test",
       },
       sanctionOptions: [
         {
           label: "KPI",
-          value: "kpi"
+          value: "kpi",
         },
         {
           label: "รายงาน",
-          value: "report"
+          value: "report",
         },
         {
           label: "พนักงาน",
-          value: "personel"
+          value: "personel",
         },
         {
           label: "รางวัล",
-          value: "reward"
-        }
-      ]
+          value: "reward",
+        },
+      ],
     };
   },
   methods: {
@@ -114,7 +114,7 @@ export default {
       db.collection("user_hr")
         .doc(this.$route.params.key)
         .get()
-        .then(doc => {
+        .then((doc) => {
           doc.data().userGroup.filter((x, index) => {
             if (index == 3) {
               this.all = true;
@@ -135,11 +135,11 @@ export default {
     sanctionAll() {
       if (this.all) {
         this.isEroorOptions = false;
-        this.sanctionOptions.filter(x => {
+        this.sanctionOptions.filter((x) => {
           this.department.userGroup.push(x.value);
         });
       } else {
-        this.sanctionOptions.filter(x => {
+        this.sanctionOptions.filter((x) => {
           this.department.userGroup = [];
         });
       }
@@ -190,18 +190,23 @@ export default {
       }
 
       if (this.$route.name == "departmentAdd") {
-        // let jsonString = JSON.stringify(this.department);
-        // const url = ``;
+        let apiURL =
+          "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/create";
+        let dataUser = {
+          email: this.department.email,
+          password: this.department.password,
+          displayName: this.department.name,
+          accessProgram: ["HR"],
+          dataEntryPermissions: this.department.userGroup,
+        };
 
-        // let getCreateUser = await axios.get(url);
+        let createUser = await axios.post(apiURL, dataUser);
 
-        // let newDataUser = { ...this.dataUser };
-        // delete newDataUser.password;
-        // this.department.uid = getCreateUser.data.uid;
-        let genCode = Math.random()
-          .toString(36)
-          .substring(7);
-        this.department.loginKey = genCode;
+        if (createUser.data.code) {
+          //  ERROR
+          return;
+        }
+
         db.collection("user_hr").add(this.department);
         this.$router.push("/departmentMain");
       } else {
@@ -213,13 +218,13 @@ export default {
           .set(this.department);
         this.$router.push("/departmentMain");
       }
-    }
+    },
   },
   mounted() {
     if (this.$route.name == "departmentEdit") {
       this.loadEdit();
     }
-  }
+  },
 };
 </script>
 

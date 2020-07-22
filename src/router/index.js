@@ -35,7 +35,7 @@ export const db = firebase.firestore();
 const storage = firebase.storage();
 export const st = storage.ref();
 export const auth = firebase.auth();
-// export const axios = require("axios").default;
+export const axios = require("axios").default;
 Vue.mixin({
   data() {
     return {};

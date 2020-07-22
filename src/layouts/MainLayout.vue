@@ -198,9 +198,9 @@ export default {
       headerBarList: [
         {
           name: "บทเรียน",
-          type: "lessonMainList"
-        }
-      ]
+          type: "lessonMainList",
+        },
+      ],
     };
   },
   methods: {
@@ -212,7 +212,7 @@ export default {
       this.snapUser = db
         .collection("user_admin")
         .where("uid", "==", uid)
-        .onSnapshot(getUserId => {
+        .onSnapshot((getUserId) => {
           if (getLoginKey != getUserId.docs[0].data().loginKey) {
             this.snapUser();
             setTimeout(() => {
@@ -221,10 +221,10 @@ export default {
             }, 2000);
           }
         });
-    }
+    },
   },
   mounted() {
-    this.loadUserInfo();
-  }
+    // this.loadUserInfo();
+  },
 };
 </script>

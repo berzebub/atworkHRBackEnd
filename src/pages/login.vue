@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { auth, db } from "../router";
+import { auth, db, axios } from "../router";
 export default {
   data() {
     return {
@@ -107,8 +107,17 @@ export default {
           return auth
             .signInWithEmailAndPassword(this.email, this.password)
             .then(async (result) => {
-              this.loadingHide();
-              this.$router.push("/kpi");
+              let apiURL =
+                "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/getUserData?uid=" +
+                result.user.uid;
+              let getData = await axios.get(apiURL);
+              const customClaims = getData.data.customClaims.accessProgram;
+              if (customClaims.includes("HR")) {
+                this.loadingHide();
+                this.$router.push("/kpi");
+              } else {
+                throw "error";
+              }
             })
             .catch((error) => {
               this.wrongPasswordDialog();
@@ -142,14 +151,16 @@ export default {
           this.$router.push("/welcomeBack");
           this.loadingHide();
         } else {
-          this.$q.localStorage.clear();
+          if (typeof this.authLogin == "function") {
+            this.authLogin();
+          }
           this.loadingHide();
         }
       });
     },
   },
   async mounted() {
-    this.checkUserLogin();
+    // this.checkUserLogin();
     // if (this.$q.localStorage.has("uid")) {
     //   this.checkUserLogin();
     // }
