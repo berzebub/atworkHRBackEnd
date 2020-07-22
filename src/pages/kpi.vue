@@ -83,13 +83,13 @@
           <div class="q-pl-md col-4">{{item.name}}</div>
 
           <div class="col" align="center">
-            <span v-if="isLoadEmployee == true">{{item.startLevelId}}</span>
+            <span v-if="isLoadEmployee == true">{{item.startLevelId.label}}</span>
           </div>
           <div class="col" align="center">{{item.numOfPractice}}</div>
           <div class="col" align="center">{{item.numOfStar}}</div>
           <div class="col" align="center">
             <q-btn
-              @click="openDialogKpiSetting(index)"
+              @click="openDialogKpiSetting(index , item)"
               color="cyan-8"
               text-color="white"
               round
@@ -131,7 +131,7 @@
             </div>
           </div>
           <div class="q-mt-md text-subtitle1">
-            <div>จำนวนแบบดาว</div>
+            <div>จำนวนดาว</div>
             <div>
               <q-input v-model="numOfStar" outlined dense />
             </div>
@@ -211,6 +211,7 @@ export default {
       departmentSelect: "",
       getEmployeeName: "",
       getEmployeeId: "",
+      getKpiId: "",
       employeeList: "",
       kpiLogList: "",
       levelList: "",
@@ -256,6 +257,7 @@ export default {
   },
   methods: {
     async loadEmployeeData() {
+      this.loadingShow();
       let employeeTemp = [];
       let kpiTemp = [];
 
@@ -290,21 +292,25 @@ export default {
                     x.year == this.year &&
                     x.month == this.month
                 );
+
                 if (filterData.length > 0) {
                   element.numOfPractice = filterData[0].numOfPractice;
                   element.numOfStar = filterData[0].numOfStar;
                   element.startLevelId = this.levelList.filter(
                     x => x.value == filterData[0].levelId
-                  )[0].label;
+                  )[0];
                   element.kpiId = filterData[0].kpiId;
                 } else {
                   element.numOfPractice = "ยังไม่ตั้งค่า";
                   element.numOfStar = "ยังไม่ตั้งค่า";
-                  element.startLevelId = "ยังไม่ตั้งค่า";
+                  element.startLevelId = this.levelList.filter(
+                    x => x.value == element.startLevelId
+                  )[0];
                 }
               });
               this.employeeList = employeeTemp;
               this.isLoadEmployee = true;
+              this.loadingHide();
             });
         });
     },
@@ -345,36 +351,63 @@ export default {
           this.loadEmployeeData();
         });
     },
-    openDialogKpiSetting(index) {
+    openDialogKpiSetting(index, item) {
+      console.log(item);
       this.dialogKpi = true;
       this.getEmployeeName = this.employeeList[index].name;
-      this.levelStart = this.levelList[index].value;
+      this.levelStart = item.startLevelId.value;
       this.getEmployeeId = this.employeeList[index].employeeId;
+      this.getKpiId = this.employeeList[index].kpiId;
+      this.numOfPractice = this.employeeList[index].numOfPractice;
+      this.numOfStar = this.employeeList[index].numOfStar;
     },
     openDialogALLKpiSetting() {
       this.dialogAllKpi = true;
+      this.levelStart = item.startLevelId.value;
+      this.numOfPractice = this.employeeList.numOfPractice;
+      this.numOfStar = this.employeeList.numOfStar;
+    },
+    saveAllKpi() {
+      this.loadingShow();
+      db.collection("employee")
+        .update({ startLevelId: this.levelStart })
+        .then(() => {
+          db.collection("kpiLog")
+            .where("month", "==", this.month)
+            .where("year", "==", this.year)
+            .update({
+              levelId: this.levelStart,
+              numOfPractice: this.numOfPractice,
+              numOfStar: this.numOfStar
+            })
+            .then(() => {
+              this.loadingHide();
+            });
+        });
     },
     savePersonalKpi() {
+      this.loadingShow();
       db.collection("employee")
         .doc(this.getEmployeeId)
         .update({ startLevelId: this.levelStart })
         .then(() => {
           db.collection("kpiLog")
             .where("employeeId", "==", this.getEmployeeId)
-            // .where("levelId", "==", this.levelStart)
             .where("month", "==", this.month)
             .where("year", "==", this.year)
             .get()
             .then(data => {
               if (data.size) {
                 console.log("มีข้อมูล");
-                // let updateDataTemp =
                 db.collection("kpiLog")
-                  .doc(this.getEmployeeId)
+                  .doc(this.getKpiId)
                   .update({
                     levelId: this.levelStart,
                     numOfPractice: this.numOfPractice,
                     numOfStar: this.numOfStar
+                  })
+                  .then(() => {
+                    this.loadEmployeeData();
                   });
               } else {
                 console.log("ไม่มีข้อมูล");
@@ -389,7 +422,11 @@ export default {
                   year: this.year,
                   filter: ""
                 };
-                db.collection("kpiLog").add(addDataTemp);
+                db.collection("kpiLog")
+                  .add(addDataTemp)
+                  .then(() => {
+                    this.loadEmployeeData();
+                  });
               }
             });
         });
