@@ -172,7 +172,7 @@ export default {
       isLogoutSetting: false,
       mainSetting: true,
       isResetNameDialog: false,
-      isResetPasswordDialog: false
+      isResetPasswordDialog: false,
     };
   },
   methods: {
@@ -192,10 +192,11 @@ export default {
     },
     logoutSetting() {
       console.log("logout");
-      this.isNameSetting = false;
-      this.isPasswordSetting = false;
-      this.isLogoutSetting = true;
-      this.mainSetting = false;
+      this.logOut();
+      // this.isNameSetting = false;
+      // this.isPasswordSetting = false;
+      // this.isLogoutSetting = true;
+      // this.mainSetting = false;
     },
     cencelLogout() {
       this.isNameSetting = false;
@@ -211,8 +212,8 @@ export default {
     },
     ConfirmPassword() {
       this.isResetPasswordDialog = false;
-    }
-  }
+    },
+  },
 };
 </script>
 
