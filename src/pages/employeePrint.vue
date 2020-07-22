@@ -1,29 +1,20 @@
 <template>
   <div align="center">
-    <div class="paper-a4  q-pa-lg  shadow-1">
-      <div align="center" class="text-subtitle1  q-mt-md">
-        รายชื่อพนักงานในระบบ Winner @Hotel
-      </div>
-      <div align="center " class="text-body2 q-py-md">
-        โรงแรมเกียรติรัชชา แผนกทำความสะอาด
-      </div>
-      <!-- ตาราง -->
-      <div
-        class="row q-mt-md bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
-        style=""
-      >
-        <div class="col-6 text-body2" align="left">
-          ชื่อ-นามสกุล
-        </div>
+    <div class="paper-a4 shadow-1">
+      <div class="q-pa-md">
+        <div align="center" class="text-subtitle1 q-mt-md">รายชื่อพนักงานในระบบ Winner @Hotel</div>
+        <div align="center " class="text-body2 q-py-md">โรงแรมเกียรติรัชชา แผนกทำความสะอาด</div>
+        <!-- ตาราง -->
+        <div class="row q-mt-md bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm" style>
+          <div class="col-6 text-body2" align="left">ชื่อ-นามสกุล</div>
 
-        <div class="col-6 text-body2" align="left">
-          อีเมล
+          <div class="col-6 text-body2" align="left">อีเมล</div>
         </div>
-      </div>
-      <!-- เนื้อหา -->
-      <div class="row bg-white text-black text-subtitle1 q-px-md q-py-sm">
-        <div class="col-6 text-overline" align="left">Parichat lalati</div>
-        <div class="col-6 text-overline" align="left">parichat@gmail.com</div>
+        <!-- เนื้อหา -->
+        <div class="row bg-white text-black text-subtitle1 q-px-md q-py-sm">
+          <div class="col-6 text-overline" align="left">Parichat lalati</div>
+          <div class="col-6 text-overline" align="left">parichat@gmail.com</div>
+        </div>
       </div>
     </div>
   </div>

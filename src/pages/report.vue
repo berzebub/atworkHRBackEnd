@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { db } from "../router";
 export default {
   data() {
     return {
@@ -83,6 +84,29 @@ export default {
         2574
       ]
     };
+  },
+  methods: {
+    loadDepartment() {
+      db.collection("department")
+        .get()
+        .then(doc => {
+          let temp = [];
+          doc.forEach(element => {
+            temp.push({
+              value: element.id,
+              label: element.data().name
+            });
+          });
+          temp.sort((a, b) => {
+            return a.name > b.name ? 1 : -1;
+          });
+          this.departmentoptions = temp;
+          this.departmentSelect = this.departmentoptions[0];
+        });
+    }
+  },
+  mounted() {
+    this.loadDepartment();
   }
 };
 </script>

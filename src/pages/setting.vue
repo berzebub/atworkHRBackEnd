@@ -89,6 +89,7 @@
           <div class="text-h6 col-12" align="center">ออกจากระบบ</div>
           <div class="q-pt-md col-12" align="center">
             <q-btn
+              @click="logoutOnly()"
               dense
               class="text-subtitle1"
               style="width:190px"
@@ -119,6 +120,40 @@
           </div>
         </div>
       </div>
+      <!-- dialog เปลี่ยนชื่อสำเร็จ-->
+      <div>
+        <q-dialog v-model="isResetNameDialog">
+          <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
+            <div class="col-12">
+              <q-icon color="primary" size="md" name="far fa-check-circle"></q-icon>
+              <span class="text-h6 q-pl-sm">สำเร็จ</span>
+            </div>
+            <div class="col-12 text-subtitle1 q-pt-sm">บันทึกข้อมูลเรียบร้อย</div>
+
+            <div class="col-12 q-pl-sm q-pt-lg" align="center">
+              <q-btn @click="ConfirmName()" color="secondary" label="ตกลง" style="width:120px" />
+            </div>
+          </div>
+        </q-dialog>
+      </div>
+      <div>
+        <q-dialog v-model="isResetPasswordDialog">
+          <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
+            <div class="col-12">
+              <q-icon color="primary" size="md" name="far fa-check-circle"></q-icon>
+              <span class="text-h6 q-pl-sm">สำเร็จ</span>
+            </div>
+            <div class="col-12 text-subtitle1 q-pt-md">
+              เราทำการส่งอีเมลสำหรับการตั้งค่ารหัสผ่านใหม่ไปยัง
+              <br />"xxxxxxxxxxxxxxxxxx "
+            </div>
+
+            <div class="col-12 q-pl-sm q-pt-lg" align="center">
+              <q-btn @click="ConfirmPassword()" color="secondary" label="ตกลง" style="width:120px" />
+            </div>
+          </div>
+        </q-dialog>
+      </div>
       <!-- <div class="absolute-center cursor-pointer">
       <q-btn @click="$router.push('/')" label=" TEST LOGOUT" color="red" size="50px" />
       </div>-->
@@ -127,6 +162,7 @@
 </template>
 
 <script>
+import { auth } from "../router";
 export default {
   data() {
     return {
@@ -134,7 +170,9 @@ export default {
       isNameSetting: false,
       isPasswordSetting: false,
       isLogoutSetting: false,
-      mainSetting: true
+      mainSetting: true,
+      isResetNameDialog: false,
+      isResetPasswordDialog: false
     };
   },
   methods: {
@@ -164,6 +202,15 @@ export default {
       this.isPasswordSetting = false;
       this.isLogoutSetting = false;
       this.mainSetting = true;
+    },
+    logoutOnly() {
+      this.logOut();
+    },
+    ConfirmName() {
+      this.isResetNameDialog = false;
+    },
+    ConfirmPassword() {
+      this.isResetPasswordDialog = false;
     }
   }
 };
