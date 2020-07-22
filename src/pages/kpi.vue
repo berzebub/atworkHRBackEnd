@@ -166,7 +166,7 @@
               <q-select
                 emit-value
                 map-options
-                v-model="levelStart"
+                v-model="levelStartAll"
                 :options="levelList"
                 outlined
                 dense
@@ -176,13 +176,13 @@
           <div class="q-mt-md text-subtitle1">
             <div>จำนวนแบบฝึกหัด</div>
             <div>
-              <q-input v-model="numOfPractice" outlined dense />
+              <q-input v-model="numOfPracticeAll" outlined dense />
             </div>
           </div>
           <div class="q-mt-md text-subtitle1">
             <div>จำนวนแบบดาว</div>
             <div>
-              <q-input v-model="numOfStar" outlined dense />
+              <q-input v-model="numOfStarAll" outlined dense />
             </div>
           </div>
         </q-card-section>
@@ -190,6 +190,7 @@
         <q-card-actions align="center" class="q-mb-sm">
           <q-btn dense style="width:120px" outline color="cyan-8" label="ยกเลิก" v-close-popup />
           <q-btn
+            @click="saveAllKpi()"
             dense
             class="bg-cyan-8 text-white"
             style="width:120px"
@@ -220,8 +221,11 @@ export default {
       month: "มกราคม",
       year: "2563",
       numOfPractice: "",
+      numOfPracticeAll: "",
+      numOfStarAll: "",
       numOfStar: "",
       levelStart: "",
+      levelStartAll: "",
       isLoadLevel: true,
       isLoadEmployee: false,
 
@@ -352,7 +356,6 @@ export default {
         });
     },
     openDialogKpiSetting(index, item) {
-      console.log(item);
       this.dialogKpi = true;
       this.getEmployeeName = this.employeeList[index].name;
       this.levelStart = item.startLevelId.value;
@@ -362,27 +365,104 @@ export default {
       this.numOfStar = this.employeeList[index].numOfStar;
     },
     openDialogALLKpiSetting() {
+      (this.numOfPracticeAll = ""), (this.numOfStarAll = "");
       this.dialogAllKpi = true;
-      this.levelStart = item.startLevelId.value;
-      this.numOfPractice = this.employeeList.numOfPractice;
-      this.numOfStar = this.employeeList.numOfStar;
+      this.levelStartAll = this.levelList[0].value;
     },
     saveAllKpi() {
       this.loadingShow();
+      let counter = 0;
+      this.employeeList.forEach(element => {
+        console.log(element);
+        db.collection("employee")
+          .doc(element.employeeId)
+          .update({
+            startLevelId: this.levelStartAll
+          })
+          .then(() => {
+            if (element.kpiId) {
+              db.collection("kpiLog")
+                .doc(element.kpiId)
+                .update({
+                  levelId: this.levelStartAll,
+                  numOfPractice: this.numOfPracticeAll,
+                  numOfStar: this.numOfStarAll
+                })
+                .then(() => {
+                  counter++;
+                  if (counter == this.employeeList.length) {
+                    this.loadingHide();
+                    this.loadEmployeeData();
+                  }
+                });
+            } else {
+              db.collection("kpiLog")
+                .add({
+                  departmentId: this.departmentSelect,
+                  employeeId: element.employeeId,
+                  hotelId: "8NMOVR4dZ68asGmjNtxv",
+                  levelId: this.levelStartAll,
+                  numOfPractice: this.numOfPracticeAll,
+                  numOfStar: this.numOfStarAll,
+                  month: this.month,
+                  year: this.year,
+                  filter: ""
+                })
+                .then(() => {
+                  counter++;
+                  if (counter == this.employeeList.length) {
+                    this.loadingHide();
+                    this.loadEmployeeData();
+                  }
+                });
+            }
+          });
+      });
+      return;
+
+      this.loadingShow();
+      let empUpdateTemp = {};
       db.collection("employee")
-        .update({ startLevelId: this.levelStart })
-        .then(() => {
-          db.collection("kpiLog")
-            .where("month", "==", this.month)
-            .where("year", "==", this.year)
-            .update({
-              levelId: this.levelStart,
-              numOfPractice: this.numOfPractice,
-              numOfStar: this.numOfStar
-            })
-            .then(() => {
-              this.loadingHide();
+        .get()
+        .then(data => {
+          data.forEach(element => {
+            empUpdateTemp = element.id;
+            db.collection("employee")
+              .doc(empUpdateTemp)
+              .update({
+                startLevelId: this.levelStartAll
+              });
+          });
+        });
+      let kpiUpdateTemp = {};
+      db.collection("kpiLog")
+        .get()
+        .then(data => {
+          if (data.size) {
+            data.forEach(element => {
+              kpiUpdateTemp = element.id;
+              db.collection("kpi")
+                .doc(kpiUpdateTemp)
+                .update({
+                  levelId: this.levelStartAll,
+                  numOfPractice: this.numOfPracticeAll,
+                  numOfStar: this.numOfStarAll
+                });
             });
+          } else {
+            db.collection("kpi").add({
+              departmentId: this.departmentSelect,
+              employeeId: kpiUpdateTemp,
+              hotelId: "8NMOVR4dZ68asGmjNtxv",
+              levelId: this.levelStartAll,
+              numOfPractice: this.numOfPracticeAll,
+              numOfStar: this.numOfStarAll,
+              month: this.month,
+              year: this.year,
+              filter: ""
+            });
+          }
+          this.loadEmployeeData();
         });
     },
     savePersonalKpi() {
@@ -398,7 +478,6 @@ export default {
             .get()
             .then(data => {
               if (data.size) {
-                console.log("มีข้อมูล");
                 db.collection("kpiLog")
                   .doc(this.getKpiId)
                   .update({
@@ -410,7 +489,6 @@ export default {
                     this.loadEmployeeData();
                   });
               } else {
-                console.log("ไม่มีข้อมูล");
                 let addDataTemp = {
                   departmentId: this.departmentSelect,
                   employeeId: this.getEmployeeId,
