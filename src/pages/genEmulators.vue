@@ -14,13 +14,13 @@ export default {
   },
   methods: {
     gen() {
-      let genDepartmentTemp = {
-        hotelId: "ITNxdT5zAb0Mq6AyhPfd",
-        name: "ห้องอาหาร"
-      };
+      // let genDepartmentTemp = {
+      //   hotelId: "ITNxdT5zAb0Mq6AyhPfd",
+      //   name: "ห้องอาหาร"
+      // };
       let genEmployeeTemp = {
         departmentId: "IoCA4OEte02K8dZUkMnW",
-        hotelId: "ITNxdT5zAb0Mq6AyhPfd",
+        hotelId: "",
         startLevelId: "vg4mEOkmTJFCLuzuCN9p",
         uid: "Q63BSlqdFMhI8gK6FVYz9gpBeQP2",
         email: "test@test.com",
@@ -28,31 +28,33 @@ export default {
         tel: "0956365478",
         star: 0
       };
-      let genLevelTemp = {
-        name: "พนักงานต้อนรับ",
-        status: true
-      };
-      let genHotelTemp = {
-        adminName: "tatum",
-        daminPhone: "0956686593",
-        email: "test@test.com",
-        name: "TESTHOTEL",
-        password: "123456"
-      };
+      // let genLevelTemp = {
+      //   name: "พนักงานต้อนรับ",
+      //   status: true
+      // };
+      // let genHotelTemp = {
+      //   adminName: "tatum",
+      //   daminPhone: "0956686593",
+      //   email: "test@test.com",
+      //   name: "TESTHOTEL",
+      //   password: "123456"
+      // };
       let genKpiLogTemp = {
-        hotelId: "ITNxdT5zAb0Mq6AyhPfd",
+        hotelId: "",
         departmentId: "IoCA4OEte02K8dZUkMnW",
+        levelId: "",
+        employeeId: "",
         numOfPractice: 0,
         numOfStar: 0,
         month: "มกราคม",
         year: "2563",
         filter: ""
       };
-      db.collection("department")
-        .add(genDepartmentTemp)
-        .then(() => {
-          this.$router.push("/kpi");
-        });
+      // db.collection("department")
+      //   .add(genDepartmentTemp)
+      //   .then(() => {
+      //     this.$router.push("/kpi");
+      //   });
 
       db.collection("employee")
         .add(genEmployeeTemp)
@@ -60,16 +62,16 @@ export default {
           this.$router.push("/kpi");
         });
 
-      db.collection("level")
-        .add(genLevelTemp)
-        .then(() => {
-          this.$router.push("/kpi");
-        });
-      db.collection("hotel")
-        .add(genHotelTemp)
-        .then(() => {
-          this.$router.push("/kpi");
-        });
+      // db.collection("level")
+      //   .add(genLevelTemp)
+      //   .then(() => {
+      //     this.$router.push("/kpi");
+      //   });
+      // db.collection("hotel")
+      //   .add(genHotelTemp)
+      //   .then(() => {
+      //     this.$router.push("/kpi");
+      //   });
       db.collection("kpiLog")
         .add(genKpiLogTemp)
         .then(() => {

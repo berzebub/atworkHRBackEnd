@@ -110,7 +110,7 @@
         </q-card-section>
 
         <q-card-section>
-          <div align="center" class="text-h6">"{{getDepartmentName}}"</div>
+          <div align="center" class="text-h6">"{{getEmployeeName}}"</div>
           <div class="q-mt-md text-subtitle1">
             <div>บทเรียนเริ่มต้น</div>
             <div>
@@ -209,7 +209,7 @@ export default {
     return {
       departmentNameList: [],
       departmentSelect: "",
-      getDepartmentName: "",
+      getEmployeeName: "",
       getEmployeeId: "",
       employeeList: "",
       kpiLogList: "",
@@ -258,7 +258,9 @@ export default {
     async loadEmployeeData() {
       let employeeTemp = [];
       let kpiTemp = [];
+
       await this.loadLevelData();
+
       db.collection("employee")
         .where("departmentId", "==", this.departmentSelect)
         .get()
@@ -269,9 +271,10 @@ export default {
               employeeId: element.id
             });
           });
+
           db.collection("kpiLog")
             .where("departmentId", "==", this.departmentSelect)
-            .where("hotelId", "==", "A4W7WwvOoRR7g0OaIJ0F")
+            .where("hotelId", "==", "8NMOVR4dZ68asGmjNtxv")
             .where("month", "==", this.month)
             .where("year", "==", this.year)
             .get()
@@ -287,7 +290,6 @@ export default {
                     x.year == this.year &&
                     x.month == this.month
                 );
-                console.log(filterData.length);
                 if (filterData.length > 0) {
                   element.numOfPractice = filterData[0].numOfPractice;
                   element.numOfStar = filterData[0].numOfStar;
@@ -328,7 +330,7 @@ export default {
     loadDepartmentData() {
       let departmentTemp = [];
       db.collection("department")
-        .where("hotelId", "==", "A4W7WwvOoRR7g0OaIJ0F") //+++++++
+        .where("hotelId", "==", "8NMOVR4dZ68asGmjNtxv") //+++++++
         .get()
         .then(data => {
           data.forEach(element => {
@@ -345,9 +347,9 @@ export default {
     },
     openDialogKpiSetting(index) {
       this.dialogKpi = true;
-      this.getDepartmentName = this.employeeList[index].name;
+      this.getEmployeeName = this.employeeList[index].name;
       this.levelStart = this.levelList[index].value;
-      this.getEmployeeId = this.employeeList[index].id;
+      this.getEmployeeId = this.employeeList[index].employeeId;
     },
     openDialogALLKpiSetting() {
       this.dialogAllKpi = true;
@@ -359,14 +361,36 @@ export default {
         .then(() => {
           db.collection("kpiLog")
             .where("employeeId", "==", this.getEmployeeId)
-            .where("levelId", "==", this.levelStart)
+            // .where("levelId", "==", this.levelStart)
             .where("month", "==", this.month)
             .where("year", "==", this.year)
             .get()
             .then(data => {
-              data.forEach(element => {
-                console.log(element.data());
-              });
+              if (data.size) {
+                console.log("มีข้อมูล");
+                // let updateDataTemp =
+                db.collection("kpiLog")
+                  .doc(this.getEmployeeId)
+                  .update({
+                    levelId: this.levelStart,
+                    numOfPractice: this.numOfPractice,
+                    numOfStar: this.numOfStar
+                  });
+              } else {
+                console.log("ไม่มีข้อมูล");
+                let addDataTemp = {
+                  departmentId: this.departmentSelect,
+                  employeeId: this.getEmployeeId,
+                  hotelId: "8NMOVR4dZ68asGmjNtxv",
+                  levelId: this.levelStart,
+                  numOfPractice: this.numOfPractice,
+                  numOfStar: this.numOfStar,
+                  month: this.month,
+                  year: this.year,
+                  filter: ""
+                };
+                db.collection("kpiLog").add(addDataTemp);
+              }
             });
         });
     },
@@ -377,8 +401,6 @@ export default {
   },
   mounted() {
     this.loadDepartmentData();
-    // this.loadLevelData();
-    // this.loadEmployeeData();
   }
 };
 </script>
