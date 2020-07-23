@@ -113,17 +113,18 @@ export default {
               let getData = await axios.get(apiURL);
               const customClaims = getData.data.customClaims.accessProgram;
               if (customClaims.includes("HR")) {
-                db.collection("hotel")
-                  .where("uid", "==", result.user.uid)
-                  .get()
-                  .then((doc) => {
-                    if (doc.size) {
-                      this.$q.localStorage.set("hotelId", doc.docs[0].id);
-                    } else {
-                      this.loadingHide();
-                      this.$router.push("/kpi");
-                    }
-                  });
+                // db.collection("hotel")
+                //   .where("uid", "==", result.user.uid)
+                //   .get()
+                //   .then((doc) => {
+                this.$q.localStorage.set(
+                  "hotelId",
+                  getData.data.customClaims.hotelId
+                );
+
+                this.loadingHide();
+                this.$router.push("/kpi");
+                // });
               } else {
                 throw "error";
               }

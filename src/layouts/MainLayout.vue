@@ -219,7 +219,6 @@ export default {
             "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/getUserData?uid=" +
             user.uid;
           let getData = await axios.get(apiURL);
-          console.log(getData.data.customClaims);
           this.userInfo.permissions =
             getData.data.customClaims.dataEntryPermissions;
           this.isLoadUserInfo = true;

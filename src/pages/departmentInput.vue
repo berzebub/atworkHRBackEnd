@@ -34,7 +34,7 @@
             outlined
             v-model="department.password"
             :type="isPwd ? 'password' : 'text'"
-            :rules="[val => !!val,isCheckPassword]"
+            :rules="[val => !!val]"
           >
             <template v-slot:append>
               <q-icon
@@ -124,6 +124,8 @@ export default {
     loadEdit() {
       this.department = this.$route.params;
       this.department.userGroup = this.$route.params.customClaims.dataEntryPermissions;
+      this.department.hotelId = this.$q.localStorage.getItem("hotelId");
+      console.log(this.department.hotelId);
       if (this.department.userGroup.length == 4) {
         this.all = true;
       }
@@ -179,6 +181,7 @@ export default {
         this.$refs.gmail.hasError ||
         this.$refs.password.hasError
       ) {
+        return;
       }
 
       if (
@@ -194,6 +197,7 @@ export default {
         return;
       }
 
+      this.loadingShow();
       if (this.$route.name == "departmentAdd") {
         let apiURL =
           "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/create";
@@ -203,34 +207,35 @@ export default {
           displayName: this.department.displayName,
           accessProgram: ["HR"],
           dataEntryPermissions: this.department.userGroup, //สิทธิ์การเข้าถึงเมนูในระบบ HR
+          hotelId: this.department.hotelId,
         };
 
         let createUser = await axios.post(apiURL, dataUser);
+        this.loadingHide();
 
         if (createUser.data.code) {
           //  ERROR
           return;
         }
 
-        // db.collection("user_hr").add(this.department);
         this.$router.push("/departmentMain");
       } else {
-        console.log("EDIt");
         if (this.all) {
           this.department.userGroup = ["kpi", "report", "personel", "reward"];
         }
 
         let apiURL =
-          "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/update";
+          "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/hrUpdate";
         const updateData = {
           uid: this.department.uid,
           displayName: this.department.displayName,
           dataEntryPermissions: this.department.userGroup,
           accessProgram: ["HR"],
+          hotelId: this.department.hotelId,
         };
         let postData = await axios.post(apiURL, updateData);
+        this.loadingHide();
         if (postData.data.code) {
-          console.log(postData);
           return;
         }
 
