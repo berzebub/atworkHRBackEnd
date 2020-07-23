@@ -45,13 +45,14 @@
             style="width:330px"
             outlined
             dense
+            @input="changeDepartment"
             v-model="department"
             :options="departmentOptions"
           />
         </div>
         <div>
           <q-btn
-            @click="addRewardBtn()"
+            @click="addRewardBtn();addReward.isImage = false;addReward.reward = '';addReward.star = '';"
             style="width:158px;height:40px"
             color="cyan-8"
             v-if="showMode == 'reward'"
@@ -70,7 +71,7 @@
         class="row bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
         style="border-radius: 10px 10px 0px 0px"
       >
-        <div class="col">
+        <div class="col q-px-md">
           ชื่อ-นามสกุล
           <i class="fas fa-sort"></i>
         </div>
@@ -78,39 +79,35 @@
           จำนวนดาว
           <i class="fas fa-sort"></i>
         </div>
-        <div style="width:120px" class="col-2" align="center">
-          ประวัติการแลก
-          <i class="fas fa-sort"></i>
-        </div>
-        <div style="width:120px" class="col-2" align="center">
-          แลกรางวัล
-          <i class="fas fa-sort"></i>
-        </div>
+        <div style="width:120px" class="col-2" align="center">ประวัติการแลก</div>
+        <div style="width:120px" class="col-2" align="center">แลกรางวัล</div>
       </div>
       <!-- เนื้อหา -->
-      <div
-        v-for="item in userList"
-        :key="item.id"
-        class="row bg-white text-black text-subtitle1 q-px-md q-py-sm brx"
-      >
-        <div class="col self-center">{{item.name}}</div>
-        <div class="col self-center" align="center">{{item.star}}</div>
-        <div style="width:120px" class="col-2 self-center" align="center">
-          <q-btn
-            @click="historyBtn(item.name,item.key)"
-            icon="fas fa-file-alt"
-            round
-            color="cyan-8"
-          />
-        </div>
-        <div style="width:120px" class="col-2 self-center relative-position" align="center">
-          <q-btn
-            @click="rewardBtn(item.name,item.star,item.key)"
-            icon="fas fa-gift"
-            round
-            color="cyan-8"
-          />
-          <q-btn v-if="!mode" class="absolute-center backDrop"></q-btn>
+      <div class="shadow-2 q-pb-sm q-mb-md" style="border-radius: 0px 0px 10px 10px">
+        <div
+          v-for="item in userList"
+          :key="item.id"
+          class="row bg-white text-black text-subtitle1 q-px-md q-py-sm"
+        >
+          <div class="col self-center q-px-md">{{item.name}}</div>
+          <div class="col self-center" align="center">{{item.star}}</div>
+          <div style="width:120px" class="col-2 self-center" align="center">
+            <q-btn
+              @click="historyBtn(item.name,item.key)"
+              icon="fas fa-file-alt"
+              round
+              color="cyan-8"
+            />
+          </div>
+          <div style="width:120px" class="col-2 self-center relative-position" align="center">
+            <q-btn
+              @click="rewardBtn(item.name,item.star,item.key)"
+              icon="fas fa-gift"
+              round
+              color="cyan-8"
+            />
+            <q-btn v-if="!mode" class="absolute-center backDrop"></q-btn>
+          </div>
         </div>
       </div>
     </div>
@@ -120,71 +117,73 @@
         class="row bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
         style="border-radius: 10px 10px 0px 0px"
       >
-        <div class="col-2">
+        <div class="col q-px-md">
           ของรางวัล
           <i class="fas fa-sort"></i>
         </div>
-        <div class="col" align="center">
-          รูป
-          <i class="fas fa-sort"></i>
-        </div>
-        <div style="width:120px" class="col-2" align="center">
+        <div class="col" align="center">รูป</div>
+        <div style="width:100px" class="col-2" align="center">
           จำนวนดาว
           <i class="fas fa-sort"></i>
         </div>
-        <div style="width:120px" class="col-2" align="center">
-          ลบ
-          <i class="fas fa-sort"></i>
-        </div>
-        <div style="width:120px" class="col-2" align="center">
-          แก้ไข
-          <i class="fas fa-sort"></i>
-        </div>
-        <div style="width:120px" class="col-2" align="center">
-          เปิด/ปิด
-          <i class="fas fa-sort"></i>
-        </div>
+        <div style="width:100px" class="col-2" align="center">ลบ</div>
+        <div style="width:100px" class="col-2" align="center">แก้ไข</div>
+        <div style="width:100px" class="col-2" align="center">เปิด/ปิด</div>
       </div>
       <!-- เนื้อหา -->
-      <div
-        v-for="item in rewardList"
-        :key="item.id"
-        class="row bg-white text-black text-subtitle1 q-px-md q-py-sm brx"
-      >
-        <div class="col-2 brx self-center">{{item.reward}}</div>
-        <div class="col" align="center">
-          <div class="row justify-center">
-            <div class="brx" style="width:180px;height:180px"></div>
+      <div class="shadow-2 q-pb-sm q-mb-md" style="border-radius: 0px 0px 10px 10px">
+        <div
+          v-for="item in rewardList"
+          :key="item.id"
+          class="row bg-white text-black text-subtitle1 q-px-md q-py-sm"
+        >
+          <div class="col self-center q-px-md" v-html="item.reward" />
+          <div class="col" align="center">
+            <div class="row justify-center">
+              <div
+                v-if="!item.isImage"
+                class="noPhoto row relative-position"
+                style="width:180px;height:180px"
+              >
+                <div class="absolute-center">ไม่มีรูปภาพ</div>
+              </div>
+              <img v-if="item.isImage" style="width:180px" :src="item.getURL" alt />
+            </div>
           </div>
-        </div>
-        <div style="width:120px" class="col-2 brx self-center" align="center">{{item.star}}</div>
-        <div style="width:120px" class="col-2 self-center" align="center">
-          <q-btn @click="deleteBtn(item.key)" icon="fas fa-trash-alt" round color="cyan-8" />
-        </div>
-        <div style="width:120px" class="col-2 self-center" align="center">
-          <q-btn @click="editBtn(item.key)" icon="fas fas fa-edit" round color="cyan-8" />
-        </div>
-        <div style="width:120px" class="col-2 self-center" align="center">
-          <span>
-            {{item.status}}
-            <toggle-button
-              :labels="{ checked: 'เปิด', unchecked: 'ปิด' }"
-              :height="30"
-              :width="67"
-              :color="{
+          <div style="width:100px" class="col-2 self-center" align="center">{{item.star}}</div>
+          <div style="width:100px" class="col-2 self-center" align="center">
+            <q-btn @click="deleteBtn(item.key)" icon="fas fa-trash-alt" round color="cyan-8" />
+          </div>
+          <div style="width:100px" class="col-2 self-center" align="center">
+            <q-btn
+              @click="editBtn(item.key,item.getURL)"
+              icon="fas fas fa-edit"
+              round
+              color="cyan-8"
+            />
+          </div>
+          <div style="width:100px" class="col-2 self-center" align="center">
+            <span>
+              {{item.status}}
+              <toggle-button
+                :labels="{ checked: 'เปิด', unchecked: 'ปิด' }"
+                :height="30"
+                :width="67"
+                :color="{
           checked: ['#0097A7'  ],
           unchecked: ['#909090']
         }"
-              :font-size="16"
-              v-model="statusReward"
-              @change="updateStatusReward(item.key)"
-            />
-          </span>
+                :font-size="16"
+                v-model="statusReward"
+                @change="updateStatusReward(item.key)"
+              />
+            </span>
+          </div>
         </div>
       </div>
     </div>
     <!-- ประวัติการแลก  -->
-    <q-dialog v-model="isShowHistory">
+    <q-dialog v-model="isShowHistory" persistent>
       <q-card style="max-width:400px;width:100%">
         <q-card-section align="center" class="bg-blue-10 text-white">
           <div class="text-h6">ประวัติการแลก</div>
@@ -192,7 +191,7 @@
         <div class="q-pa-md">
           <span>{{rewardUser.name}}</span>
           <span class="q-px-sm">:</span>
-          <span>{{}}</span>
+          <span>{{department.label}}</span>
           <q-separator class="q-my-sm" />
           <span>
             <div>วันที่ 22 มิ.ย. 2563</div>
@@ -216,7 +215,7 @@
       </q-card>
     </q-dialog>
     <!-- แลกรางวัล  -->
-    <q-dialog v-model="isReward">
+    <q-dialog v-model="isReward" persistent>
       <q-card style="max-width:400px;width:100%">
         <q-card-section align="center" class="bg-blue-10 text-white">
           <div class="text-h6">แลกรางวัล</div>
@@ -224,13 +223,13 @@
         <div class="q-pa-md">
           <span>{{rewardUser.name}}</span>
           <span class="q-px-sm">:</span>
-          <span>{{}}</span>
+          <span>{{department.label}}</span>
           <q-separator class="q-my-sm" />
           <span>
             <div>รางวัลที่แลก</div>
             <div align="right">
               <q-select
-                :color="isRewardBtn ? 'red' : null"
+                :color="isRewardBtn ? 'red' : ''"
                 outlined
                 dense
                 v-model="reward "
@@ -282,7 +281,7 @@
       </q-card>
     </q-dialog>
     <!-- เพิ่มของรางวัล  -->
-    <q-dialog v-model="isAddReward">
+    <q-dialog v-model="isAddReward" persistent>
       <q-card class="text-subtitle2" style="max-width:400px;width:100%">
         <q-card-section align="center" class="bg-blue-10 text-white">
           <div v-if="!modeAdd" class="text-h6">เพิ่มของรางวัล</div>
@@ -305,7 +304,7 @@
               ref="star"
               type="number"
               outlined
-              v-model="addReward.star"
+              v-model.number="addReward.star"
               dense
               :rules="[val => !!val]"
             />
@@ -318,10 +317,7 @@
             >ไฟล์ jpg ขนาด 300x300 px เท่านั้น</span>
             <div align="center" class="q-pa-md" v-if="addReward.isImage">
               <div>
-                <q-img
-                  src="https://cdn.quasar.dev/img/parallax2.jpg"
-                  style="width:300px;height:300px"
-                >
+                <q-img :src="addReward.getURL" style="width:300px;">
                   <div class="absolute-bottom text-subtitle1 text-center">
                     <u @click="deleteImg()" class="cursor-pointer">ลบรูปภาพ</u>
                   </div>
@@ -386,30 +382,23 @@
 </template>
 
 <script>
-import { db } from "../router";
+import { db, st } from "../router";
 export default {
   data() {
     return {
       uploadImg: null,
+      pathFile:
+        "https://storage.cloud.google.com/atwork-dee11.appspot.com/image_reward/",
       addReward: {
         reward: "",
         star: "",
-        isImage: false
+        isImage: false,
       },
       statusReward: false,
       mode: true,
       showMode: "person",
-      department: "ชื่อพนักงาน",
-      departmentOptions: [
-        {
-          label: "ชื่อพนักงาน",
-          value: "person"
-        },
-        {
-          label: "ของรางวัล",
-          value: "reward"
-        }
-      ],
+      department: "",
+      departmentOptions: [],
       reward: "",
       rewardOptions: [],
       columnsAll: [],
@@ -426,94 +415,120 @@ export default {
         name: "",
         star: "",
         starAll: 0,
-        starBalance: 0
-      }
+        starBalance: 0,
+      },
     };
   },
   methods: {
     // แลกของรางวัล
     rewardRedemption() {
-      // let history = {
-      //   id: this.userId,
-      //   name: this.rewardUser.name,
-      //   rewardId: [this.reward.value]
-      // };
-      // db.collection("reward_history")
-      //   .get()
-      //   .then(doc => {
-      //     doc.forEach(element => {
-      //       if (this.userId == element.data().id) {
-      //         db.collection("reward_history")
-      //           .doc(element.id)
-      //           .delete();
-      //       } else {
-      //         db.collection("reward_history").add(history);
-      //       }
-      //     });
-      //   });
+      let star = this.rewardUser.star - this.rewardUser.starAll;
+      db.collection("employee")
+        .doc(this.userId)
+        .update({ star: star })
+        .then(() => {
+          let history = {
+            employeeId: this.userId,
+            name: this.rewardUser.name,
+            rewardId: [this.reward.value],
+          };
+          db.collection("reward_history").add(history);
+          // db.collection("reward_history")
+          //   .get()
+          //   .then((doc) => {
+          //     doc.forEach((element) => {
+          //       if (this.userId == element.data().id) {
+          //         db.collection("reward_history").doc(element.id).delete();
+          //       } else {
+
+          //       }
+          //     });
+          //   });
+        });
     },
     //  โหลดพนักงาน
 
-    loadUser() {
-      this.loadReward();
-      this.loadDepartment();
-      db.collection("employee").onSnapshot(doc => {
-        this.userList = [];
-        doc.forEach(element => {
-          let dataKey = {
-            star: "500",
-            key: element.id
-          };
-          let final = {
-            ...dataKey,
-            ...element.data()
-          };
-          this.userList.push(final);
-          this.userList.sort((a, b) => {
-            return a.name > b.name ? 1 : -1;
+    loadUser(val) {
+      db.collection("employee")
+        .where("departmentId", "==", val)
+        .onSnapshot((doc) => {
+          this.userList = [];
+          doc.forEach((element) => {
+            let dataKey = {
+              key: element.id,
+            };
+            let final = {
+              ...dataKey,
+              ...element.data(),
+            };
+            this.userList.push(final);
+            this.userList.sort((a, b) => {
+              return a.name > b.name ? 1 : -1;
+            });
           });
+          this.loadingHide();
         });
-      });
     },
     // โหลดรางวัล
     loadReward() {
-      db.collection("reward").onSnapshot(doc => {
+      this.loadingShow();
+      db.collection("reward").onSnapshot(async (doc) => {
         this.rewardList = [];
         this.rewardOptions = [];
-        doc.forEach(element => {
+        await doc.forEach((element) => {
+          let getImage = "";
+          if (element.data().isImage) {
+            getImage = this.pathFile + element.id + ".jpg";
+          }
           let dataKey = {
-            key: element.id
+            key: element.id,
+            getURL: getImage,
           };
           let final = {
             ...dataKey,
-            ...element.data()
+            ...element.data(),
           };
-          // this.statusReward = element.data().status;
           this.rewardList.push(final);
         });
         this.rewardList.filter((x, index) => {
           this.rewardOptions.push({
             label:
               index + 1 + "." + " " + x.reward + " - " + x.star + " " + "ดาว",
-            value: x.key
+            value: x.key,
           });
         });
         this.reward = this.rewardOptions[0];
+        this.changeStar(this.reward);
+        this.loadingHide();
       });
     },
+    // โหลดแผนก
     loadDepartment() {
-      // db.collection("department")
-      //   .where("hotelId", "==")
-      //   .get()
-      //   .then(doc => {
-      //     doc.forEach(element => {
-      //       console.log(element.data());
-      //     });
-      //   });
+      this.loadingShow();
+      db.collection("department")
+        .get()
+        .then((doc) => {
+          let key = [];
+          doc.forEach((element) => {
+            key.push(element.id);
+
+            this.departmentOptions.push({
+              label: element.data().name,
+              value: element.id,
+            });
+          });
+          this.department = this.departmentOptions[0];
+          this.loadUser(key[0]);
+          this.loadReward();
+        });
+    },
+    changeDepartment(val) {
+      this.loadUser(val.value);
     },
     // เปลี่ยน mode พนักงาน กับ รางวัล
     changeMode() {
       if (this.showMode == "person") {
+        this.loadReward();
         this.modeAdd = false;
         this.userList;
       } else {
@@ -537,15 +552,15 @@ export default {
     changeStar(val) {
       db.collection("reward")
         .get()
-        .then(doc => {
-          doc.forEach(element => {
+        .then((doc) => {
+          doc.forEach((element) => {
             if (val.value == element.id) {
               this.rewardUser.starAll = element.data().star;
             }
           });
           this.rewardUser.starBalance =
-            Number(this.rewardUser.star) - Number(this.rewardUser.starAll);
-          if (Number(this.rewardUser.star) < Number(this.rewardUser.starAll)) {
+            this.rewardUser.star - this.rewardUser.starAll;
+          if (this.rewardUser.star < this.rewardUser.starAll) {
             this.isRewardBtn = true;
           } else {
             this.isRewardBtn = false;
@@ -554,35 +569,42 @@ export default {
     },
     chengOptions(val) {},
     // แก้ไขรางวัล
-    editBtn(val) {
+    editBtn(val, image) {
+      this.uploadImg = null;
       this.addReward = "";
       this.userId = val;
       this.modeAdd = true;
       this.isAddReward = true;
       db.collection("reward")
         .get()
-        .then(doc => {
-          doc.forEach(element => {
+        .then((doc) => {
+          doc.forEach((element) => {
             if (element.id == val) {
-              this.addReward = element.data();
+              let dataKey = {
+                getURL: image,
+              };
+              let filnal = {
+                ...dataKey,
+                ...element.data(),
+              };
+              this.addReward = filnal;
             }
           });
         });
     },
     // ลบรางวัล
     deleteBtn(val) {
-      db.collection("reward")
-        .doc(val)
-        .delete();
+      this.rewardList = [];
+      db.collection("reward").doc(val).delete();
     },
     addRewardBtn() {
-      this.addReward.isImage = false;
-      this.addReward.reward = "";
-      this.addReward.star = "";
+      this.uploadImg = null;
       this.modeAdd = false;
       this.isAddReward = true;
     },
-    saveReward() {
+    // บันทึกของรางวัล
+    async saveReward() {
+      delete this.addReward.getURL;
       this.$refs.reward.validate();
       this.$refs.star.validate();
       if (this.$refs.reward.hasErrors || this.$refs.star.hasError) {
@@ -590,13 +612,34 @@ export default {
       if (this.addReward.reward == "" || this.addReward.star == "") {
         return;
       } else {
+        if (this.uploadImg) {
+          this.addReward.isImage = true;
+        }
+        this.loadingShow();
         if (!this.modeAdd) {
+          if (!this.uploadImg) {
+            this.addReward.isImage = false;
+          }
           this.addReward.status = true;
-          db.collection("reward").add(this.addReward);
+          let getDb = await db.collection("reward").add(this.addReward);
+          if (this.uploadImg) {
+            await st
+              .child("/image_reward/" + getDb.id + ".jpg")
+              .put(this.uploadImg)
+              .then(async () => {
+                this.rewardList = [];
+                await this.loadReward();
+              });
+          }
         } else {
-          db.collection("reward")
-            .doc(this.userId)
-            .set(this.addReward);
+          db.collection("reward").doc(this.userId).set(this.addReward);
+          if (this.uploadImg) {
+            await st
+              .child("/image_reward/" + this.userId + ".jpg")
+              .put(this.uploadImg);
+            this.rewardList = [];
+            this.loadReward();
+          }
         }
         this.isAddReward = false;
         this.modeAdd = false;
@@ -604,16 +647,18 @@ export default {
     },
     // อัพเดท การปิดเปิด
     updateStatusReward(val) {
-      db.collection("reward")
-        .doc(val)
-        .update({ status: this.statusReward });
-    }
+      db.collection("reward").doc(val).update({ status: this.statusReward });
+    },
+    deleteImg() {
+      this.addReward.isImage = false;
+      db.collection("reward").doc(this.userId).update({ isImage: false });
+      st.child("/image_reward/" + this.userId + ".jpg").delete();
+    },
   },
 
   mounted() {
-    this.loadUser();
-    // this.changeMode();
-  }
+    this.loadDepartment();
+  },
 };
 </script>
 
@@ -637,5 +682,8 @@ export default {
   background-color: black;
   opacity: 0.3;
   z-index: 10;
+}
+.noPhoto {
+  border: 1px solid #9e9e9e;
 }
 </style>
