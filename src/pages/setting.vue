@@ -60,14 +60,19 @@
             <div class="text-h6 q-py-lg" align="center">แก้ไข ชื่อ นามสกุล</div>
             <div class="text-subtitle1" align="left">ชื่อ นามสกุล</div>
             <div>
-              <q-input outlined dense v-model="name" style="width:328px"></q-input>
+              <q-input outlined dense v-model="userInfo.displayName" style="width:328px"></q-input>
             </div>
             <div class="row q-pt-lg">
               <div class="col-6 q-pr-sm" align="right">
                 <q-btn outline color="secondary" label="ยกเลิก" style="width:120px" />
               </div>
               <div class="col-6 q-pl-sm">
-                <q-btn color="secondary" label="ตกลง" style="width:120px" />
+                <q-btn
+                  color="secondary"
+                  label="ตกลง"
+                  @click="confirmEditDisplayName()"
+                  style="width:120px"
+                />
               </div>
             </div>
           </div>
@@ -75,48 +80,18 @@
         <!-- password -->
         <div v-if="isPasswordSetting==true" class="row absolute-center">
           <div class="col-12 text-subtitle1" align="center">คุณต้องการตั้งค่ารหัสผ่านใหม่</div>
-          <div class="col-12 text-subtitle1 q-pb-lg" align="center">xxxxxxxxxxx</div>
+          <div class="col-12 text-subtitle1 q-pb-lg" align="center">{{ this.userInfo.email }}</div>
 
           <div class="col-6 q-pr-sm" align="right">
             <q-btn outline color="secondary" label="ยกเลิก" style="width:120px" />
           </div>
           <div class="col-6 q-pl-sm" align="left">
-            <q-btn color="secondary" label="ตกลง" style="width:120px" />
-          </div>
-        </div>
-        <!-- log out -->
-        <div class="row absolute-center" v-if="isLogoutSetting == true">
-          <div class="text-h6 col-12" align="center">ออกจากระบบ</div>
-          <div class="q-pt-md col-12" align="center">
             <q-btn
-              @click="logoutOnly()"
-              dense
-              class="text-subtitle1"
-              style="width:190px"
-              label="เฉพาะอุปกรณ์ปัจจุบัน"
               color="secondary"
-            ></q-btn>
-          </div>
-          <div class="q-pt-lg col-12" align="center">
-            <q-btn
-              dense
-              outline
-              class="text-subtitle1"
-              style="width:190px"
-              label="อุปกรณ์ทั้งหมด"
-              color="secondary"
-            ></q-btn>
-          </div>
-          <div class="q-pt-lg col-12" align="center">
-            <q-btn
-              @click="cencelLogout()"
-              dense
-              outline
-              class="text-subtitle1"
-              style="width:190px"
-              label="ยกเลิก"
-              color="secondary"
-            ></q-btn>
+              label="ตกลง"
+              @click="confirmResetPassword()"
+              style="width:120px"
+            />
           </div>
         </div>
       </div>
@@ -145,7 +120,8 @@
             </div>
             <div class="col-12 text-subtitle1 q-pt-md">
               เราทำการส่งอีเมลสำหรับการตั้งค่ารหัสผ่านใหม่ไปยัง
-              <br />"xxxxxxxxxxxxxxxxxx "
+              <br />
+              "{{ this.userInfo.email }} "
             </div>
 
             <div class="col-12 q-pl-sm q-pt-lg" align="center">
@@ -154,15 +130,12 @@
           </div>
         </q-dialog>
       </div>
-      <!-- <div class="absolute-center cursor-pointer">
-      <q-btn @click="$router.push('/')" label=" TEST LOGOUT" color="red" size="50px" />
-      </div>-->
     </div>
   </q-page>
 </template>
 
 <script>
-import { auth } from "../router";
+import { auth, axios } from "../router";
 export default {
   data() {
     return {
@@ -173,9 +146,43 @@ export default {
       mainSetting: true,
       isResetNameDialog: false,
       isResetPasswordDialog: false,
+      authLogin: "",
+      userInfo: "",
     };
   },
   methods: {
+    confirmResetPassword() {
+      this.loadingShow();
+      auth
+        .sendPasswordResetEmail(this.userInfo.email)
+        .then(() => {
+          this.loadingHide();
+          this.isResetPasswordDialog = true;
+          console.log("FINISH");
+        })
+        .catch((error) => {
+          this.loadingHide();
+          console.log(error);
+        });
+    },
+    async confirmEditDisplayName() {
+      this.loadingShow();
+      let apiURL =
+        "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/updateDisplayName";
+      let updateData = {
+        uid: this.userInfo.uid,
+        displayName: this.userInfo.displayName,
+      };
+      let updateUserData = await axios.post(apiURL, updateData);
+      if (updateUserData.data.code) {
+        // ERROR UPDATE
+        console.log(updateUserData);
+        this.loadingHide();
+        return;
+      }
+      this.loadingHide();
+      this.isResetNameDialog = true;
+    },
     nameSetting() {
       console.log("name");
       this.isNameSetting = true;
@@ -193,10 +200,6 @@ export default {
     logoutSetting() {
       console.log("logout");
       this.logOut();
-      // this.isNameSetting = false;
-      // this.isPasswordSetting = false;
-      // this.isLogoutSetting = true;
-      // this.mainSetting = false;
     },
     cencelLogout() {
       this.isNameSetting = false;
@@ -208,11 +211,26 @@ export default {
       this.logOut();
     },
     ConfirmName() {
+      console.log("confirm name");
       this.isResetNameDialog = false;
     },
     ConfirmPassword() {
+      console.log("reset password clicked");
       this.isResetPasswordDialog = false;
     },
+    getUser() {
+      this.loadingShow();
+      this.authLogin = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          this.userInfo = user;
+          this.loadingHide();
+        }
+      });
+    },
+  },
+
+  mounted() {
+    this.getUser();
   },
 };
 </script>

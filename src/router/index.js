@@ -43,6 +43,10 @@ Vue.mixin({
     };
   },
   methods: {
+
+
+
+
     loadingShow() {
       this.$q.loading.show({
         delay: 400
@@ -68,12 +72,12 @@ Vue.mixin({
       auth
         .signOut()
         .then(() => this.$router.push("/"))
-        .catch(function(error) {});
+        .catch(function (error) { });
     }
   }
 });
 
-export default function(/* { store, ssrContext } */) {
+export default function (/* { store, ssrContext } */) {
   const Router = new VueRouter({
     scrollBehavior: () => ({ x: 0, y: 0 }),
     routes,
