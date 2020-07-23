@@ -228,7 +228,7 @@ export default {
       levelStartAll: "",
       isLoadLevel: true,
       isLoadEmployee: false,
-
+      hotelId: this.$q.localStorage.getItem("hotelId"),
       monthOption: [
         "มกราคม",
         "กุมภาพันธ์",
@@ -241,7 +241,7 @@ export default {
         "กันยายน",
         "ตุลาคม",
         "พฤศจิกายน",
-        "ธันวาคม"
+        "ธันวาคม",
       ],
       yearsOption: [
         "2563",
@@ -255,8 +255,8 @@ export default {
         "2571",
         "2572",
         "2573",
-        "2574"
-      ]
+        "2574",
+      ],
     };
   },
   methods: {
@@ -270,11 +270,11 @@ export default {
       db.collection("employee")
         .where("departmentId", "==", this.departmentSelect)
         .get()
-        .then(data => {
-          data.forEach(element => {
+        .then((data) => {
+          data.forEach((element) => {
             employeeTemp.push({
               ...element.data(),
-              employeeId: element.id
+              employeeId: element.id,
             });
           });
 
@@ -284,14 +284,14 @@ export default {
             .where("month", "==", this.month)
             .where("year", "==", this.year)
             .get()
-            .then(data => {
-              data.forEach(element => {
+            .then((data) => {
+              data.forEach((element) => {
                 kpiTemp.push({ ...element.data(), kpiId: element.id });
               });
 
-              employeeTemp.forEach(element => {
+              employeeTemp.forEach((element) => {
                 let filterData = kpiTemp.filter(
-                  x =>
+                  (x) =>
                     x.employeeId == element.employeeId &&
                     x.year == this.year &&
                     x.month == this.month
@@ -301,14 +301,14 @@ export default {
                   element.numOfPractice = filterData[0].numOfPractice;
                   element.numOfStar = filterData[0].numOfStar;
                   element.startLevelId = this.levelList.filter(
-                    x => x.value == filterData[0].levelId
+                    (x) => x.value == filterData[0].levelId
                   )[0];
                   element.kpiId = filterData[0].kpiId;
                 } else {
                   element.numOfPractice = "ยังไม่ตั้งค่า";
                   element.numOfStar = "ยังไม่ตั้งค่า";
                   element.startLevelId = this.levelList.filter(
-                    x => x.value == element.startLevelId
+                    (x) => x.value == element.startLevelId
                   )[0];
                 }
               });
@@ -323,11 +323,11 @@ export default {
         let levelTemp = [];
         db.collection("level")
           .get()
-          .then(data => {
-            data.forEach(element => {
+          .then((data) => {
+            data.forEach((element) => {
               let newData = {
                 label: element.data().name,
-                value: element.id
+                value: element.id,
               };
               levelTemp.push(newData);
             });
@@ -342,11 +342,11 @@ export default {
       db.collection("department")
         .where("hotelId", "==", "8NMOVR4dZ68asGmjNtxv") //+++++++
         .get()
-        .then(data => {
-          data.forEach(element => {
+        .then((data) => {
+          data.forEach((element) => {
             let newData = {
               label: element.data().name,
-              value: element.id
+              value: element.id,
             };
             departmentTemp.push(newData);
           });
@@ -372,12 +372,12 @@ export default {
     saveAllKpi() {
       this.loadingShow();
       let counter = 0;
-      this.employeeList.forEach(element => {
+      this.employeeList.forEach((element) => {
         console.log(element);
         db.collection("employee")
           .doc(element.employeeId)
           .update({
-            startLevelId: this.levelStartAll
+            startLevelId: this.levelStartAll,
           })
           .then(() => {
             if (element.kpiId) {
@@ -386,7 +386,7 @@ export default {
                 .update({
                   levelId: this.levelStartAll,
                   numOfPractice: this.numOfPracticeAll,
-                  numOfStar: this.numOfStarAll
+                  numOfStar: this.numOfStarAll,
                 })
                 .then(() => {
                   counter++;
@@ -406,7 +406,7 @@ export default {
                   numOfStar: this.numOfStarAll,
                   month: this.month,
                   year: this.year,
-                  filter: ""
+                  filter: "",
                 })
                 .then(() => {
                   counter++;
@@ -424,30 +424,26 @@ export default {
       let empUpdateTemp = {};
       db.collection("employee")
         .get()
-        .then(data => {
-          data.forEach(element => {
+        .then((data) => {
+          data.forEach((element) => {
             empUpdateTemp = element.id;
-            db.collection("employee")
-              .doc(empUpdateTemp)
-              .update({
-                startLevelId: this.levelStartAll
-              });
+            db.collection("employee").doc(empUpdateTemp).update({
+              startLevelId: this.levelStartAll,
+            });
           });
         });
       let kpiUpdateTemp = {};
       db.collection("kpiLog")
         .get()
-        .then(data => {
+        .then((data) => {
           if (data.size) {
-            data.forEach(element => {
+            data.forEach((element) => {
               kpiUpdateTemp = element.id;
-              db.collection("kpi")
-                .doc(kpiUpdateTemp)
-                .update({
-                  levelId: this.levelStartAll,
-                  numOfPractice: this.numOfPracticeAll,
-                  numOfStar: this.numOfStarAll
-                });
+              db.collection("kpi").doc(kpiUpdateTemp).update({
+                levelId: this.levelStartAll,
+                numOfPractice: this.numOfPracticeAll,
+                numOfStar: this.numOfStarAll,
+              });
             });
           } else {
             db.collection("kpi").add({
@@ -459,7 +455,7 @@ export default {
               numOfStar: this.numOfStarAll,
               month: this.month,
               year: this.year,
-              filter: ""
+              filter: "",
             });
           }
           this.loadEmployeeData();
@@ -476,14 +472,14 @@ export default {
             .where("month", "==", this.month)
             .where("year", "==", this.year)
             .get()
-            .then(data => {
+            .then((data) => {
               if (data.size) {
                 db.collection("kpiLog")
                   .doc(this.getKpiId)
                   .update({
                     levelId: this.levelStart,
                     numOfPractice: this.numOfPractice,
-                    numOfStar: this.numOfStar
+                    numOfStar: this.numOfStar,
                   })
                   .then(() => {
                     this.loadEmployeeData();
@@ -498,7 +494,7 @@ export default {
                   numOfStar: this.numOfStar,
                   month: this.month,
                   year: this.year,
-                  filter: ""
+                  filter: "",
                 };
                 db.collection("kpiLog")
                   .add(addDataTemp)
@@ -512,11 +508,11 @@ export default {
 
     genData() {
       this.$router.push("/genEmulators");
-    }
+    },
   },
   mounted() {
     this.loadDepartmentData();
-  }
+  },
 };
 </script>
 
