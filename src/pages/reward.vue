@@ -166,6 +166,7 @@
         </div>
         <div style="width:120px" class="col-2 self-center" align="center">
           <span>
+            {{item.status}}
             <toggle-button
               :labels="{ checked: 'เปิด', unchecked: 'ปิด' }"
               :height="30"
@@ -227,14 +228,16 @@
           <q-separator class="q-my-sm" />
           <span>
             <div>รางวัลที่แลก</div>
-            <div>
+            <div align="right">
               <q-select
+                :color="isRewardBtn ? 'red' : null"
                 outlined
                 dense
                 v-model="reward "
                 @input="changeStar"
                 :options="rewardOptions"
               />
+              <span v-if="isRewardBtn " class="text-red">ดาวปัจจุบันไม่พอ</span>
             </div>
           </span>
           <span>
@@ -248,7 +251,7 @@
             </div>
             <div class="q-py-sm row justify-between">
               <span>ดาวที่จะเหลือ</span>
-              <span>{{rewardUser.starBalance}}</span>
+              <span :class="isRewardBtn ? 'text-red': ''">{{rewardUser.starBalance}}</span>
             </div>
           </span>
         </div>
@@ -263,14 +266,18 @@
             color="cyan-8"
             label="ยกเลิก"
           />
-          <q-btn
-            dense
-            class="q-mx-sm"
-            style="width:120px"
-            @click="rewardRedemption()"
-            color="cyan-8"
-            label="แลกของรางวัล"
-          />
+          <span class="relative-position">
+            <q-btn
+              :disable="isRewardBtn"
+              dense
+              class="q-mx-sm"
+              style="width:120px"
+              @click="rewardRedemption()"
+              color="cyan-8"
+              label="แลกของรางวัล"
+            />
+            <q-btn v-if="isRewardBtn" class="absolute-center backDropReward"></q-btn>
+          </span>
         </div>
       </q-card>
     </q-dialog>
@@ -282,18 +289,76 @@
           <div v-if="modeAdd" class="text-h6">แก้ไขของรางวัล</div>
         </q-card-section>
         <div class="q-pa-md">
-          <div class="q-py-sm">
+          <div>
             <span>ชื่อของรางวัล</span>
-            <q-input outlined v-model="addReward.reward" dense />
+            <q-input
+              ref="reward"
+              outlined
+              v-model="addReward.reward"
+              dense
+              :rules="[val => !!val]"
+            />
           </div>
-          <div class="q-py-sm">
+          <div>
             <span>จำนวนดาวที่ใช้แลก</span>
-            <q-input outlined v-model="addReward.star" dense />
+            <q-input
+              ref="star"
+              type="number"
+              outlined
+              v-model="addReward.star"
+              dense
+              :rules="[val => !!val]"
+            />
           </div>
-          <div class="q-py-sm">
+          <div class="q-pb-sm">
             <span>ไฟล์รูปภาพ</span>
-            <span class="text-body2 q-px-md">ไฟล์ jpg ขนาด 300x300 px เท่านั้น</span>
-            <q-input outlined dense />
+            <span
+              v-if="!addReward.isImage"
+              class="text-body2 text-grey-5 q-px-md"
+            >ไฟล์ jpg ขนาด 300x300 px เท่านั้น</span>
+            <div align="center" class="q-pa-md" v-if="addReward.isImage">
+              <div>
+                <q-img
+                  src="https://cdn.quasar.dev/img/parallax2.jpg"
+                  style="width:300px;height:300px"
+                >
+                  <div class="absolute-bottom text-subtitle1 text-center">
+                    <u @click="deleteImg()" class="cursor-pointer">ลบรูปภาพ</u>
+                  </div>
+                </q-img>
+              </div>
+            </div>
+            <q-file
+              v-if="!addReward.isImage"
+              accept=".jpg"
+              bg-color="white"
+              outlined
+              v-model="uploadImg"
+            >
+              <template class="relative-position" v-slot:append>
+                <div
+                  style="width:100px"
+                  class="text-subtitle1 rounded-borders text-center bg-cyan-8 text-white q-pa-xs cursor-pointer"
+                  @click.stop="uploadImg = null"
+                  v-if="!uploadImg"
+                >เลือกไฟล์</div>
+
+                <div
+                  class="cursor-pointer rounded-borders text-white q-py-sm q-px-xs bg-cyan-8"
+                  v-if="uploadImg "
+                  @click="uploadImg  = null"
+                >
+                  <span class="far fa-trash-alt q-px-xs"></span>
+                </div>
+              </template>
+              <div
+                style="width:100%"
+                class="text-subtitle1 row absolute-center text-grey-7"
+                v-if="!uploadImg "
+              >
+                <span class="col text-center">ลากแล้ววาง หรือ</span>
+              </div>
+            </q-file>
           </div>
           <div align="center" class="q-pt-sm">
             <q-btn
@@ -325,10 +390,11 @@ import { db } from "../router";
 export default {
   data() {
     return {
-      uploadImg: "",
+      uploadImg: null,
       addReward: {
         reward: "",
-        star: ""
+        star: "",
+        isImage: false
       },
       statusReward: false,
       mode: true,
@@ -351,9 +417,11 @@ export default {
       rewardList: [],
       userList: [],
       modeAdd: false,
+
       isShowHistory: false,
       isReward: false,
       isAddReward: false,
+      isRewardBtn: false,
       rewardUser: {
         name: "",
         star: "",
@@ -385,61 +453,68 @@ export default {
       //   });
     },
     //  โหลดพนักงาน
+
     loadUser() {
-      this.userList = [];
-      db.collection("user_hr")
-        .get()
-        .then(doc => {
-          doc.forEach(element => {
-            let dataKey = {
-              key: element.id
-            };
-            let final = {
-              ...dataKey,
-              ...element.data()
-            };
-            this.userList.push(final);
+      this.loadReward();
+      this.loadDepartment();
+      db.collection("employee").onSnapshot(doc => {
+        this.userList = [];
+        doc.forEach(element => {
+          let dataKey = {
+            star: "500",
+            key: element.id
+          };
+          let final = {
+            ...dataKey,
+            ...element.data()
+          };
+          this.userList.push(final);
+          this.userList.sort((a, b) => {
+            return a.name > b.name ? 1 : -1;
           });
         });
+      });
     },
     // โหลดรางวัล
     loadReward() {
-      this.rewardList = [];
-      this.rewardOptions = [];
-      db.collection("reward")
-        .get()
-        .then(doc => {
-          doc.forEach(element => {
-            let dataKey = {
-              key: element.id
-            };
-
-            let final = {
-              ...dataKey,
-              ...element.data()
-            };
-            this.rewardOptions.push({
-              label:
-                "." +
-                " " +
-                element.data().reward +
-                " - " +
-                element.data().star +
-                " " +
-                "ดาว",
-              value: element.id
-            });
-            this.reward = this.rewardOptions[0];
-            this.statusReward = element.data().status;
-            this.rewardList.push(final);
+      db.collection("reward").onSnapshot(doc => {
+        this.rewardList = [];
+        this.rewardOptions = [];
+        doc.forEach(element => {
+          let dataKey = {
+            key: element.id
+          };
+          let final = {
+            ...dataKey,
+            ...element.data()
+          };
+          // this.statusReward = element.data().status;
+          this.rewardList.push(final);
+        });
+        this.rewardList.filter((x, index) => {
+          this.rewardOptions.push({
+            label:
+              index + 1 + "." + " " + x.reward + " - " + x.star + " " + "ดาว",
+            value: x.key
           });
         });
+        this.reward = this.rewardOptions[0];
+      });
+    },
+    loadDepartment() {
+      // db.collection("department")
+      //   .where("hotelId", "==")
+      //   .get()
+      //   .then(doc => {
+      //     doc.forEach(element => {
+      //       console.log(element.data());
+      //     });
+      //   });
     },
     // เปลี่ยน mode พนักงาน กับ รางวัล
     changeMode() {
       if (this.showMode == "person") {
         this.modeAdd = false;
-        this.loadReward();
         this.userList;
       } else {
         this.rewardList;
@@ -452,6 +527,7 @@ export default {
     },
     // แลกรางวัล
     rewardBtn(name, star, val) {
+      this.loadReward();
       this.userId = val;
       this.rewardUser.name = name;
       this.rewardUser.star = star;
@@ -469,12 +545,17 @@ export default {
           });
           this.rewardUser.starBalance =
             Number(this.rewardUser.star) - Number(this.rewardUser.starAll);
+          if (Number(this.rewardUser.star) < Number(this.rewardUser.starAll)) {
+            this.isRewardBtn = true;
+          } else {
+            this.isRewardBtn = false;
+          }
         });
     },
     chengOptions(val) {},
     // แก้ไขรางวัล
     editBtn(val) {
-      this.addReward = {};
+      this.addReward = "";
       this.userId = val;
       this.modeAdd = true;
       this.isAddReward = true;
@@ -490,30 +571,36 @@ export default {
     },
     // ลบรางวัล
     deleteBtn(val) {
-      this.rewardList = [];
       db.collection("reward")
         .doc(val)
         .delete();
-      this.loadReward();
     },
     addRewardBtn() {
-      this.addReward = {};
+      this.addReward.isImage = false;
+      this.addReward.reward = "";
+      this.addReward.star = "";
       this.modeAdd = false;
       this.isAddReward = true;
     },
     saveReward() {
-      this.rewardList = [];
-      if (!this.modeAdd) {
-        this.addReward.status = true;
-        db.collection("reward").add(this.addReward);
-      } else {
-        db.collection("reward")
-          .doc(this.userId)
-          .set(this.addReward);
+      this.$refs.reward.validate();
+      this.$refs.star.validate();
+      if (this.$refs.reward.hasErrors || this.$refs.star.hasError) {
       }
-      this.isAddReward = false;
-      this.modeAdd = false;
-      this.loadReward();
+      if (this.addReward.reward == "" || this.addReward.star == "") {
+        return;
+      } else {
+        if (!this.modeAdd) {
+          this.addReward.status = true;
+          db.collection("reward").add(this.addReward);
+        } else {
+          db.collection("reward")
+            .doc(this.userId)
+            .set(this.addReward);
+        }
+        this.isAddReward = false;
+        this.modeAdd = false;
+      }
     },
     // อัพเดท การปิดเปิด
     updateStatusReward(val) {
@@ -525,7 +612,7 @@ export default {
 
   mounted() {
     this.loadUser();
-    this.changeMode();
+    // this.changeMode();
   }
 };
 </script>
@@ -543,5 +630,12 @@ export default {
   opacity: 0.3;
   z-index: 10;
   border-radius: 100%;
+}
+.backDropReward {
+  width: 120px;
+  height: 32px;
+  background-color: black;
+  opacity: 0.3;
+  z-index: 10;
 }
 </style>
