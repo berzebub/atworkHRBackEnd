@@ -224,6 +224,11 @@ export default {
           this.department.userGroup = ["kpi", "report", "personel", "reward"];
         }
 
+        let isHrAdmin = false;
+        if (this.department.customClaims.isHrAdmin) {
+          isHrAdmin = true;
+        }
+
         let apiURL =
           "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/hrUpdate";
         const updateData = {
@@ -232,6 +237,7 @@ export default {
           dataEntryPermissions: this.department.userGroup,
           accessProgram: ["HR"],
           hotelId: this.department.hotelId,
+          isHrAdmin: isHrAdmin,
         };
         let postData = await axios.post(apiURL, updateData);
         this.loadingHide();

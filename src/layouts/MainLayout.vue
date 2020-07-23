@@ -144,7 +144,7 @@
         :class="$route.name == 'departmentMain' ? 'bg-light-blue-7': null"
         align="center"
         v-ripple
-        v-if="userInfo.permissions.includes('personel')"
+        v-if="userInfo.isHrAdmin"
       >
         <div class="row">
           <div v-if="$route.name == 'departmentMain'" class="bg-white" style="width:7px"></div>
@@ -221,6 +221,7 @@ export default {
           let getData = await axios.get(apiURL);
           this.userInfo.permissions =
             getData.data.customClaims.dataEntryPermissions;
+          this.userInfo.isHrAdmin = getData.data.customClaims.isHrAdmin;
           this.isLoadUserInfo = true;
           this.loadingHide();
         } else {
