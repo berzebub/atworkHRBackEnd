@@ -4,7 +4,13 @@
       <div class="q-pa-md text-left text-subtitle1" style="max-width:328px">
         <div>
           <span>ชื่อ นามสกุล</span>
-          <q-input ref="name" dense outlined v-model="department.name" :rules="[val => !!val]" />
+          <q-input
+            ref="name"
+            dense
+            outlined
+            v-model="department.displayName"
+            :rules="[val => !!val]"
+          />
         </div>
         <div>
           <span>อีเมล</span>
@@ -19,7 +25,7 @@
           ,isValidEmail]"
           />
         </div>
-        <div>
+        <div v-if="$route.name != 'departmentEdit'">
           <span>รหัสผ่าน</span>
           <div class="text-grey-6 text-body2">ไม่ต่ำกว่า 6 ตัวอักษร</div>
           <q-input
@@ -39,6 +45,11 @@
             </template>
           </q-input>
         </div>
+        <div v-else>
+          <span>รหัสผ่าน</span>
+          <div class="text-grey-6 text-body2">ไม่ต่ำกว่า 6 ตัวอักษร</div>
+          <q-input ref="password" dense outlined value="123123123" readonly type="password"></q-input>
+        </div>
         <div class="row">
           <div class="self-center">สิทธิ์การใช้งาน</div>
           <div class="q-gutter-sm">
@@ -57,7 +68,7 @@
             :keep-color="isEroorOptions"
             :color="!isEroorOptions?'cyan-8':'negative'"
             v-model="department.userGroup"
-            :options="sanctionOptions"
+            :options="permissions"
             type="checkbox"
           />
         </div>
@@ -89,7 +100,7 @@ export default {
         userGroup: [],
         uid: "test",
       },
-      sanctionOptions: [
+      permissions: [
         {
           label: "KPI",
           value: "kpi",
@@ -111,17 +122,11 @@ export default {
   },
   methods: {
     loadEdit() {
-      db.collection("user_hr")
-        .doc(this.$route.params.key)
-        .get()
-        .then((doc) => {
-          doc.data().userGroup.filter((x, index) => {
-            if (index == 3) {
-              this.all = true;
-            }
-          });
-          this.department = doc.data();
-        });
+      this.department = this.$route.params;
+      this.department.userGroup = this.$route.params.customClaims.dataEntryPermissions;
+      if (this.department.userGroup.length == 4) {
+        this.all = true;
+      }
     },
     checkAll() {
       this.department.userGroup.filter((x, index) => {
@@ -135,11 +140,11 @@ export default {
     sanctionAll() {
       if (this.all) {
         this.isEroorOptions = false;
-        this.sanctionOptions.filter((x) => {
+        this.permissions.filter((x) => {
           this.department.userGroup.push(x.value);
         });
       } else {
-        this.sanctionOptions.filter((x) => {
+        this.permissions.filter((x) => {
           this.department.userGroup = [];
         });
       }
@@ -175,10 +180,10 @@ export default {
         this.$refs.password.hasError
       ) {
       }
+
       if (
-        this.department.name == "" ||
+        this.department.displayName == "" ||
         this.department.email == "" ||
-        this.department.password.length < 6 ||
         this.department.password == "" ||
         this.department.userGroup == ""
       ) {
@@ -195,7 +200,7 @@ export default {
         let dataUser = {
           email: this.department.email,
           password: this.department.password,
-          displayName: this.department.name,
+          displayName: this.department.displayName,
           accessProgram: ["HR"],
           dataEntryPermissions: this.department.userGroup, //สิทธิ์การเข้าถึงเมนูในระบบ HR
         };
@@ -207,15 +212,28 @@ export default {
           return;
         }
 
-        db.collection("user_hr").add(this.department);
+        // db.collection("user_hr").add(this.department);
         this.$router.push("/departmentMain");
       } else {
+        console.log("EDIt");
         if (this.all) {
           this.department.userGroup = ["kpi", "report", "personel", "reward"];
         }
-        db.collection("user_hr")
-          .doc(this.$route.params.key)
-          .set(this.department);
+
+        let apiURL =
+          "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/update";
+        const updateData = {
+          uid: this.department.uid,
+          displayName: this.department.displayName,
+          dataEntryPermissions: this.department.userGroup,
+          accessProgram: ["HR"],
+        };
+        let postData = await axios.post(apiURL, updateData);
+        if (postData.data.code) {
+          console.log(postData);
+          return;
+        }
+
         this.$router.push("/departmentMain");
       }
     },

@@ -134,6 +134,10 @@ export default {
     },
     editBtn(val) {
       console.log(val);
+      this.$router.push({
+        name: "departmentEdit",
+        params: val,
+      });
       // this.$router.push("/departmentEdit/" + val);
     },
   },
