@@ -69,8 +69,7 @@ export default {
       this.departmentList = [];
       db.collection("user_hr")
         .where("uid", "==", "test")
-        .get()
-        .then(doc => {
+        .onSnapshot(doc => {
           doc.forEach(element => {
             let dataKey = {
               id: element.id
