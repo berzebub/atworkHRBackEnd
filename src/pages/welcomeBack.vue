@@ -27,7 +27,7 @@ export default {
     return {
       dialogEmail: false,
       dialogWrongEmail: false,
-      userInfo: ""
+      userInfo: "",
     };
   },
   methods: {
@@ -37,11 +37,8 @@ export default {
     },
     toLoginPage() {
       this.logOut();
-    }
+    },
   },
-  async mounted() {
-    this.userInfo = await this.getUserInfo(this.$q.localStorage.getItem("uid"));
-  }
 };
 </script>
 

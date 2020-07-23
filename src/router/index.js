@@ -38,7 +38,9 @@ export const auth = firebase.auth();
 export const axios = require("axios").default;
 Vue.mixin({
   data() {
-    return {};
+    return {
+      hotelId: this.$q.localStorage.getItem("hotelId")
+    };
   },
   methods: {
     loadingShow() {

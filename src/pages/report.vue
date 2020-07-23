@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="container">
+    <div class="container q-pa-md">
       <div class="row q-pt-lg">
         <div class="q-pr-md" style="width:300px">
           <q-select outlined v-model="departmentSelect" :options="departmentoptions" dense></q-select>
@@ -66,7 +66,7 @@ export default {
         "กันยายน",
         "ตุลาคม",
         "พฤศจิกายน",
-        "ธันวาคม"
+        "ธันวาคม",
       ],
       yearSelect: "2563",
       yaerOptions: [
@@ -81,20 +81,22 @@ export default {
         2571,
         2572,
         2573,
-        2574
-      ]
+        2574,
+      ],
+      employeeData: "",
     };
   },
   methods: {
     loadDepartment() {
       db.collection("department")
+        .where("hotelId", "==", this.hotelId)
         .get()
-        .then(doc => {
+        .then((doc) => {
           let temp = [];
-          doc.forEach(element => {
+          doc.forEach((element) => {
             temp.push({
               value: element.id,
-              label: element.data().name
+              label: element.data().name,
             });
           });
           temp.sort((a, b) => {
@@ -102,12 +104,28 @@ export default {
           });
           this.departmentoptions = temp;
           this.departmentSelect = this.departmentoptions[0];
+          this.loadEmployeeData();
         });
-    }
+    },
+    loadEmployeeData() {
+      db.collection("employee")
+        .where("hotelId", "==", this.hotelId)
+        .get()
+        .then((doc) => {
+          let temp = [];
+          doc.forEach((element) => {
+            temp.push({
+              employeeId: element.id,
+              ...element.data(),
+            });
+          });
+          this.employeeData = temp;
+        });
+    },
   },
   mounted() {
     this.loadDepartment();
-  }
+  },
 };
 </script>
 
