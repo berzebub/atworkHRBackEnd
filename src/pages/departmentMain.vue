@@ -17,18 +17,18 @@
           </div>
         </div>
         <div
-          v-for="item in userList.filter(
+          v-for="item2 in userList.filter(
               x => x.displayName[0] == item
             )"
-          :key="item.id"
+          :key="item2.id"
         >
           <div class="q-pb-md q-px-md">
-            <div class="q-pt-sm text-subtitle1">{{item.displayName}}</div>
+            <div class="q-pt-sm text-subtitle1">{{item2.displayName}}</div>
             <div class="row">
               <div class="col text-body2">
-                {{item.email}}
+                {{item2.email}}
                 <div class="q-mt-xs q-gutter-sm">
-                  <span v-for="i in item.customClaims.dataEntryPermissions" :key="i">
+                  <span v-for="i in item2.customClaims.dataEntryPermissions" :key="i">
                     <span class="statusUser q-px-xs">
                       <span v-if="i =='kpi'">KPI</span>
                       <span v-if="i =='report'">รายงาน</span>
@@ -39,10 +39,16 @@
                 </div>
               </div>
               <div>
-                <q-btn color="cyan-8" icon="fas fa-trash-alt" class="q-mx-md" round />
+                <q-btn
+                  color="cyan-8"
+                  @click="promptDeleteUser(item2)"
+                  icon="fas fa-trash-alt"
+                  class="q-mx-md"
+                  round
+                />
               </div>
               <div>
-                <q-btn @click="editBtn(item.id)" color="cyan-8" icon="fas fa-edit" round />
+                <q-btn @click="editBtn(item2)" color="cyan-8" icon="fas fa-edit" round />
               </div>
             </div>
           </div>
@@ -51,6 +57,29 @@
         </div>
       </q-card>
     </div>
+
+    <q-dialog v-model="isShowDeleteUserDialog">
+      <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
+        <div class="col-12 q-pt-md">
+          <q-btn outline round color="secondary" icon="fas fa-trash-alt" size="12px" />
+          <span class="text-h6 q-pl-md">ยืนยันการลบรายชื่อ</span>
+        </div>
+        <div class="col-12 text-subtitle1 q-pt-md">คุณต้องการลบ "{{ tempData.displayName }}"</div>
+
+        <div class="col-6 q-pr-sm q-pt-lg" align="right">
+          <q-btn
+            @click="isShowDeleteUserDialog = false,tempData = ''"
+            outline
+            color="secondary"
+            label="ยกเลิก"
+            style="width:120px"
+          />
+        </div>
+        <div class="col-6 q-pl-sm q-pt-lg" align="left">
+          <q-btn @click="confirmDeleteData()" color="secondary" label="ยืนยัน" style="width:120px" />
+        </div>
+      </div>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -62,9 +91,25 @@ export default {
     return {
       nameArr: [],
       userList: [],
+      isShowDeleteUserDialog: false,
+      tempData: "",
     };
   },
   methods: {
+    async confirmDeleteData() {
+      this.loadingShow();
+      const apiURL =
+        "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/delete?uid=" +
+        this.tempData.uid;
+      let userData = await axios.get(apiURL);
+      this.loadingHide();
+      this.isShowDeleteUserDialog = false;
+      this.loaduserList();
+    },
+    promptDeleteUser(data) {
+      this.tempData = data;
+      this.isShowDeleteUserDialog = true;
+    },
     async loaduserList() {
       this.loadingShow();
       const apiURL =
@@ -77,9 +122,9 @@ export default {
 
       this.userList = getHRUserData;
       this.isLoadUser = true;
-
       let nameArr = getHRUserData.map((x) => x.displayName[0]);
       nameArr.sort((a, b) => (a > b ? 1 : -1));
+      nameArr = [...new Set(nameArr)];
       this.nameArr = nameArr;
       this.loadingHide();
     },
@@ -88,7 +133,8 @@ export default {
       this.$router.push("/departmentAdd");
     },
     editBtn(val) {
-      this.$router.push("/departmentEdit/" + val);
+      console.log(val);
+      // this.$router.push("/departmentEdit/" + val);
     },
   },
 
