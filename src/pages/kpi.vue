@@ -498,15 +498,11 @@ export default {
               }
             });
         });
-<<<<<<< Updated upstream
     },
 
     genData() {
       this.$router.push("/genEmulators");
     },
-=======
-    }
->>>>>>> Stashed changes
   },
   mounted() {
     this.loadDepartmentData();
