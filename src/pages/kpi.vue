@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="container">
     <div class="q-pa-md">
       <div class="row justify-between">
         <div v class="row">
@@ -127,13 +127,27 @@
           <div class="q-mt-md text-subtitle1">
             <div>จำนวนแบบฝึกหัด</div>
             <div>
-              <q-input v-model="numOfPractice" outlined dense />
+              <q-input
+                :rules="[val => !!val]"
+                ref="numOfPractice"
+                v-model="numOfPractice"
+                lazy-rules
+                outlined
+                dense
+              />
             </div>
           </div>
           <div class="q-mt-md text-subtitle1">
             <div>จำนวนดาว</div>
             <div>
-              <q-input v-model="numOfStar" outlined dense />
+              <q-input
+                :rules="[val => !!val]"
+                lazy-rules
+                ref="numOfStar"
+                v-model="numOfStar"
+                outlined
+                dense
+              />
             </div>
           </div>
         </q-card-section>
@@ -146,7 +160,6 @@
             class="bg-cyan-8 text-white"
             style="width:120px"
             label="บันทึก"
-            v-close-popup
           />
         </q-card-actions>
       </q-card>
@@ -176,13 +189,27 @@
           <div class="q-mt-md text-subtitle1">
             <div>จำนวนแบบฝึกหัด</div>
             <div>
-              <q-input v-model="numOfPracticeAll" outlined dense />
+              <q-input
+                :rules="[val => !!val]"
+                lazy-rules
+                ref="numOfPracticeAll"
+                v-model="numOfPracticeAll"
+                outlined
+                dense
+              />
             </div>
           </div>
           <div class="q-mt-md text-subtitle1">
-            <div>จำนวนแบบดาว</div>
+            <div>จำนวนดาว</div>
             <div>
-              <q-input v-model="numOfStarAll" outlined dense />
+              <q-input
+                :rules="[val => !!val]"
+                lazy-rules
+                ref="numOfStarAll"
+                v-model="numOfStarAll"
+                outlined
+                dense
+              />
             </div>
           </div>
         </q-card-section>
@@ -195,7 +222,6 @@
             class="bg-cyan-8 text-white"
             style="width:120px"
             label="บันทึก"
-            v-close-popup
           />
         </q-card-actions>
       </q-card>
@@ -372,6 +398,15 @@ export default {
     },
     saveAllKpi() {
       this.loadingShow();
+      this.$refs.numOfPracticeAll.validate();
+      this.$refs.numOfStarAll.validate();
+      if (
+        this.$refs.numOfPracticeAll.hasError ||
+        this.$refs.numOfStarAll.hasError
+      ) {
+        this.loadingHide();
+        return;
+      }
       let counter = 0;
       this.employeeList.forEach(element => {
         console.log(element);
@@ -392,6 +427,7 @@ export default {
                 .then(() => {
                   counter++;
                   if (counter == this.employeeList.length) {
+                    this.dialogAllKpi = false;
                     this.loadingHide();
                     this.loadEmployeeData();
                   }
@@ -412,6 +448,7 @@ export default {
                 .then(() => {
                   counter++;
                   if (counter == this.employeeList.length) {
+                    this.dialogAllKpi = false;
                     this.loadingHide();
                     this.loadEmployeeData();
                   }
@@ -419,55 +456,15 @@ export default {
             }
           });
       });
-      return;
-
-      this.loadingShow();
-      let empUpdateTemp = {};
-      db.collection("employee")
-        .get()
-        .then(data => {
-          data.forEach(element => {
-            empUpdateTemp = element.id;
-            db.collection("employee")
-              .doc(empUpdateTemp)
-              .update({
-                startLevelId: this.levelStartAll
-              });
-          });
-        });
-      let kpiUpdateTemp = {};
-      db.collection("kpiLog")
-        .get()
-        .then(data => {
-          if (data.size) {
-            data.forEach(element => {
-              kpiUpdateTemp = element.id;
-              db.collection("kpi")
-                .doc(kpiUpdateTemp)
-                .update({
-                  levelId: this.levelStartAll,
-                  numOfPractice: this.numOfPracticeAll,
-                  numOfStar: this.numOfStarAll
-                });
-            });
-          } else {
-            db.collection("kpi").add({
-              departmentId: this.departmentSelect,
-              employeeId: kpiUpdateTemp,
-              hotelId: this.hotelId,
-              levelId: this.levelStartAll,
-              numOfPractice: this.numOfPracticeAll,
-              numOfStar: this.numOfStarAll,
-              month: this.month,
-              year: this.year,
-              filter: ""
-            });
-          }
-          this.loadEmployeeData();
-        });
     },
     savePersonalKpi() {
       this.loadingShow();
+      this.$refs.numOfPractice.validate();
+      this.$refs.numOfStar.validate();
+      if (this.$refs.numOfPractice.hasError || this.$refs.numOfStar.hasError) {
+        this.loadingHide();
+        return;
+      }
       db.collection("employee")
         .doc(this.getEmployeeId)
         .update({ startLevelId: this.levelStart })
@@ -487,6 +484,7 @@ export default {
                     numOfStar: this.numOfStar
                   })
                   .then(() => {
+                    this.dialogKpi = false;
                     this.loadEmployeeData();
                   });
               } else {
@@ -504,6 +502,7 @@ export default {
                 db.collection("kpiLog")
                   .add(addDataTemp)
                   .then(() => {
+                    this.dialogKpi = false;
                     this.loadEmployeeData();
                   });
               }
