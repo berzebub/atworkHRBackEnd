@@ -28,7 +28,7 @@
               <div class="col text-body2">
                 {{item.email}}
                 <div class="q-mt-xs q-gutter-sm">
-                  <span v-for="i in item.userGroup" :key="i">
+                  <span v-for="i in item.customClaims.dataEntryPermissions" :key="i">
                     <span class="statusUser q-px-xs">
                       <span v-if="i =='kpi'">KPI</span>
                       <span v-if="i =='report'">รายงาน</span>
@@ -78,44 +78,12 @@ export default {
       this.userList = getHRUserData;
       this.isLoadUser = true;
 
-      let nameArr = getHRUserData.map((x) => x.displayName.slice(0, 1));
+      let nameArr = getHRUserData.map((x) => x.displayName[0]);
       nameArr.sort((a, b) => (a > b ? 1 : -1));
       this.nameArr = nameArr;
       this.loadingHide();
-
-      // this.userList = [];
-      // db.collection("user_hr")
-      //   .get()
-      //   .then((doc) => {
-      //     doc.forEach((element) => {
-      //       let dataKey = {
-      //         id: element.id,
-      //       };
-      //       let final = {
-      //         ...dataKey,
-      //         ...element.data(),
-      //       };
-      //       this.userList.push(final);
-      //     });
-      //     this.departmentSort();
-      //   });
     },
-    departmentSort() {
-      let nameArr = [];
-      let array = [];
-      this.userList.forEach((element) => {
-        nameArr.push(element.name[0].toUpperCase());
-      });
 
-      nameArr = [...new Set(nameArr)];
-      nameArr.sort((a, b) => {
-        return a < b ? -1 : 1;
-      });
-      this.nameArr = nameArr;
-      this.userList.sort((a, b) => {
-        return a.name > b.name ? 1 : -1;
-      });
-    },
     addBtn() {
       this.$router.push("/departmentAdd");
     },
