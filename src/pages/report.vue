@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div class="container q-pa-md">
-      <div class="row q-pt-lg">
+      <div class="row">
         <div class="q-pr-md" style="width:300px">
           <q-select outlined v-model="departmentSelect" :options="departmentoptions" dense></q-select>
         </div>

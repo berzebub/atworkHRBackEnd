@@ -1,11 +1,7 @@
-API endpoint: http://localhost:4006
+API endpoint: http://localhost:4007
 If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
 
-   export FIRESTORE_EMULATOR_HOST=localhost:4006
+   export FIRESTORE_EMULATOR_HOST=localhost:4007
 
 Dev App Server is now running.
 
-Jul 23, 2020 9:54:11 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected non-HTTP/2 connection.
-Jul 23, 2020 9:54:12 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
-INFO: Detected HTTP/2 connection.

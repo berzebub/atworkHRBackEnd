@@ -18,11 +18,10 @@
             label="ค้นหา"
             dense
             v-model="search"
-            rounded
-            outlined
             type="search"
             style="width:300px"
             @keyup="filterData()"
+            filled
           >
             <template v-slot:prepend>
               <q-icon name="search" />
@@ -47,10 +46,7 @@
           อีเมล
           <i class="fas fa-sort"></i>
         </div>
-        <div class="col-2" align="right">
-          ตั้งค่ารหัสผ่านใหม่
-          <i class="fas fa-sort"></i>
-        </div>
+        <div class="col-2" align="right">ตั้งค่ารหัสผ่านใหม่</div>
       </div>
       <!-- เนื้อหา -->
       <q-card class="bg-white text-black text-subtitle1 q-py-sm">

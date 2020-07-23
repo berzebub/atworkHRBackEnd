@@ -29,9 +29,9 @@ firebase.initializeApp(firebaseConfig);
 
 export const db = firebase.firestore();
 
-// if (location.hostname === "localhost") {
-//   db.settings({ host: "localhost:4006", ssl: false });
-// }
+if (location.hostname === "localhost") {
+  db.settings({ host: "localhost:4006", ssl: false });
+}
 const storage = firebase.storage();
 export const st = storage.ref();
 export const auth = firebase.auth();
