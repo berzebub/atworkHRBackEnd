@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div class="container q-pa-md">
-      <div class="row q-pt-lg">
+      <div class="row">
         <div class="q-pr-md col-4">
           <q-select
             outlined
