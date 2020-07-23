@@ -43,6 +43,7 @@
       :width="100"
       :breakpoint="500"
       content-class="bg-blue-10"
+      v-if="isLoadUserInfo"
     >
       <!-- KPI -->
       <div
@@ -51,6 +52,7 @@
         :class="$route.name == 'kpi' ? 'bg-light-blue-7': null"
         align="center"
         v-ripple
+        v-if="userInfo.permissions.includes('kpi')"
       >
         <div class="row">
           <div v-if="$route.name == 'kpi'" class="bg-white" style="width:7px"></div>
@@ -71,6 +73,7 @@
         :class="$route.name == 'report' ? 'bg-light-blue-7': null"
         align="center"
         v-ripple
+        v-if="userInfo.permissions.includes('report')"
       >
         <div class="row">
           <div v-if="$route.name == 'report'" class="bg-white" style="width:7px"></div>
@@ -92,6 +95,7 @@
         :class="$route.name == 'employee' ? 'bg-light-blue-7': null"
         align="center"
         v-ripple
+        v-if="userInfo.permissions.includes('personel')"
       >
         <div class="row">
           <div v-if="$route.name == 'employee'" class="bg-white" style="width:7px"></div>
@@ -114,6 +118,7 @@
         :class="$route.name == 'reward' ? 'bg-light-blue-7': null"
         align="center"
         v-ripple
+        v-if="userInfo.permissions.includes('reward')"
       >
         <div class="row">
           <div v-if="$route.name == 'reward'" class="bg-white" style="width:7px"></div>
@@ -139,6 +144,7 @@
         :class="$route.name == 'departmentMain' ? 'bg-light-blue-7': null"
         align="center"
         v-ripple
+        v-if="userInfo.permissions.includes('personel')"
       >
         <div class="row">
           <div v-if="$route.name == 'departmentMain'" class="bg-white" style="width:7px"></div>
@@ -182,7 +188,7 @@
 </template>
 
 <script>
-import { db, auth } from "../router";
+import { db, auth, axios } from "../router";
 
 export default {
   name: "MainLayout",
@@ -190,7 +196,7 @@ export default {
   data() {
     return {
       drawer: true,
-      userInfo: "",
+      userInfo: {},
       isLoadUserInfo: false,
       isKey: false,
       loginKey: "",
@@ -205,26 +211,29 @@ export default {
   },
   methods: {
     async loadUserInfo() {
-      let getLoginKey = this.$q.localStorage.getItem("loginKey");
-      let uid = this.$q.localStorage.getItem("uid");
-      this.userInfo = await this.getUserInfo(uid);
-      this.isLoadUserInfo = true;
-      this.snapUser = db
-        .collection("user_admin")
-        .where("uid", "==", uid)
-        .onSnapshot((getUserId) => {
-          if (getLoginKey != getUserId.docs[0].data().loginKey) {
-            this.snapUser();
-            setTimeout(() => {
-              this.loadingHide();
-              this.logOut();
-            }, 2000);
-          }
-        });
+      this.loadingShow();
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          // กรณี Login อยู่ในระบบ
+          let apiURL =
+            "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/getUserData?uid=" +
+            user.uid;
+          let getData = await axios.get(apiURL);
+          console.log(getData.data.customClaims);
+          this.userInfo.permissions =
+            getData.data.customClaims.dataEntryPermissions;
+          this.isLoadUserInfo = true;
+          this.loadingHide();
+        } else {
+          this.loadingHide();
+          this.$router.push("/");
+          this.$q.localStorage.clear();
+        }
+      });
     },
   },
   mounted() {
-    // this.loadUserInfo();
+    this.loadUserInfo();
   },
 };
 </script>

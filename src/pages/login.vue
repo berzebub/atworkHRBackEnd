@@ -117,9 +117,12 @@ export default {
                   .where("uid", "==", result.user.uid)
                   .get()
                   .then((doc) => {
-                    this.$q.localStorage.set("hotelId", doc.docs[0].id);
-                    this.loadingHide();
-                    this.$router.push("/kpi");
+                    if (doc.size) {
+                      this.$q.localStorage.set("hotelId", doc.docs[0].id);
+                    } else {
+                      this.loadingHide();
+                      this.$router.push("/kpi");
+                    }
                   });
               } else {
                 throw "error";
