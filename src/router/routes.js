@@ -14,10 +14,6 @@ const routes = [
     component: () => import("pages/welcomeBack.vue")
   },
   {
-    path: "/genEmulators",
-    component: () => import("pages/genEmulators.vue")
-  },
-  {
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
     children: [

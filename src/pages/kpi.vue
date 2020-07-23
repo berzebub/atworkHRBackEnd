@@ -41,14 +41,6 @@
               :options="yearsOption"
             />
           </div>
-          <!-- GEN -->
-          <div class="q-ml-md">
-            <q-btn @click="genData()" color="negative">ฝาก GEN</q-btn>
-          </div>
-          <!-- OUT -->
-          <div class="q-ml-md">
-            <q-btn @click="logOut()" color="orange">OUT</q-btn>
-          </div>
         </div>
         <!-- KPI ALL  -->
         <div>
@@ -506,11 +498,15 @@ export default {
               }
             });
         });
+<<<<<<< Updated upstream
     },
 
     genData() {
       this.$router.push("/genEmulators");
     },
+=======
+    }
+>>>>>>> Stashed changes
   },
   mounted() {
     this.loadDepartmentData();
