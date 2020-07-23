@@ -197,7 +197,7 @@ export default {
           password: this.department.password,
           displayName: this.department.name,
           accessProgram: ["HR"],
-          dataEntryPermissions: this.department.userGroup,
+          dataEntryPermissions: this.department.userGroup, //สิทธิ์การเข้าถึงเมนูในระบบ HR
         };
 
         let createUser = await axios.post(apiURL, dataUser);

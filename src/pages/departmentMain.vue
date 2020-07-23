@@ -17,13 +17,13 @@
           </div>
         </div>
         <div
-          v-for="item in departmentList.filter(
-              x => x.name[0].toUpperCase() == item
+          v-for="item in userList.filter(
+              x => x.displayName[0] == item
             )"
           :key="item.id"
         >
           <div class="q-pb-md q-px-md">
-            <div class="q-pt-sm text-subtitle1">{{item.name}}</div>
+            <div class="q-pt-sm text-subtitle1">{{item.displayName}}</div>
             <div class="row">
               <div class="col text-body2">
                 {{item.email}}
@@ -55,39 +55,55 @@
 </template>
 
 <script>
-import { db, auth } from "../router";
+import { db, auth, axios } from "../router";
 import IndexVue from "./Index.vue";
 export default {
   data() {
     return {
       nameArr: [],
-      departmentList: []
+      userList: [],
     };
   },
   methods: {
-    loadDepartmentList() {
-      this.departmentList = [];
-      db.collection("user_hr")
-        .where("uid", "==", "test")
-        .get()
-        .then(doc => {
-          doc.forEach(element => {
-            let dataKey = {
-              id: element.id
-            };
-            let final = {
-              ...dataKey,
-              ...element.data()
-            };
-            this.departmentList.push(final);
-          });
-          this.departmentSort();
-        });
+    async loaduserList() {
+      this.loadingShow();
+      const apiURL =
+        "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/getAllUser";
+      let userData = await axios.get(apiURL);
+
+      let getHRUserData = userData.data.filter((x) =>
+        x.customClaims.accessProgram.includes("HR")
+      );
+
+      this.userList = getHRUserData;
+      this.isLoadUser = true;
+
+      let nameArr = getHRUserData.map((x) => x.displayName.slice(0, 1));
+      nameArr.sort((a, b) => (a > b ? 1 : -1));
+      this.nameArr = nameArr;
+      this.loadingHide();
+
+      // this.userList = [];
+      // db.collection("user_hr")
+      //   .get()
+      //   .then((doc) => {
+      //     doc.forEach((element) => {
+      //       let dataKey = {
+      //         id: element.id,
+      //       };
+      //       let final = {
+      //         ...dataKey,
+      //         ...element.data(),
+      //       };
+      //       this.userList.push(final);
+      //     });
+      //     this.departmentSort();
+      //   });
     },
     departmentSort() {
       let nameArr = [];
       let array = [];
-      this.departmentList.forEach(element => {
+      this.userList.forEach((element) => {
         nameArr.push(element.name[0].toUpperCase());
       });
 
@@ -96,7 +112,7 @@ export default {
         return a < b ? -1 : 1;
       });
       this.nameArr = nameArr;
-      this.departmentList.sort((a, b) => {
+      this.userList.sort((a, b) => {
         return a.name > b.name ? 1 : -1;
       });
     },
@@ -105,12 +121,12 @@ export default {
     },
     editBtn(val) {
       this.$router.push("/departmentEdit/" + val);
-    }
+    },
   },
 
   mounted() {
-    this.loadDepartmentList();
-  }
+    this.loaduserList();
+  },
 };
 </script>
 

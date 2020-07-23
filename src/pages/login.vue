@@ -113,8 +113,14 @@ export default {
               let getData = await axios.get(apiURL);
               const customClaims = getData.data.customClaims.accessProgram;
               if (customClaims.includes("HR")) {
-                this.loadingHide();
-                this.$router.push("/kpi");
+                db.collection("hotel")
+                  .where("uid", "==", result.user.uid)
+                  .get()
+                  .then((doc) => {
+                    this.$q.localStorage.set("hotelId", doc.docs[0].id);
+                    this.loadingHide();
+                    this.$router.push("/kpi");
+                  });
               } else {
                 throw "error";
               }
@@ -130,23 +136,9 @@ export default {
     wrongPasswordDialog() {
       this.openWrongDialogEmail = true;
     },
-    async getLoginKey(uid) {
-      return new Promise((a, b) => {
-        db.collection("user_hr")
-          .where("uid", "==", uid)
-          .get()
-          .then((getUserId) => {
-            this.$q.localStorage.set(
-              "loginKey",
-              getUserId.docs[0].data().loginKey
-            );
-            a("finish");
-          });
-      });
-    },
     async checkUserLogin() {
       this.loadingShow();
-      this.authLogin = await auth.onAuthStateChanged(async (user) => {
+      this.authLogin = auth.onAuthStateChanged(async (user) => {
         if (user) {
           this.$router.push("/welcomeBack");
           this.loadingHide();
@@ -160,22 +152,7 @@ export default {
     },
   },
   async mounted() {
-    // this.checkUserLogin();
-    // if (this.$q.localStorage.has("uid")) {
-    //   this.checkUserLogin();
-    // }
-    // if (location.hostname === "localhost") {
-    //   db.collection("user_hr")
-    //     .doc("8SiWHTYgYy1zcXtVmi1V")
-    //     .set({
-    //       uid: "svJzHjFCe5PHUKEI1TLNieCziUE2",
-    //       email: "admin@admin.com",
-    //       userGroup: ["kpi", "report", "personel", "reward", "admin"],
-    //       name: "Admin",
-    //       loginKey: "y482bw",
-    //       hotelId: "A4W7WwvOoRR7g0OaIJ0F",
-    //     });
-    // }
+    this.checkUserLogin();
   },
   beforeDestroy() {
     if (typeof this.authLogin == "function") {

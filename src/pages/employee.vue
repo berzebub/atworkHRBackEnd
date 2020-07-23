@@ -157,7 +157,9 @@ export default {
       this.$router.push("/employeePrint");
     },
     loadDepartment() {
+      let hotelId = this.$q.localStorage.getItem("hotelId");
       db.collection("department")
+        .where("hotelId", "==", hotelId)
         .get()
         .then((doc) => {
           let temp = [];
@@ -190,19 +192,18 @@ export default {
       auth
         .sendPasswordResetEmail(this.currentEmployeeActive.email)
         .then(function () {
-          // Email sent.
           this.isSavedDialog = true;
         })
         .catch(function (error) {
           console.log(error);
-          // An error happened.
         });
 
       this.isSavedDialog = true;
     },
     loadEmployeeData() {
+      let hotelId = this.$q.localStorage.getItem("hotelId");
       db.collection("employee")
-        .where("hotelId", "==", "ITNxdT5zAb0Mq6AyhPfd")
+        .where("hotelId", "==", hotelId)
         .get()
         .then((doc) => {
           let temp = [];
