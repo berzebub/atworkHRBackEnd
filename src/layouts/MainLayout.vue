@@ -219,8 +219,13 @@ export default {
             "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/getUserData?uid=" +
             user.uid;
           let getData = await axios.get(apiURL);
-          this.userInfo.permissions =
-            getData.data.customClaims.dataEntryPermissions;
+          if (getData.data.customClaims.isHrAdmin) {
+            this.userInfo.permissions = ["kpi", "report", "personel", "reward"];
+          } else {
+            this.userInfo.permissions =
+              getData.data.customClaims.dataEntryPermissions;
+          }
+
           this.userInfo.isHrAdmin = getData.data.customClaims.isHrAdmin;
           this.isLoadUserInfo = true;
           this.loadingHide();
