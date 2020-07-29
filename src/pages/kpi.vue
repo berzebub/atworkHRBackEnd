@@ -126,6 +126,8 @@
                 :rules="[val => !!val]"
                 ref="numOfPractice"
                 v-model.number="numOfPractice"
+                :error="isCheckZeor == true && (numOfPractice == 0 || numOfPractice == '')"
+                hide-bottom-space
                 lazy-rules
                 outlined
                 dense
@@ -141,6 +143,8 @@
                 lazy-rules
                 ref="numOfStar"
                 v-model.number="numOfStar"
+                :error="isCheckZeor == true && (numOfStar == 0 || numOfStar == '')"
+                hide-bottom-space
                 outlined
                 dense
                 mask="####"
@@ -191,8 +195,11 @@
                 lazy-rules
                 ref="numOfPracticeAll"
                 v-model="numOfPracticeAll"
+                :error="isCheckZeor == true && (numOfPracticeAll == 0 || numOfPracticeAll == '')"
+                hide-bottom-space
                 outlined
                 dense
+                mask="####"
               />
             </div>
           </div>
@@ -204,8 +211,11 @@
                 lazy-rules
                 ref="numOfStarAll"
                 v-model="numOfStarAll"
+                :error="isCheckZeor == true && (numOfStarAll == 0 || numOfStarAll == '')"
+                hide-bottom-space
                 outlined
                 dense
+                mask="####"
               />
             </div>
           </div>
@@ -251,6 +261,7 @@ export default {
       levelStartAll: "",
       isLoadLevel: true,
       isLoadEmployee: false,
+      isCheckZeor: false,
       hotelId: this.$q.localStorage.getItem("hotelId"),
       monthOption: [
         "มกราคม",
@@ -392,6 +403,7 @@ export default {
         });
     },
     openDialogKpiSetting(index, item) {
+      this.isCheckZeor = false;
       this.dialogKpi = true;
       this.getEmployeeName = this.employeeList[index].name;
       this.levelStart = item.startLevelId.value;
@@ -403,6 +415,7 @@ export default {
     openDialogALLKpiSetting() {
       (this.numOfPracticeAll = ""), (this.numOfStarAll = "");
       this.dialogAllKpi = true;
+      this.isCheckZeor = false;
       this.levelStartAll = this.levelList[0].value;
     },
     saveAllKpi() {
@@ -410,9 +423,14 @@ export default {
       this.$refs.numOfPracticeAll.validate();
       this.$refs.numOfStarAll.validate();
       if (
+        ((this.$refs.numOfPracticeAll.hasError || this.numOfPracticeAll == 0) &&
+          (this.$refs.numOfStarAll.hasError || this.numOfStarAll == 0)) ||
+        this.numOfPracticeAll == 0 ||
+        this.numOfStarAll == 0 ||
         this.$refs.numOfPracticeAll.hasError ||
         this.$refs.numOfStarAll.hasError
       ) {
+        this.isCheckZeor = true;
         this.loadingHide();
         return;
       }
@@ -469,7 +487,15 @@ export default {
       this.loadingShow();
       this.$refs.numOfPractice.validate();
       this.$refs.numOfStar.validate();
-      if (this.$refs.numOfPractice.hasError || this.$refs.numOfStar.hasError) {
+      if (
+        ((this.$refs.numOfPractice.hasError || this.numOfPractice == 0) &&
+          (this.$refs.numOfStar.hasError || this.numOfStar == 0)) ||
+        this.numOfPractice == 0 ||
+        this.numOfStar == 0 ||
+        this.$refs.numOfPractice.hasError ||
+        this.$refs.numOfStar.hasError
+      ) {
+        this.isCheckZeor = true;
         this.loadingHide();
         return;
       }
