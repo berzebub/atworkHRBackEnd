@@ -359,6 +359,9 @@ export default {
               if (newData.status == true) {
                 levelTemp.push(newData);
               }
+              levelTemp.sort((a, b) => {
+                return a.label > b.label ? 1 : -1;
+              });
             });
             this.levelList = levelTemp;
             this.isLoadLevel = true;
