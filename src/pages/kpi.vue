@@ -350,9 +350,12 @@ export default {
             data.forEach((element) => {
               let newData = {
                 label: element.data().name,
+                status: element.data().status,
                 value: element.id,
               };
-              levelTemp.push(newData);
+              if (newData.status == true) {
+                levelTemp.push(newData);
+              }
             });
             this.levelList = levelTemp;
             this.isLoadLevel = true;
