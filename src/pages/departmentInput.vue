@@ -15,7 +15,7 @@
         <div>
           <span>อีเมล</span>
           <q-input
-            ref="gmail"
+            ref="email"
             type="email"
             :readonly="$route.name=='departmentEdit'"
             dense
@@ -64,7 +64,8 @@
         </div>
         <div style="margin-left:-10px">
           <q-option-group
-            @input="checkAll(), isEroorOptions = false "
+            @input="checkAll()"
+            value
             :keep-color="isEroorOptions"
             :color="!isEroorOptions?'cyan-8':'negative'"
             v-model="department.userGroup"
@@ -86,6 +87,7 @@
 </template>
 <script>
 import { db, axios } from "../router";
+import { GoBack } from "quasar";
 export default {
   data() {
     return {
@@ -94,11 +96,10 @@ export default {
       isPasswordEroor: false,
       isEroorOptions: false,
       department: {
-        name: "",
+        displayName: "",
         email: "",
         password: "",
         userGroup: [],
-        uid: "test",
       },
       permissions: [
         {
@@ -121,8 +122,9 @@ export default {
     };
   },
   methods: {
-    loadEdit() {
-      this.department = this.$route.params;
+    loadEdit() { 
+      this.department.displayName = this.$route.params.displayName
+      this.department.email = this.$route.params.email
       this.department.userGroup = this.$route.params.customClaims.dataEntryPermissions;
       this.department.hotelId = this.$q.localStorage.getItem("hotelId");
       console.log(this.department.hotelId);
@@ -131,24 +133,22 @@ export default {
       }
     },
     checkAll() {
-      this.department.userGroup.filter((x, index) => {
-        if (index == 3) {
-          this.all = true;
-        } else {
-          this.all = false;
-        }
-      });
+      this.isEroorOptions = false;
+      if (this.department.userGroup.length == this.permissions.length) {
+        this.all = true;
+      } else {
+        this.all = false;
+      }
     },
     sanctionAll() {
       if (this.all) {
+        let test = this.permissions.map((x) => {
+          return x.value;
+        });
+        this.department.userGroup = test;
         this.isEroorOptions = false;
-        this.permissions.filter((x) => {
-          this.department.userGroup.push(x.value);
-        });
       } else {
-        this.permissions.filter((x) => {
-          this.department.userGroup = [];
-        });
+        this.department.userGroup = [];
       }
     },
     cancelBtn() {
@@ -174,29 +174,18 @@ export default {
     },
     async saveBtn() {
       this.$refs.name.validate();
-      this.$refs.gmail.validate();
+      this.$refs.email.validate();
       this.$refs.password.validate();
       if (
         this.$refs.name.hasErrors ||
-        this.$refs.gmail.hasError ||
-        this.$refs.password.hasError
+        this.$refs.email.hasError ||
+        this.$refs.password.hasError || 
+        this.department.userGroup.length == 0
       ) {
-        return;
-      }
-
-      if (
-        this.department.displayName == "" ||
-        this.department.email == "" ||
-        this.department.password == "" ||
-        this.department.userGroup == ""
-      ) {
-        if (this.department.userGroup == "") {
           this.isEroorOptions = true;
-          return;
-        }
-        return;
+          return
       }
-
+ 
       this.loadingShow();
       if (this.$route.name == "departmentAdd") {
         let apiURL =
@@ -225,14 +214,14 @@ export default {
         }
 
         let isHrAdmin = false;
-        if (this.department.customClaims.isHrAdmin) {
+        if (this.$route.params.customClaims.isHrAdmin) {
           isHrAdmin = true;
         }
 
         let apiURL =
           "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/hrUpdate";
         const updateData = {
-          uid: this.department.uid,
+          uid: this.$route.params.uid,
           displayName: this.department.displayName,
           dataEntryPermissions: this.department.userGroup,
           accessProgram: ["HR"],
@@ -251,7 +240,11 @@ export default {
   },
   mounted() {
     if (this.$route.name == "departmentEdit") {
-      this.loadEdit();
+      if (this.$route.params.displayName == undefined) {
+        this.$router.push("departmentMain");
+      } else {
+        this.loadEdit();
+      }
     }
   },
 };
