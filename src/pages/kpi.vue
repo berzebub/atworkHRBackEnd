@@ -120,7 +120,10 @@
             </div>
           </div>
           <div class="q-mt-md text-subtitle1">
-            <div>จำนวนแบบฝึกหัด</div>
+            <div class="row items-center">
+              <div>จำนวนแบบฝึกหัด</div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+            </div>
             <div>
               <q-input
                 :rules="[val => !!val]"
@@ -136,7 +139,10 @@
             </div>
           </div>
           <div class="q-mt-md text-subtitle1">
-            <div>จำนวนดาว</div>
+            <div class="row items-center">
+              <div>จำนวนดาว</div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+            </div>
             <div>
               <q-input
                 :rules="[val => !!val]"
@@ -188,7 +194,11 @@
             </div>
           </div>
           <div class="q-mt-md text-subtitle1">
-            <div>จำนวนแบบฝึกหัด</div>
+            <div class="row items-center">
+              <div>จำนวนแบบฝึกหัด</div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+            </div>
+
             <div>
               <q-input
                 :rules="[val => !!val]"
@@ -204,7 +214,10 @@
             </div>
           </div>
           <div class="q-mt-md text-subtitle1">
-            <div>จำนวนดาว</div>
+            <div class="row items-center">
+              <div>จำนวนดาว</div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+            </div>
             <div>
               <q-input
                 :rules="[val => !!val]"
