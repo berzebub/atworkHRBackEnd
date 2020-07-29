@@ -9,6 +9,7 @@
           <div class="col-12">
             <div
               class="col-12 row items-center q-pa-md cursor-pointer relative-position"
+              :class="isNameSetting == true ? 'bg-teal-1': null"
               @click="nameSetting()"
               v-ripple
             >
@@ -21,6 +22,7 @@
 
             <div
               class="col-12 row items-center q-pa-md cursor-pointer relative-position"
+              :class="isPasswordSetting == true ? 'bg-teal-1': null"
               v-ripple
               @click="passwordSetting()"
             >
@@ -64,11 +66,11 @@
             </div>
             <div class="row q-pt-lg">
               <div class="col-6 q-pr-sm" align="right">
-                <q-btn outline color="secondary" label="ยกเลิก" style="width:120px" />
+                <q-btn outline color="cyan-8" label="ยกเลิก" style="width:120px" />
               </div>
               <div class="col-6 q-pl-sm">
                 <q-btn
-                  color="secondary"
+                  color="cyan-8"
                   label="ตกลง"
                   @click="confirmEditDisplayName()"
                   style="width:120px"
@@ -83,15 +85,10 @@
           <div class="col-12 text-subtitle1 q-pb-lg" align="center">{{ this.userInfo.email }}</div>
 
           <div class="col-6 q-pr-sm" align="right">
-            <q-btn outline color="secondary" label="ยกเลิก" style="width:120px" />
+            <q-btn outline color="cyan-8" label="ยกเลิก" style="width:120px" />
           </div>
           <div class="col-6 q-pl-sm" align="left">
-            <q-btn
-              color="secondary"
-              label="ตกลง"
-              @click="confirmResetPassword()"
-              style="width:120px"
-            />
+            <q-btn color="cyan-8" label="ตกลง" @click="confirmResetPassword()" style="width:120px" />
           </div>
         </div>
       </div>
@@ -106,7 +103,7 @@
             <div class="col-12 text-subtitle1 q-pt-sm">บันทึกข้อมูลเรียบร้อย</div>
 
             <div class="col-12 q-pl-sm q-pt-lg" align="center">
-              <q-btn @click="ConfirmName()" color="secondary" label="ตกลง" style="width:120px" />
+              <q-btn @click="ConfirmName()" color="cyan-8" label="ตกลง" style="width:120px" />
             </div>
           </div>
         </q-dialog>
@@ -125,7 +122,7 @@
             </div>
 
             <div class="col-12 q-pl-sm q-pt-lg" align="center">
-              <q-btn @click="ConfirmPassword()" color="secondary" label="ตกลง" style="width:120px" />
+              <q-btn @click="ConfirmPassword()" color="cyan-8" label="ตกลง" style="width:120px" />
             </div>
           </div>
         </q-dialog>
