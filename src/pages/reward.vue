@@ -434,7 +434,6 @@ export default {
     async rewardRedemption() {
       let star = this.user.star - this.user.starAll;
       db.collection("employee").doc(this.userId).update({ star: star });
-
       db.collection("reward_history")
         .where("employeeId", "==", this.userId)
         .get()
@@ -508,7 +507,6 @@ export default {
         });
     },
     //  โหลดพนักงาน
-
     loadUser(val) {
       db.collection("employee")
         .where("departmentId", "==", val)
@@ -551,17 +549,6 @@ export default {
           };
           this.rewardList.push(final);
         });
-        this.rewardList.filter((x, index) => {
-          if (x.status) {
-            this.rewardOptions.push({
-              label:
-                index + 1 + "." + " " + x.reward + " - " + x.star + " " + "ดาว",
-              value: x.key,
-            });
-          }
-        });
-        this.reward = this.rewardOptions[0];
-        this.changeStar(this.reward);
         this.loadingHide();
       });
     },
@@ -609,36 +596,49 @@ export default {
     },
     async loadItem() {
       this.showHistoryList = [];
-
       await db
         .collection("reward_history")
         .where("employeeId", "==", this.userId)
         .get()
         .then((doc) => {
-          let data = doc.docs[0].data().rewardId;
-          db.collection("reward")
-            .get()
-            .then((doc) => {
-              doc.forEach((element) => {
-                data.filter((x, index) => {
-                  if (x.rewardId == element.id) {
-                    let dataKey = {
-                      date: x.date,
-                      name: element.data().reward,
-                      star: element.data().star,
-                    };
-                    this.showHistoryList.push(dataKey);
-                  }
+          if (doc.size) {
+            let data = doc.docs[0].data().rewardId;
+            db.collection("reward")
+              .get()
+              .then((doc) => {
+                doc.forEach((element) => {
+                  data.filter((x, index) => {
+                    if (x.rewardId == element.id) {
+                      let dataKey = {
+                        date: x.date,
+                        name: element.data().reward,
+                        star: element.data().star,
+                      };
+                      this.showHistoryList.push(dataKey);
+                    }
+                  });
                 });
               });
-            });
+          }
         });
     },
     // แลกรางวัล
+    loadItemReward() {
+      this.rewardOptions = [];
+      this.rewardList.filter((x, index) => {
+        if (x.status) {
+          this.rewardOptions.push({
+            label:
+              index + 1 + "." + " " + x.reward + " - " + x.star + " " + "ดาว",
+            value: x.key,
+          });
+        }
+      });
+      this.reward = this.rewardOptions[0];
+      this.changeStar(this.reward);
+    },
     rewardBtn(name, star, val) {
-      this.loadEmployee();
-      this.loadRewardHistory();
-      this.loadReward();
+      this.loadItemReward();
       this.userId = val;
       this.user.name = name;
       this.user.star = star;
