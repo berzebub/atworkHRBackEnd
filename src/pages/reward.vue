@@ -169,7 +169,6 @@
           </div>
           <div style="width:100px" class="col-2 self-center" align="center">
             <span>
-              {{ item.status }}
               <toggle-button
                 :labels="{ checked: 'เปิด', unchecked: 'ปิด' }"
                 :height="30"
@@ -179,8 +178,8 @@
                   unchecked: ['#909090']
                 }"
                 :font-size="16"
-                v-model="statusReward"
-                @change="updateStatusReward(item.key)"
+                v-model="item.status"
+                @input="updateStatusReward(item.key,item.status)"
               />
             </span>
           </div>
@@ -193,22 +192,24 @@
         <q-card-section align="center" class="bg-blue-10 text-white">
           <div class="text-h6">ประวัติการแลก</div>
         </q-card-section>
-        <div class="q-pa-md">
-          <span>{{ user.name }}</span>
-          <span class="q-px-sm">:</span>
-          <span>{{ department.label }}</span>
-          <span>
-            <div v-for="item in showHistoryList" :key="item.id">
-              <q-separator class="q-my-sm" />
-              <div>{{ item.date }}</div>
+        <q-scroll-area style="height: 300px;">
+          <div class="q-pa-md">
+            <span>{{ user.name }}</span>
+            <span class="q-px-sm">:</span>
+            <span>{{ department.label }}</span>
+            <span>
+              <div v-for="item in showHistoryList" :key="item.id">
+                <q-separator class="q-my-sm" />
+                <div>{{ item.date }}</div>
 
-              <div class="row justify-between">
-                <div>{{ item.name }}</div>
-                <div>{{ item.star + " " +"ดาว" }}</div>
+                <div class="row justify-between">
+                  <div>{{ item.name }}</div>
+                  <div>{{ item.star + " " +"ดาว" }}</div>
+                </div>
               </div>
-            </div>
-          </span>
-        </div>
+            </span>
+          </div>
+        </q-scroll-area>
         <q-card-section align="center">
           <q-btn style="width:120px" v-close-popup color="cyan-8" label="ปิด" />
         </q-card-section>
@@ -739,8 +740,8 @@ export default {
       }
     },
     // อัพเดท การปิดเปิด
-    updateStatusReward(val) {
-      db.collection("reward").doc(val).update({ status: this.statusReward });
+    updateStatusReward(val, status) {
+      db.collection("reward").doc(val).update({ status: status });
     },
     deleteImg() {
       this.addReward.isImage = false;
