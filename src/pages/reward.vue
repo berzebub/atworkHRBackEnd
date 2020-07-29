@@ -84,16 +84,11 @@
           จำนวนดาว
           <i class="fas fa-sort"></i>
         </div>
-        <div style="width:120px" class="col-2" align="center">
-          ประวัติการแลก
-        </div>
+        <div style="width:120px" class="col-2" align="center">ประวัติการแลก</div>
         <div style="width:120px" class="col-2" align="center">แลกรางวัล</div>
       </div>
       <!-- เนื้อหา -->
-      <div
-        class="shadow-2 q-pb-sm q-mb-md"
-        style="border-radius: 0px 0px 10px 10px"
-      >
+      <div class="shadow-2 q-pb-sm q-mb-md" style="border-radius: 0px 0px 10px 10px">
         <div
           v-for="item in userList"
           :key="item.id"
@@ -109,18 +104,14 @@
               color="cyan-8"
             />
           </div>
-          <div
-            style="width:120px"
-            class="col-2 self-center relative-position"
-            align="center"
-          >
+          <div style="width:120px" class="col-2 self-center relative-position" align="center">
             <q-btn
               @click="rewardBtn(item.name, item.star, item.key)"
               icon="fas fa-gift"
               round
               color="cyan-8"
             />
-            <div v-if="!mode" class="absolute-center backDrop "></div>
+            <div v-if="!mode" class="absolute-center backDrop"></div>
           </div>
         </div>
       </div>
@@ -145,10 +136,7 @@
         <div style="width:100px" class="col-2" align="center">เปิด/ปิด</div>
       </div>
       <!-- เนื้อหา -->
-      <div
-        class="shadow-2 q-pb-sm q-mb-md"
-        style="border-radius: 0px 0px 10px 10px"
-      >
+      <div class="shadow-2 q-pb-sm q-mb-md" style="border-radius: 0px 0px 10px 10px">
         <div
           v-for="item in rewardList"
           :key="item.id"
@@ -164,24 +152,12 @@
               >
                 <div class="absolute-center">ไม่มีรูปภาพ</div>
               </div>
-              <img
-                v-if="item.isImage"
-                style="width:180px"
-                :src="item.getURL"
-                alt
-              />
+              <img v-if="item.isImage" style="width:180px" :src="item.getURL" alt />
             </div>
           </div>
+          <div style="width:100px" class="col-2 self-center" align="center">{{ item.star }}</div>
           <div style="width:100px" class="col-2 self-center" align="center">
-            {{ item.star }}
-          </div>
-          <div style="width:100px" class="col-2 self-center" align="center">
-            <q-btn
-              @click="deleteBtn(item.key)"
-              icon="fas fa-trash-alt"
-              round
-              color="cyan-8"
-            />
+            <q-btn @click="deleteBtn(item.key)" icon="fas fa-trash-alt" round color="cyan-8" />
           </div>
           <div style="width:100px" class="col-2 self-center" align="center">
             <q-btn
@@ -222,12 +198,13 @@
           <span class="q-px-sm">:</span>
           <span>{{ department.label }}</span>
           <span>
-            <div v-for="item in user.rewardId" :key="item.id">
+            <div v-for="item in showHistoryList" :key="item.id">
               <q-separator class="q-my-sm" />
               <div>{{ item.date }}</div>
+
               <div class="row justify-between">
-                <!-- <span>คูปอง 100 บาท</span>
-                <span>150 ดาว</span> -->
+                <div>{{ item.name }}</div>
+                <div>{{ item.star + " " +"ดาว" }}</div>
               </div>
             </div>
           </span>
@@ -273,9 +250,11 @@
             </div>
             <div class="q-py-sm row justify-between">
               <span>ดาวที่จะเหลือ</span>
-              <span :class="isRewardBtn ? 'text-red' : ''">{{
+              <span :class="isRewardBtn ? 'text-red' : ''">
+                {{
                 user.starBalance
-              }}</span>
+                }}
+              </span>
             </div>
           </span>
         </div>
@@ -300,10 +279,7 @@
               color="cyan-8"
               label="แลกของรางวัล"
             />
-            <div
-              v-if="isRewardBtn"
-              class="absolute-center backDropReward"
-            ></div>
+            <div v-if="isRewardBtn" class="absolute-center backDropReward"></div>
           </span>
         </div>
       </q-card>
@@ -342,8 +318,7 @@
             <span
               v-if="!addReward.isImage"
               class="text-body2 text-grey-5 q-px-md"
-              >ไฟล์ jpg ขนาด 300x300 px เท่านั้น</span
-            >
+            >ไฟล์ jpg ขนาด 300x300 px เท่านั้น</span>
             <div align="center" class="q-pa-md" v-if="addReward.isImage">
               <div>
                 <q-img :src="addReward.getURL" style="width:300px;">
@@ -366,9 +341,7 @@
                   class="text-subtitle1 rounded-borders text-center bg-cyan-8 text-white q-pa-xs cursor-pointer"
                   @click.stop="uploadImg = null"
                   v-if="!uploadImg"
-                >
-                  เลือกไฟล์
-                </div>
+                >เลือกไฟล์</div>
 
                 <div
                   class="cursor-pointer rounded-borders text-white q-py-sm q-px-xs bg-cyan-8"
@@ -425,7 +398,7 @@ export default {
         star: "",
         hotelId: "",
         departmentId: "",
-        isImage: false
+        isImage: false,
       },
       statusReward: false,
       mode: true,
@@ -446,27 +419,26 @@ export default {
       isReward: false,
       isAddReward: false,
       isRewardBtn: false,
+      showHistoryList: [],
       user: {
         name: "",
         star: "",
         starAll: 0,
-        starBalance: 0
-      }
+        starBalance: 0,
+      },
     };
   },
   methods: {
     // แลกของรางวัล
     async rewardRedemption() {
       let star = this.user.star - this.user.starAll;
-      db.collection("employee")
-        .doc(this.userId)
-        .update({ star: star });
+      db.collection("employee").doc(this.userId).update({ star: star });
 
       db.collection("reward_history")
         .where("employeeId", "==", this.userId)
         .get()
-        .then(async doc => {
-          let owen = this.employeeList.filter(x => {
+        .then(async (doc) => {
+          let owen = this.employeeList.filter((x) => {
             return x.key == this.userId;
           })[0];
           let date = "20/06/63";
@@ -474,16 +446,16 @@ export default {
             hotelId: owen.hotelId,
             departmentId: owen.departmentId,
             employeeId: this.userId,
-            name: this.user.name
+            name: this.user.name,
           };
           if (doc.size) {
-            let test = this.rewardHistory.filter(x => {
+            let test = this.rewardHistory.filter((x) => {
               return x.employeeId == this.userId;
             })[0];
             let rewardList = test.rewardId;
             let item = {
               date: date,
-              rewardId: this.reward.value
+              rewardId: this.reward.value,
             };
             rewardList.push(item);
 
@@ -503,14 +475,14 @@ export default {
       this.employeeList = [];
       db.collection("employee")
         .get()
-        .then(doc => {
-          doc.forEach(element => {
+        .then((doc) => {
+          doc.forEach((element) => {
             let dataKey = {
-              key: element.id
+              key: element.id,
             };
             let final = {
               ...dataKey,
-              ...element.data()
+              ...element.data(),
             };
             this.employeeList.push(final);
           });
@@ -521,14 +493,14 @@ export default {
       this.rewardHistory = [];
       db.collection("reward_history")
         .get()
-        .then(doc => {
-          doc.forEach(element => {
+        .then((doc) => {
+          doc.forEach((element) => {
             let dataKey = {
-              key: element.id
+              key: element.id,
             };
             let final = {
               ...dataKey,
-              ...element.data()
+              ...element.data(),
             };
             this.rewardHistory.push(final);
           });
@@ -539,15 +511,15 @@ export default {
     loadUser(val) {
       db.collection("employee")
         .where("departmentId", "==", val)
-        .onSnapshot(doc => {
+        .onSnapshot((doc) => {
           this.userList = [];
-          doc.forEach(element => {
+          doc.forEach((element) => {
             let dataKey = {
-              key: element.id
+              key: element.id,
             };
             let final = {
               ...dataKey,
-              ...element.data()
+              ...element.data(),
             };
             this.userList.push(final);
             this.userList.sort((a, b) => {
@@ -560,30 +532,32 @@ export default {
     // โหลดรางวัล
     loadReward() {
       this.loadingShow();
-      db.collection("reward").onSnapshot(async doc => {
+      db.collection("reward").onSnapshot(async (doc) => {
         this.rewardList = [];
         this.rewardOptions = [];
-        await doc.forEach(element => {
+        await doc.forEach((element) => {
           let getImage = "";
           if (element.data().isImage) {
             getImage = this.pathFile + element.id + ".jpg";
           }
           let dataKey = {
             key: element.id,
-            getURL: getImage
+            getURL: getImage,
           };
           let final = {
             ...dataKey,
-            ...element.data()
+            ...element.data(),
           };
           this.rewardList.push(final);
         });
         this.rewardList.filter((x, index) => {
-          this.rewardOptions.push({
-            label:
-              index + 1 + "." + " " + x.reward + " - " + x.star + " " + "ดาว",
-            value: x.key
-          });
+          if (x.status) {
+            this.rewardOptions.push({
+              label:
+                index + 1 + "." + " " + x.reward + " - " + x.star + " " + "ดาว",
+              value: x.key,
+            });
+          }
         });
         this.reward = this.rewardOptions[0];
         this.changeStar(this.reward);
@@ -595,14 +569,14 @@ export default {
       this.loadingShow();
       db.collection("department")
         .get()
-        .then(doc => {
+        .then((doc) => {
           let key = [];
-          doc.forEach(element => {
+          doc.forEach((element) => {
             key.push(element.id);
 
             this.departmentOptions.push({
               label: element.data().name,
-              value: element.id
+              value: element.id,
             });
           });
           this.department = this.departmentOptions[0];
@@ -633,14 +607,30 @@ export default {
       this.isShowHistory = true;
     },
     async loadItem() {
+      this.showHistoryList = [];
+
       await db
         .collection("reward_history")
         .where("employeeId", "==", this.userId)
         .get()
-        .then(doc => {
-          let history = doc.docs[0].data().rewardId;
-          this.user.rewardId = doc.docs[0].data().rewardId;
-          console.log(this.user);
+        .then((doc) => {
+          let data = doc.docs[0].data().rewardId;
+          db.collection("reward")
+            .get()
+            .then((doc) => {
+              doc.forEach((element) => {
+                data.filter((x, index) => {
+                  if (x.rewardId == element.id) {
+                    let dataKey = {
+                      date: x.date,
+                      name: element.data().reward,
+                      star: element.data().star,
+                    };
+                    this.showHistoryList.push(dataKey);
+                  }
+                });
+              });
+            });
         });
     },
     // แลกรางวัล
@@ -657,8 +647,8 @@ export default {
     changeStar(val) {
       db.collection("reward")
         .get()
-        .then(doc => {
-          doc.forEach(element => {
+        .then((doc) => {
+          doc.forEach((element) => {
             if (val.value == element.id) {
               this.user.starAll = element.data().star;
             }
@@ -681,15 +671,15 @@ export default {
       this.isAddReward = true;
       db.collection("reward")
         .get()
-        .then(doc => {
-          doc.forEach(element => {
+        .then((doc) => {
+          doc.forEach((element) => {
             if (element.id == val) {
               let dataKey = {
-                getURL: image
+                getURL: image,
               };
               let filnal = {
                 ...dataKey,
-                ...element.data()
+                ...element.data(),
               };
               this.addReward = filnal;
             }
@@ -698,9 +688,7 @@ export default {
     },
     // ลบรางวัล
     deleteBtn(val) {
-      db.collection("reward")
-        .doc(val)
-        .delete();
+      db.collection("reward").doc(val).delete();
     },
     addRewardBtn() {
       this.uploadImg = null;
@@ -736,9 +724,7 @@ export default {
             this.loadReward();
           }
         } else {
-          db.collection("reward")
-            .doc(this.userId)
-            .set(this.addReward);
+          db.collection("reward").doc(this.userId).set(this.addReward);
           if (this.uploadImg) {
             await st
               .child("/image_reward/" + this.userId + ".jpg")
@@ -754,22 +740,18 @@ export default {
     },
     // อัพเดท การปิดเปิด
     updateStatusReward(val) {
-      db.collection("reward")
-        .doc(val)
-        .update({ status: this.statusReward });
+      db.collection("reward").doc(val).update({ status: this.statusReward });
     },
     deleteImg() {
       this.addReward.isImage = false;
-      db.collection("reward")
-        .doc(this.userId)
-        .update({ isImage: false });
+      db.collection("reward").doc(this.userId).update({ isImage: false });
       st.child("/image_reward/" + this.userId + ".jpg").delete();
-    }
+    },
   },
 
   mounted() {
     this.loadDepartment();
-  }
+  },
 };
 </script>
 
