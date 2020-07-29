@@ -335,6 +335,9 @@ export default {
                   )[0];
                 }
               });
+              employeeTemp.sort((a, b) => {
+                return a.name > b.name ? 1 : -1;
+              });
               this.employeeList = employeeTemp;
               this.isLoadEmployee = true;
               this.loadingHide();
