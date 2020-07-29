@@ -9,7 +9,7 @@
             :options="departmentoptions"
             dense
             style="width:300px"
-            @input="filterEmployeeData()"
+            @input="filterEmployeeData(),search=''"
           ></q-select>
         </div>
         <!-- ค้นหา -->
@@ -145,7 +145,9 @@ export default {
       } else {
         this.employeeListShow = this.employeeData.filter(
           (x) =>
-            x.name.startsWith(this.search) || x.email.startsWith(this.search)
+            (x.name.startsWith(this.search) ||
+              x.email.startsWith(this.search)) &&
+            x.departmentId == this.departmentSelect.value
         );
       }
     },
