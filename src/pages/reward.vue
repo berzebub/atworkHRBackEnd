@@ -14,6 +14,8 @@
             }"
             :font-size="16"
             v-model="mode"
+            :sync="true"
+            @input="updateStatusRewardHotel(hotelId)"
           />
         </div>
       </div>
@@ -78,11 +80,11 @@
       >
         <div class="col q-px-md">
           ชื่อ-นามสกุล
-          <i class="fas fa-sort"></i>
+          <q-icon @click="sortName('employee')" name="fas fa-sort cursor-pointer"></q-icon>
         </div>
         <div class="col" align="center">
           จำนวนดาว
-          <i class="fas fa-sort"></i>
+          <q-icon @click="sortStar('starEmployee')" name="fas fa-sort cursor-pointer"></q-icon>
         </div>
         <div style="width:120px" class="col-2" align="center">ประวัติการแลก</div>
         <div style="width:120px" class="col-2" align="center">แลกรางวัล</div>
@@ -124,12 +126,12 @@
       >
         <div class="col q-px-md">
           ของรางวัล
-          <i class="fas fa-sort"></i>
+          <q-icon @click="sortName('reward')" name="fas fa-sort cursor-pointer"></q-icon>
         </div>
         <div class="col" align="center">รูป</div>
         <div style="width:100px" class="col-2" align="center">
           จำนวนดาว
-          <i class="fas fa-sort"></i>
+          <q-icon @click="sortStar('starReward')" name="fas fa-sort cursor-pointer"></q-icon>
         </div>
         <div style="width:100px" class="col-2" align="center">ลบ</div>
         <div style="width:100px" class="col-2" align="center">แก้ไข</div>
@@ -303,95 +305,100 @@
           <div v-if="!modeAdd" class="text-h6">เพิ่มของรางวัล</div>
           <div v-if="modeAdd" class="text-h6">แก้ไขของรางวัล</div>
         </q-card-section>
-        <div class="q-pa-md text-subtitle1">
-          <div>
-            <span>ชื่อของรางวัล</span>
-            <q-input
-              ref="reward"
-              outlined
-              v-model="addReward.reward"
-              dense
-              :rules="[val => !!val]"
-            />
-          </div>
-          <div>
-            <span>จำนวนดาวที่ใช้แลก</span>
-            <q-input
-              ref="star"
-              type="number"
-              outlined
-              v-model.number="addReward.star"
-              dense
-              :rules="[val => !!val]"
-            />
-          </div>
-          <div class="q-pb-sm">
-            <span>ไฟล์รูปภาพ</span>
-            <span
-              v-if="!addReward.isImage"
-              class="text-body2 text-grey-5 q-px-md"
-            >ไฟล์ jpg ขนาด 300x300 px เท่านั้น</span>
-            <div align="center" class="q-pa-md" v-if="addReward.isImage">
-              <div>
-                <q-img :src="addReward.getURL" style="width:300px;">
-                  <div class="absolute-bottom text-subtitle1 text-center">
-                    <u @click="deleteImg()" class="cursor-pointer">ลบรูปภาพ</u>
+        <q-card-section>
+          <div class="text-subtitle1">
+            <div>
+              <span>ชื่อของรางวัล</span>
+              <q-input
+                ref="reward"
+                outlined
+                v-model="addReward.reward"
+                dense
+                :rules="[val => !!val]"
+              />
+            </div>
+            <div>
+              <span>จำนวนดาวที่ใช้แลก</span>
+              <q-input
+                ref="star"
+                type="number"
+                outlined
+                v-model.number="addReward.star"
+                dense
+                :rules="[val => !!val]"
+              />
+            </div>
+            <div class="q-pb-sm">
+              <span>ไฟล์รูปภาพ</span>
+              <span
+                v-if="!addReward.isImage"
+                class="text-body2 text-grey-5 q-px-md"
+              >ไฟล์ jpg ขนาด 300x300 px เท่านั้น</span>
+              <div align="center" class="q-pa-md" v-if="addReward.isImage">
+                <div>
+                  <q-img :src="addReward.getURL" style="width:300px;">
+                    <div class="absolute-bottom text-subtitle1 text-center">
+                      <u @click="deleteImg()" class="cursor-pointer">ลบรูปภาพ</u>
+                    </div>
+                  </q-img>
+                </div>
+              </div>
+              <div style="overflow: hidden">
+                <q-file
+                  v-if="!addReward.isImage"
+                  accept=".jpg"
+                  input-style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
+                  bg-color="white"
+                  outlined
+                  v-model="uploadImg"
+                >
+                  <template class="relative-position" v-slot:append>
+                    <div
+                      style="width:100px"
+                      class="text-subtitle1 rounded-borders text-center bg-cyan-8 text-white q-pa-xs cursor-pointer"
+                      @click.stop="uploadImg = null"
+                      v-if="!uploadImg"
+                    >เลือกไฟล์</div>
+
+                    <div
+                      class="cursor-pointer rounded-borders text-white q-py-sm q-px-xs bg-cyan-8"
+                      v-if="uploadImg"
+                      @click="uploadImg = null"
+                    >
+                      <span class="far fa-trash-alt q-px-xs"></span>
+                    </div>
+                  </template>
+                  <div
+                    style="width:100%"
+                    class="text-subtitle1 row absolute-center text-grey-7"
+                    v-if="!uploadImg"
+                  >
+                    <span class="col text-center">ลากแล้ววาง หรือ</span>
                   </div>
-                </q-img>
+                </q-file>
               </div>
             </div>
-            <q-file
-              v-if="!addReward.isImage"
-              accept=".jpg"
-              bg-color="white"
-              outlined
-              v-model="uploadImg"
-            >
-              <template class="relative-position" v-slot:append>
-                <div
-                  style="width:100px"
-                  class="text-subtitle1 rounded-borders text-center bg-cyan-8 text-white q-pa-xs cursor-pointer"
-                  @click.stop="uploadImg = null"
-                  v-if="!uploadImg"
-                >เลือกไฟล์</div>
-
-                <div
-                  class="cursor-pointer rounded-borders text-white q-py-sm q-px-xs bg-cyan-8"
-                  v-if="uploadImg"
-                  @click="uploadImg = null"
-                >
-                  <span class="far fa-trash-alt q-px-xs"></span>
-                </div>
-              </template>
-              <div
-                style="width:100%"
-                class="text-subtitle1 row absolute-center text-grey-7"
-                v-if="!uploadImg"
-              >
-                <span class="col text-center">ลากแล้ววาง หรือ</span>
-              </div>
-            </q-file>
+            <div align="center" class="q-pt-sm">
+              <q-btn
+                dense
+                class="q-mx-sm"
+                outline
+                style="width:120px"
+                v-close-popup
+                color="cyan-8"
+                label="ยกเลิก"
+              />
+              <q-btn
+                dense
+                class="q-mx-sm"
+                style="width:120px"
+                @click="saveReward()"
+                color="cyan-8"
+                label="บันทึก"
+              />
+            </div>
           </div>
-          <div align="center" class="q-pt-sm">
-            <q-btn
-              dense
-              class="q-mx-sm"
-              outline
-              style="width:120px"
-              v-close-popup
-              color="cyan-8"
-              label="ยกเลิก"
-            />
-            <q-btn
-              dense
-              class="q-mx-sm"
-              style="width:120px"
-              @click="saveReward()"
-              color="cyan-8"
-              label="บันทึก"
-            />
-          </div>
-        </div>
+        </q-card-section>
       </q-card>
     </q-dialog>
     <dialog-setting
@@ -430,13 +437,14 @@ export default {
         isImage: false,
       },
       statusReward: false,
-      mode: true,
       showMode: "person",
       department: "",
       departmentOptions: [],
       reward: "",
       rewardOptions: [],
       columnsAll: [],
+      mode: false,
+      statusHotel: [],
       userId: "",
       rewardList: [],
       employeeList: [],
@@ -456,6 +464,7 @@ export default {
         starAll: 0,
         starBalance: 0,
       },
+      isSort: true,
       isHistoryList: false,
     };
   },
@@ -503,6 +512,19 @@ export default {
           this.dataName = "เราทำการแลกของรางวัลเสร็จสิ้นแล้ว";
         });
       this.isReward = false;
+    },
+    // โหลด โรงแรม
+    loadHotel() {
+      db.collection("hotel")
+        .doc(this.hotelId)
+        .get()
+        .then((doc) => {
+          this.mode = doc.data().isReward;
+          this.loadDepartment();
+        });
+    },
+    updateStatusRewardHotel(val) {
+      db.collection("hotel").doc(val).update({ isReward: this.mode });
     },
     // โหลด ลูกจ้าง
     loadEmployee() {
@@ -555,12 +577,57 @@ export default {
               ...element.data(),
             };
             this.userList.push(final);
-            this.userList.sort((a, b) => {
-              return a.name > b.name ? 1 : -1;
-            });
+          });
+          // this.userList.sort((a, b) => {
+          //   return a.name > b.name ? 1 : -1;
+          // });
+          this.userList.sort((a, b) => {
+            return a.star - b.star;
           });
           this.loadingHide();
         });
+    },
+    sortName(val) {
+      if (val == "employee") {
+        this.isSort = !this.isSort;
+        this.userList.sort((a, b) => {
+          if (this.isSort == true) {
+            return b.name > a.name ? 1 : -1;
+          } else {
+            return a.name > b.name ? 1 : -1;
+          }
+        });
+      } else {
+        this.isSort = !this.isSort;
+        this.rewardList.sort((a, b) => {
+          if (this.isSort == true) {
+            return b.name > a.name ? 1 : -1;
+          } else {
+            return a.name > b.name ? 1 : -1;
+          }
+        });
+      }
+    },
+    sortStar(val) {
+      if (val == "starEmployee") {
+        this.isSort = !this.isSort;
+        this.userList.sort((a, b) => {
+          if (this.isSort == true) {
+            return b.star - a.star;
+          } else {
+            return a.star - b.star;
+          }
+        });
+      } else {
+        this.isSort = !this.isSort;
+        this.rewardList.sort((a, b) => {
+          if (this.isSort == true) {
+            return b.star - a.star;
+          } else {
+            return a.star - b.star;
+          }
+        });
+      }
     },
     // โหลดรางวัล
     loadReward() {
@@ -583,6 +650,9 @@ export default {
           };
           this.rewardList.push(final);
         });
+        this.rewardList.sort((a, b) => {
+          return a.star - b.star;
+        });
         this.loadingHide();
       });
     },
@@ -601,6 +671,7 @@ export default {
             });
           });
           this.department = this.departmentOptions[0];
+
           this.loadUser(key[0]);
           this.loadReward();
           this.loadRewardHistory();
@@ -629,12 +700,12 @@ export default {
       this.isHistoryList = false;
     },
     loadItem() {
+      let temp = [];
       db.collection("reward_history")
         .where("employeeId", "==", this.userId)
         .onSnapshot((doc) => {
           if (doc.size) {
             let data = doc.docs[0].data().rewardList;
-            let temp = [];
             data.map((x1) => {
               this.rewardList.filter((x2, index) => {
                 if (x1.rewardList == x2.key) {
@@ -804,7 +875,7 @@ export default {
   },
 
   mounted() {
-    this.loadDepartment();
+    this.loadHotel();
   },
 };
 </script>

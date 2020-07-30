@@ -53,7 +53,7 @@ export default {
     },
   },
   mounted() {
-    let stoTypeList = [2];
+    let stoTypeList = [2, 4];
 
     if (stoTypeList.includes(this.type)) {
       setTimeout(() => {
