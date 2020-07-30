@@ -12,9 +12,9 @@
           <q-select outlined v-model="yearSelect" :options="yaerOptions" dense></q-select>
         </div>
         <div class="col" align="right">
-          <q-btn class="q-mx-md" round color="secondary" icon="fas fa-file-download" />
+          <q-btn class="q-mx-md" round color="cyan-8" icon="fas fa-file-download" />
 
-          <q-btn round color="secondary" icon="fas fa-print" />
+          <q-btn round color="cyan-8" icon="fas fa-print" />
         </div>
       </div>
 
@@ -66,7 +66,7 @@ export default {
         "กันยายน",
         "ตุลาคม",
         "พฤศจิกายน",
-        "ธันวาคม",
+        "ธันวาคม"
       ],
       yearSelect: "2563",
       yaerOptions: [
@@ -81,9 +81,9 @@ export default {
         2571,
         2572,
         2573,
-        2574,
+        2574
       ],
-      employeeData: "",
+      employeeData: ""
     };
   },
   methods: {
@@ -91,12 +91,12 @@ export default {
       db.collection("department")
         .where("hotelId", "==", this.hotelId)
         .get()
-        .then((doc) => {
+        .then(doc => {
           let temp = [];
-          doc.forEach((element) => {
+          doc.forEach(element => {
             temp.push({
               value: element.id,
-              label: element.data().name,
+              label: element.data().name
             });
           });
           temp.sort((a, b) => {
@@ -111,21 +111,21 @@ export default {
       db.collection("employee")
         .where("hotelId", "==", this.hotelId)
         .get()
-        .then((doc) => {
+        .then(doc => {
           let temp = [];
-          doc.forEach((element) => {
+          doc.forEach(element => {
             temp.push({
               employeeId: element.id,
-              ...element.data(),
+              ...element.data()
             });
           });
           this.employeeData = temp;
         });
-    },
+    }
   },
   mounted() {
     this.loadDepartment();
-  },
+  }
 };
 </script>
 

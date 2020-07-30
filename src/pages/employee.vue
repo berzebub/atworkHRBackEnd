@@ -30,7 +30,7 @@
         </div>
 
         <div class="col-1" align="right">
-          <q-btn @click="goToPrint()" round color="secondary" icon="fas fa-print" />
+          <q-btn @click="goToPrint()" round color="cyan-8" icon="fas fa-print" />
         </div>
       </div>
       <!-- ตาราง -->
@@ -40,11 +40,11 @@
       >
         <div class="col-5">
           ชื่อ-นามสกุล
-          <i class="fas fa-sort"></i>
+          <q-icon @click="sortName()" name="fas fa-sort"></q-icon>
         </div>
         <div class="col-5" align="center">
           อีเมล
-          <i class="fas fa-sort"></i>
+          <q-icon name="fas fa-sort"></q-icon>
         </div>
         <div class="col-2" align="right">ตั้งค่ารหัสผ่านใหม่</div>
       </div>
@@ -62,7 +62,7 @@
             <q-btn
               @click="resetPassword(item)"
               round
-              color="secondary"
+              color="cyan-8"
               icon="fas fa-redo"
               size="10px"
             />
@@ -71,10 +71,10 @@
       </q-card>
       <!-- dialog reset password-->
       <div>
-        <q-dialog v-model="isResetPasswordDialog">
+        <q-dialog persistent v-model="isResetPasswordDialog">
           <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
             <div class="col-12 q-pt-md">
-              <q-btn outline round color="secondary" icon="fas fa-trash-alt" size="12px" />
+              <q-btn outline round color="blue-10" icon="fas fa-trash-alt" size="12px" />
               <span class="text-h6 q-pl-md">ยืนยันการตั้งค่ารหัสผ่านใหม่</span>
             </div>
             <div class="col-12 text-subtitle1 q-pt-md">คุณต้องการตั้งค่ารหัสผ่านใหม่ "xxxxxxxxxxxxx"</div>
@@ -102,18 +102,14 @@
       <!-- dialog saved-->
       <div>
         <q-dialog v-model="isSavedDialog">
-          <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
+          <div class="bg-white row q-pa-lg q-py-xl" align="center" style="width:400px ">
             <div class="col-12">
-              <q-icon color="primary" size="md" name="far fa-check-circle"></q-icon>
+              <q-icon color="blue-10" size="md" name="far fa-check-circle"></q-icon>
               <span class="text-h6 q-pl-sm">สำเร็จ</span>
             </div>
             <div class="col-12 text-subtitle1 q-pt-md">
               เราทำการส่งอีเมลสำหรับการตั้งค่ารหัสผ่าน
               <br />ใหม่ไปยังอีเมลของพนักงานแล้ว
-            </div>
-
-            <div class="col-12 q-pl-sm q-pt-lg" align="center">
-              <q-btn @click="savedConfirm()" color="secondary" label="ตกลง" style="width:120px" />
             </div>
           </div>
         </q-dialog>
@@ -135,7 +131,7 @@ export default {
       isSavedDialog: false,
       employeeData: "",
       employeeListShow: "",
-      currentEmployeeActive: "",
+      currentEmployeeActive: ""
     };
   },
   methods: {
@@ -144,7 +140,7 @@ export default {
         this.filterEmployeeData();
       } else {
         this.employeeListShow = this.employeeData.filter(
-          (x) =>
+          x =>
             (x.name.startsWith(this.search) ||
               x.email.startsWith(this.search)) &&
             x.departmentId == this.departmentSelect.value
@@ -159,12 +155,12 @@ export default {
       db.collection("department")
         .where("hotelId", "==", hotelId)
         .get()
-        .then((doc) => {
+        .then(doc => {
           let temp = [];
-          doc.forEach((element) => {
+          doc.forEach(element => {
             temp.push({
               value: element.id,
-              label: element.data().name,
+              label: element.data().name
             });
           });
           temp.sort((a, b) => {
@@ -182,17 +178,15 @@ export default {
     cancelResetPassword() {
       this.isResetPasswordDialog = false;
     },
-    savedConfirm() {
-      this.isSavedDialog = false;
-    },
+
     confirmResetPassword() {
       this.isResetPasswordDialog = false;
       auth
         .sendPasswordResetEmail(this.currentEmployeeActive.email)
-        .then(function () {
+        .then(function() {
           this.isSavedDialog = true;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
 
@@ -203,9 +197,9 @@ export default {
       db.collection("employee")
         .where("hotelId", "==", hotelId)
         .get()
-        .then((doc) => {
+        .then(doc => {
           let temp = [];
-          doc.forEach((element) => {
+          doc.forEach(element => {
             temp.push({ ...element.data(), employeeId: element.id });
           });
           this.employeeData = temp;
@@ -214,13 +208,18 @@ export default {
     },
     filterEmployeeData() {
       this.employeeListShow = this.employeeData.filter(
-        (x) => x.departmentId == this.departmentSelect.value
+        x => x.departmentId == this.departmentSelect.value
       );
     },
+    sortName() {
+      this.employeeListShow.sort((a, b) => {
+        return a.name > b.name ? 1 : -1;
+      });
+    }
   },
   mounted() {
     this.loadDepartment();
-  },
+  }
 };
 </script>
 

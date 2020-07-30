@@ -2,8 +2,8 @@
   <q-page>
     <div class="row">
       <div style="width:360px " class="shadow-1">
-        <div class="bg-blue-10 text-white text-h6 row items-center shadow-5" style="height:56px">
-          <span class="q-ml-lg">ตั้งค่า</span>
+        <div class="q-py-sm bg-blue-10 text-white text-h6 row items-center shadow-5">
+          <span class="q-ml-md">ตั้งค่า</span>
         </div>
         <div class="row" style="height:calc(100vh - 56px)">
           <div class="col-12">
@@ -66,7 +66,13 @@
             </div>
             <div class="row q-pt-lg">
               <div class="col-6 q-pr-sm" align="right">
-                <q-btn outline color="cyan-8" label="ยกเลิก" style="width:120px" />
+                <q-btn
+                  @click="cancelPassword()"
+                  outline
+                  color="cyan-8"
+                  label="ยกเลิก"
+                  style="width:120px"
+                />
               </div>
               <div class="col-6 q-pl-sm">
                 <q-btn
@@ -85,7 +91,13 @@
           <div class="col-12 text-subtitle1 q-pb-lg" align="center">{{ this.userInfo.email }}</div>
 
           <div class="col-6 q-pr-sm" align="right">
-            <q-btn outline color="cyan-8" label="ยกเลิก" style="width:120px" />
+            <q-btn
+              @click="cancelPassword()"
+              outline
+              color="cyan-8"
+              label="ยกเลิก"
+              style="width:120px"
+            />
           </div>
           <div class="col-6 q-pl-sm" align="left">
             <q-btn color="cyan-8" label="ตกลง" @click="confirmResetPassword()" style="width:120px" />
@@ -144,7 +156,7 @@ export default {
       isResetNameDialog: false,
       isResetPasswordDialog: false,
       authLogin: "",
-      userInfo: "",
+      userInfo: ""
     };
   },
   methods: {
@@ -157,7 +169,7 @@ export default {
           this.isResetPasswordDialog = true;
           console.log("FINISH");
         })
-        .catch((error) => {
+        .catch(error => {
           this.loadingHide();
           console.log(error);
         });
@@ -168,7 +180,7 @@ export default {
         "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/updateDisplayName";
       let updateData = {
         uid: this.userInfo.uid,
-        displayName: this.userInfo.displayName,
+        displayName: this.userInfo.displayName
       };
       let updateUserData = await axios.post(apiURL, updateData);
       if (updateUserData.data.code) {
@@ -217,18 +229,24 @@ export default {
     },
     getUser() {
       this.loadingShow();
-      this.authLogin = auth.onAuthStateChanged(async (user) => {
+      this.authLogin = auth.onAuthStateChanged(async user => {
         if (user) {
           this.userInfo = user;
           this.loadingHide();
         }
       });
     },
+    cancelPassword() {
+      this.isNameSetting = false;
+      this.isPasswordSetting = false;
+      this.isLogoutSetting = false;
+      this.mainSetting = true;
+    }
   },
 
   mounted() {
     this.getUser();
-  },
+  }
 };
 </script>
 
