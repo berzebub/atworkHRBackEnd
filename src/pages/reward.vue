@@ -656,6 +656,7 @@ export default {
       this.rewardOptions = [];
       this.rewardList.filter((x, index) => {
         if (x.status) {
+          console.log(x);
           this.rewardOptions.push({
             label:
               index + 1 + "." + " " + x.reward + " - " + x.star + " " + "ดาว",
