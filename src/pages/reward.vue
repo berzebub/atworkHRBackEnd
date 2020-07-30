@@ -157,7 +157,12 @@
           </div>
           <div style="width:100px" class="col-2 self-center" align="center">{{ item.star }}</div>
           <div style="width:100px" class="col-2 self-center" align="center">
-            <q-btn @click="deleteBtn(item.key)" icon="fas fa-trash-alt" round color="cyan-8" />
+            <q-btn
+              @click="deleteBtn(item.key,item.reward)"
+              icon="fas fa-trash-alt"
+              round
+              color="cyan-8"
+            />
           </div>
           <div style="width:100px" class="col-2 self-center" align="center">
             <q-btn
@@ -192,13 +197,19 @@
         <q-card-section align="center" class="bg-blue-10 text-white">
           <div class="text-h6">ประวัติการแลก</div>
         </q-card-section>
-        <q-scroll-area style="height: 300px;">
+        <q-scroll-area class="text-subtitle1" style="height: 300px;">
           <div class="q-pa-md">
             <span>{{ user.name }}</span>
             <span class="q-px-sm">:</span>
             <span>{{ department.label }}</span>
             <span>
-              <div v-for="item in showHistoryList" :key="item.id">
+              <div v-if="isHistoryList">
+                <q-separator class="q-my-sm" />
+                <div class="text-center row" style="height: 200px;">
+                  <span class="col self-center">ยังไม่มีประวัติการทำรายการ</span>
+                </div>
+              </div>
+              <div v-show="!isHistoryList" v-for="item in showHistoryList" :key="item.id">
                 <q-separator class="q-my-sm" />
                 <div>{{ item.date }}</div>
 
@@ -221,7 +232,7 @@
         <q-card-section align="center" class="bg-blue-10 text-white">
           <div class="text-h6">แลกรางวัล</div>
         </q-card-section>
-        <div class="q-pa-md">
+        <div class="q-pa-md text-subtitle1">
           <span>{{ user.name }}</span>
           <span class="q-px-sm">:</span>
           <span>{{ department.label }}</span>
@@ -292,7 +303,7 @@
           <div v-if="!modeAdd" class="text-h6">เพิ่มของรางวัล</div>
           <div v-if="modeAdd" class="text-h6">แก้ไขของรางวัล</div>
         </q-card-section>
-        <div class="q-pa-md">
+        <div class="q-pa-md text-subtitle1">
           <div>
             <span>ชื่อของรางวัล</span>
             <q-input
@@ -383,12 +394,23 @@
         </div>
       </q-card>
     </q-dialog>
+    <dialog-setting
+      :type="1"
+      :name="dataName"
+      v-if="isShowDeleteDialog"
+      @emitCancelDelete="isShowDeleteDialog = false"
+      @emitConfirmDelete="confirmDelete"
+    ></dialog-setting>
   </q-page>
 </template>
 
 <script>
 import { db, st } from "../router";
+import dialogSetting from "../components/dialogSetting";
 export default {
+  components: {
+    dialogSetting,
+  },
   data() {
     return {
       uploadImg: null,
@@ -415,11 +437,11 @@ export default {
       rewardHistory: [],
       userList: [],
       modeAdd: false,
-
       isShowHistory: false,
       isReward: false,
       isAddReward: false,
       isRewardBtn: false,
+      isShowDeleteDialog: false,
       showHistoryList: [],
       user: {
         name: "",
@@ -427,6 +449,7 @@ export default {
         starAll: 0,
         starBalance: 0,
       },
+      isHistoryList: false,
     };
   },
   methods: {
@@ -552,7 +575,7 @@ export default {
         this.loadingHide();
       });
     },
-    // โหลดแผนก
+    // โหลดแผนก และข้อมูลทั้งหมด
     loadDepartment() {
       this.loadingShow();
       db.collection("department")
@@ -561,7 +584,6 @@ export default {
           let key = [];
           doc.forEach((element) => {
             key.push(element.id);
-
             this.departmentOptions.push({
               label: element.data().name,
               value: element.id,
@@ -593,32 +615,30 @@ export default {
       this.loadItem();
       this.user.name = name;
       this.isShowHistory = true;
+      this.isHistoryList = false;
     },
-    async loadItem() {
-      this.showHistoryList = [];
-      await db
-        .collection("reward_history")
+    loadItem() {
+      db.collection("reward_history")
         .where("employeeId", "==", this.userId)
-        .get()
-        .then((doc) => {
+        .onSnapshot((doc) => {
           if (doc.size) {
             let data = doc.docs[0].data().rewardId;
-            db.collection("reward")
-              .get()
-              .then((doc) => {
-                doc.forEach((element) => {
-                  data.filter((x, index) => {
-                    if (x.rewardId == element.id) {
-                      let dataKey = {
-                        date: x.date,
-                        name: element.data().reward,
-                        star: element.data().star,
-                      };
-                      this.showHistoryList.push(dataKey);
-                    }
-                  });
-                });
+            let temp = [];
+            data.map((x1) => {
+              this.rewardList.filter((x2, index) => {
+                if (x1.rewardId == x2.key) {
+                  let dataKey = {
+                    date: x1.date,
+                    name: x2.reward,
+                    star: x2.star,
+                  };
+                  temp.push(dataKey);
+                }
               });
+            });
+            this.showHistoryList = temp;
+          } else {
+            this.isHistoryList = true;
           }
         });
     },
@@ -688,8 +708,14 @@ export default {
         });
     },
     // ลบรางวัล
-    deleteBtn(val) {
-      db.collection("reward").doc(val).delete();
+    deleteBtn(val, reward) {
+      this.dataName = reward;
+      this.userId = val;
+      this.isShowDeleteDialog = true;
+    },
+    confirmDelete() {
+      db.collection("reward").doc(this.userId).delete();
+      this.isShowDeleteDialog = false;
     },
     addRewardBtn() {
       this.uploadImg = null;
@@ -702,6 +728,7 @@ export default {
       delete this.addReward.getURL;
       this.$refs.reward.validate();
       this.$refs.star.validate();
+
       if (this.$refs.reward.hasErrors || this.$refs.star.hasError) {
       }
       if (this.addReward.reward == "" || this.addReward.star == "") {
@@ -709,6 +736,9 @@ export default {
       } else {
         if (this.uploadImg) {
           this.addReward.isImage = true;
+          // if (this.uploadImg.size >= 100000) {
+          //   return;
+          // }
         }
         this.loadingShow();
         if (!this.modeAdd) {
