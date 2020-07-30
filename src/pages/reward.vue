@@ -401,6 +401,12 @@
       @emitCancelDelete="isShowDeleteDialog = false"
       @emitConfirmDelete="confirmDelete"
     ></dialog-setting>
+    <dialog-setting
+      :type="2"
+      :name="dataName"
+      v-if="dialogSuccess"
+      @autoClose="dialogSuccess = false"
+    ></dialog-setting>
   </q-page>
 </template>
 
@@ -441,6 +447,7 @@ export default {
       isReward: false,
       isAddReward: false,
       isRewardBtn: false,
+      dialogSuccess: false,
       isShowDeleteDialog: false,
       showHistoryList: [],
       user: {
@@ -490,6 +497,8 @@ export default {
             history.rewardId = [{ date: date, rewardId: this.reward.value }];
             db.collection("reward_history").add(history);
           }
+          this.dialogSuccess = true;
+          this.dataName = "เราทำการแลกของรางวัลเสร็จสิ้นแล้ว";
         });
       this.isReward = false;
     },
@@ -714,8 +723,14 @@ export default {
       this.isShowDeleteDialog = true;
     },
     confirmDelete() {
-      db.collection("reward").doc(this.userId).delete();
       this.isShowDeleteDialog = false;
+      db.collection("reward")
+        .doc(this.userId)
+        .delete()
+        .then(() => {
+          this.dialogSuccess = true;
+          this.dataName = "ลบข้อมูลเรียบร้อย";
+        });
     },
     addRewardBtn() {
       this.uploadImg = null;
@@ -754,6 +769,8 @@ export default {
             this.rewardList = [];
             this.loadReward();
           }
+          this.dataName = "บันทึกข้อมูลเรียบร้อย";
+          this.dialogSuccess = true;
         } else {
           db.collection("reward").doc(this.userId).set(this.addReward);
           if (this.uploadImg) {

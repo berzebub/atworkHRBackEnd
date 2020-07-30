@@ -23,12 +23,22 @@
         </div>
       </div>
     </q-dialog>
+    <q-dialog v-if="type == 2" v-model="successData" persistent>
+      <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
+        <div class="col-12 q-pt-md">
+          <!-- <q-btn outline round color="blue-10" icon="far fa-check-circle" size="12px" /> -->
+          <q-icon color="blue-10" size="24px" name="far fa-check-circle" />
+          <span class="text-h6 q-pl-md">สำเร็จ</span>
+        </div>
+        <div class="col-12 text-subtitle1 q-pt-md">{{ name }}</div>
+      </div>
+    </q-dialog>
   </div>
 </template>
 
 <script>
 export default {
-  props: ["type", "name", "practice"],
+  props: ["type", "name"],
   data() {
     return {
       successData: true,
@@ -43,16 +53,16 @@ export default {
     },
   },
   mounted() {
-    // let stoTypeList = [2];
-    // console.log(this.type);
-    // if (stoTypeList.includes(this.type)) {
-    //   setTimeout(() => {
-    //     this.successData = false;
-    //   }, 1300);
-    //   setTimeout(() => {
-    //     this.$emit("autoClose");
-    //   }, 1500);
-    // }
+    let stoTypeList = [2];
+
+    if (stoTypeList.includes(this.type)) {
+      setTimeout(() => {
+        this.successData = false;
+      }, 1300);
+      setTimeout(() => {
+        this.$emit("autoClose");
+      }, 1500);
+    }
   },
 };
 </script>
