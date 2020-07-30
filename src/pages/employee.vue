@@ -38,13 +38,13 @@
         class="row q-mt-lg bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
         style="border-radius: 10px 10px 0px 0px"
       >
-        <div class="col-5">
+        <div class="col-5 q-pl-md">
           ชื่อ-นามสกุล
           <q-icon @click="sortName()" name="fas fa-sort"></q-icon>
         </div>
         <div class="col-5" align="center">
           อีเมล
-          <q-icon name="fas fa-sort"></q-icon>
+          <q-icon @click="sortEmail()" name="fas fa-sort"></q-icon>
         </div>
         <div class="col-2" align="right">ตั้งค่ารหัสผ่านใหม่</div>
       </div>
@@ -56,7 +56,7 @@
           :key="index"
           :class="index % 2 == 0 ? 'bg-white' : 'bg-grey-3'"
         >
-          <div class="col-5">{{ item.name }}</div>
+          <div class="col-5 q-pl-md">{{ item.name }}</div>
           <div class="col-5" align="center">{{ item.email }}</div>
           <div class="col-2" align="center">
             <q-btn
@@ -77,7 +77,9 @@
               <q-btn outline round color="blue-10" icon="fas fa-trash-alt" size="12px" />
               <span class="text-h6 q-pl-md">ยืนยันการตั้งค่ารหัสผ่านใหม่</span>
             </div>
-            <div class="col-12 text-subtitle1 q-pt-md">คุณต้องการตั้งค่ารหัสผ่านใหม่ "xxxxxxxxxxxxx"</div>
+            <div
+              class="col-12 text-subtitle1 q-pt-md"
+            >คุณต้องการตั้งค่ารหัสผ่านใหม่ "{{this.nameEmployee}}"</div>
 
             <div class="col-6 q-pr-sm q-pt-lg" align="right">
               <q-btn
@@ -99,39 +101,38 @@
           </div>
         </q-dialog>
       </div>
-      <!-- dialog saved-->
-      <div>
-        <q-dialog v-model="isSavedDialog">
-          <div class="bg-white row q-pa-lg q-py-xl" align="center" style="width:400px ">
-            <div class="col-12">
-              <q-icon color="blue-10" size="md" name="far fa-check-circle"></q-icon>
-              <span class="text-h6 q-pl-sm">สำเร็จ</span>
-            </div>
-            <div class="col-12 text-subtitle1 q-pt-md">
-              เราทำการส่งอีเมลสำหรับการตั้งค่ารหัสผ่าน
-              <br />ใหม่ไปยังอีเมลของพนักงานแล้ว
-            </div>
-          </div>
-        </q-dialog>
-      </div>
+
+      <dialog-center
+        :type="2"
+        :name="'เราทำการส่งอีเมลสำหรับการตั้งค่ารหัสผ่านใหม่ไปยังอีเมลของพนักงานแล้ว'"
+        v-if="isDialogSucess"
+        @autoClose="dialogSucess"
+      />
     </div>
   </q-page>
 </template>
 
 <script>
 import { db, auth } from "../router";
+import dialogCenter from "../components/dialogSetting";
 
 export default {
+  components: {
+    dialogCenter
+  },
   data() {
     return {
       departmentSelect: "",
       departmentoptions: [],
       search: "",
       isResetPasswordDialog: false,
-      isSavedDialog: false,
+
       employeeData: "",
       employeeListShow: "",
-      currentEmployeeActive: ""
+      currentEmployeeActive: "",
+      nameEmployee: "",
+      isDialogSucess: false,
+      isSort: true
     };
   },
   methods: {
@@ -148,7 +149,7 @@ export default {
       }
     },
     goToPrint() {
-      this.$router.push("/employeePrint");
+      this.$router.push("/employeePrint/" + this.departmentSelect.value);
     },
     loadDepartment() {
       let hotelId = this.$q.localStorage.getItem("hotelId");
@@ -164,7 +165,7 @@ export default {
             });
           });
           temp.sort((a, b) => {
-            return a.name > b.name ? 1 : -1;
+            return a.label > b.label ? 1 : -1;
           });
           this.departmentoptions = temp;
           this.departmentSelect = this.departmentoptions[0];
@@ -172,6 +173,8 @@ export default {
         });
     },
     resetPassword(item) {
+      console.log(item);
+      this.nameEmployee = item.name;
       this.isResetPasswordDialog = true;
       this.currentEmployeeActive = item;
     },
@@ -184,13 +187,12 @@ export default {
       auth
         .sendPasswordResetEmail(this.currentEmployeeActive.email)
         .then(function() {
-          this.isSavedDialog = true;
+          this.isDialogSucess = true;
         })
         .catch(function(error) {
           console.log(error);
         });
-
-      this.isSavedDialog = true;
+      this.isDialogSucess = true;
     },
     loadEmployeeData() {
       let hotelId = this.$q.localStorage.getItem("hotelId");
@@ -210,11 +212,33 @@ export default {
       this.employeeListShow = this.employeeData.filter(
         x => x.departmentId == this.departmentSelect.value
       );
-    },
-    sortName() {
       this.employeeListShow.sort((a, b) => {
         return a.name > b.name ? 1 : -1;
       });
+    },
+    sortName() {
+      this.isSort = !this.isSort;
+      this.employeeListShow.sort((a, b) => {
+        if (this.isSort == true) {
+          return a.name > b.name ? 1 : -1;
+        } else {
+          return a.name < b.name ? 1 : -1;
+        }
+      });
+    },
+    sortEmail() {
+      this.isSort = !this.isSort;
+      this.employeeListShow.sort((a, b) => {
+        if (this.isSort == true) {
+          return a.email > b.email ? 1 : -1;
+        } else {
+          return a.email < b.email ? 1 : -1;
+        }
+      });
+    },
+    dialogSucess() {
+      console.log("555");
+      this.isDialogSucess = false;
     }
   },
   mounted() {

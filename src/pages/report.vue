@@ -14,7 +14,7 @@
         <div class="col" align="right">
           <q-btn class="q-mx-md" round color="cyan-8" icon="fas fa-file-download" />
 
-          <q-btn round color="cyan-8" icon="fas fa-print" />
+          <q-btn round color="cyan-8" icon="fas fa-print" @click="reportPrint()" />
         </div>
       </div>
 
@@ -121,6 +121,9 @@ export default {
           });
           this.employeeData = temp;
         });
+    },
+    reportPrint() {
+      this.$router.push("/reportPrint/" + this.departmentSelect.value);
     }
   },
   mounted() {

@@ -104,22 +104,13 @@
           </div>
         </div>
       </div>
-      <!-- dialog เปลี่ยนชื่อสำเร็จ-->
-      <div>
-        <q-dialog v-model="isResetNameDialog">
-          <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
-            <div class="col-12">
-              <q-icon color="primary" size="md" name="far fa-check-circle"></q-icon>
-              <span class="text-h6 q-pl-sm">สำเร็จ</span>
-            </div>
-            <div class="col-12 text-subtitle1 q-pt-sm">บันทึกข้อมูลเรียบร้อย</div>
 
-            <div class="col-12 q-pl-sm q-pt-lg" align="center">
-              <q-btn @click="ConfirmName()" color="cyan-8" label="ตกลง" style="width:120px" />
-            </div>
-          </div>
-        </q-dialog>
-      </div>
+      <dialog-center
+        :type="2"
+        :name="'บันทึกข้อมูลเรียบร้อย'"
+        v-if="isDialogSucess"
+        @autoClose="dialogSucess"
+      />
       <div>
         <q-dialog v-model="isResetPasswordDialog">
           <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
@@ -132,9 +123,29 @@
               <br />
               "{{ this.userInfo.email }} "
             </div>
+          </div>
+        </q-dialog>
+        <!-- dialog logout -->
+        <q-dialog v-model="isDialogLogout" persistent>
+          <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
+            <div class="col-12 q-pt-md">
+              <q-icon color="cyan-8" name="fas fa-sign-out-alt" size="25px" />
+              <span class="text-h6 q-pl-md">ออกจากระบบ</span>
+            </div>
+            <div class="col-12 text-subtitle1 q-pt-md">คุณต้องการออกจากระบบ</div>
 
-            <div class="col-12 q-pl-sm q-pt-lg" align="center">
-              <q-btn @click="ConfirmPassword()" color="cyan-8" label="ตกลง" style="width:120px" />
+            <div class="col-6 q-pr-sm q-pt-lg" align="right">
+              <q-btn
+                @click="logoutCancel()"
+                v-close-popup
+                outline
+                color="cyan-8"
+                label="ยกเลิก"
+                style="width:120px"
+              />
+            </div>
+            <div class="col-6 q-pl-sm q-pt-lg" align="left">
+              <q-btn @click="logout()" color="cyan-8" label="ตกลง" style="width:120px" />
             </div>
           </div>
         </q-dialog>
@@ -145,7 +156,11 @@
 
 <script>
 import { auth, axios } from "../router";
+import dialogCenter from "../components/dialogSetting";
 export default {
+  components: {
+    dialogCenter
+  },
   data() {
     return {
       name: "",
@@ -153,10 +168,12 @@ export default {
       isPasswordSetting: false,
       isLogoutSetting: false,
       mainSetting: true,
-      isResetNameDialog: false,
+
       isResetPasswordDialog: false,
       authLogin: "",
-      userInfo: ""
+      userInfo: "",
+      isDialogSucess: false,
+      isDialogLogout: false
     };
   },
   methods: {
@@ -167,6 +184,9 @@ export default {
         .then(() => {
           this.loadingHide();
           this.isResetPasswordDialog = true;
+          setTimeout(() => {
+            this.isResetPasswordDialog = false;
+          }, 1300);
           console.log("FINISH");
         })
         .catch(error => {
@@ -190,7 +210,7 @@ export default {
         return;
       }
       this.loadingHide();
-      this.isResetNameDialog = true;
+      this.isDialogSucess = true;
     },
     nameSetting() {
       console.log("name");
@@ -206,7 +226,7 @@ export default {
       this.isLogoutSetting = false;
       this.mainSetting = false;
     },
-    logoutSetting() {
+    logout() {
       console.log("logout");
       this.logOut();
     },
@@ -219,14 +239,7 @@ export default {
     logoutOnly() {
       this.logOut();
     },
-    ConfirmName() {
-      console.log("confirm name");
-      this.isResetNameDialog = false;
-    },
-    ConfirmPassword() {
-      console.log("reset password clicked");
-      this.isResetPasswordDialog = false;
-    },
+
     getUser() {
       this.loadingShow();
       this.authLogin = auth.onAuthStateChanged(async user => {
@@ -241,6 +254,15 @@ export default {
       this.isPasswordSetting = false;
       this.isLogoutSetting = false;
       this.mainSetting = true;
+    },
+    dialogSucess() {
+      this.isDialogSucess = false;
+    },
+    logoutCancel() {
+      this.isDialogLogout = false;
+    },
+    logoutSetting() {
+      this.isDialogLogout = true;
     }
   },
 

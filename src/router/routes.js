@@ -68,13 +68,13 @@ const routes = [
   },
   // พนักงานปริ้น
   {
-    path: "/employeePrint",
+    path: "/employeePrint/:departmentId",
     name: "employeePrint",
     component: () => import("pages/employeePrint.vue")
   },
   // รายงานปริ้น
   {
-    path: "/reportPrint",
+    path: "/reportPrint/:departmentId",
     name: "reportPrint",
     component: () => import("pages/reportPrint.vue")
   },
