@@ -482,19 +482,21 @@ export default {
             let test = this.rewardHistory.filter((x) => {
               return x.employeeId == this.userId;
             })[0];
-            let rewardList = test.rewardId;
+            let rewardList = test.rewardList;
             let item = {
               date: date,
-              rewardId: this.reward.value,
+              rewardList: this.reward.value,
             };
             rewardList.push(item);
 
             await db
               .collection("reward_history")
               .doc(doc.docs[0].id)
-              .update({ rewardId: rewardList });
+              .update({ rewardList: rewardList });
           } else {
-            history.rewardId = [{ date: date, rewardId: this.reward.value }];
+            history.rewardList = [
+              { date: date, rewardList: this.reward.value },
+            ];
             db.collection("reward_history").add(history);
           }
           this.dialogSuccess = true;
@@ -631,11 +633,11 @@ export default {
         .where("employeeId", "==", this.userId)
         .onSnapshot((doc) => {
           if (doc.size) {
-            let data = doc.docs[0].data().rewardId;
+            let data = doc.docs[0].data().rewardList;
             let temp = [];
             data.map((x1) => {
               this.rewardList.filter((x2, index) => {
-                if (x1.rewardId == x2.key) {
+                if (x1.rewardList == x2.key) {
                   let dataKey = {
                     date: x1.date,
                     name: x2.reward,
@@ -654,20 +656,23 @@ export default {
     // แลกรางวัล
     loadItemReward() {
       this.rewardOptions = [];
-      this.rewardList.filter((x, index) => {
+      this.rewardList.filter((x) => {
         if (x.status) {
-          console.log(x);
           this.rewardOptions.push({
-            label:
-              index + 1 + "." + " " + x.reward + " - " + x.star + " " + "ดาว",
+            label: x.reward + " - " + x.star + " " + "ดาว",
             value: x.key,
           });
         }
       });
       this.reward = this.rewardOptions[0];
+      this.rewardOptions.filter((x, index) => {
+        return (x.label = index + 1 + "." + " " + x.label);
+      });
+
       this.changeStar(this.reward);
     },
     rewardBtn(name, star, val) {
+      this.dialogSuccess = false;
       this.loadItemReward();
       this.userId = val;
       this.user.name = name;
@@ -740,7 +745,7 @@ export default {
     },
     // บันทึกของรางวัล
     async saveReward() {
-      delete this.user.rewardId;
+      delete this.user.rewardList;
       delete this.addReward.getURL;
       this.$refs.reward.validate();
       this.$refs.star.validate();
