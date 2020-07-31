@@ -466,6 +466,7 @@ export default {
       },
       isSort: true,
       isHistoryList: false,
+      rewardData: "",
     };
   },
   methods: {
@@ -519,7 +520,12 @@ export default {
     },
     // โหลด โรงแรม
     loadHotel() {
-      db.collection("hotel")
+      this.loadingShow();
+      if (typeof this.rewardData == "function") {
+        this.rewardData();
+      }
+      this.rewardData = db
+        .collection("hotel")
         .doc(this.hotelId)
         .get()
         .then((doc) => {
@@ -662,7 +668,6 @@ export default {
     },
     // โหลดแผนก และข้อมูลทั้งหมด
     loadDepartment() {
-      this.loadingShow();
       db.collection("department")
         .get()
         .then((doc) => {
@@ -880,6 +885,11 @@ export default {
 
   mounted() {
     this.loadHotel();
+  },
+  beforeDestroy() {
+    if (typeof this.rewardData == "function") {
+      this.rewardData();
+    }
   },
 };
 </script>
