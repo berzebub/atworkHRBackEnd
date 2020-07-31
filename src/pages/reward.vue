@@ -418,7 +418,7 @@
 </template>
 
 <script>
-import { db, st } from "../router";
+import { db, st, axios } from "../router";
 import dialogSetting from "../components/dialogSetting";
 export default {
   components: {
@@ -480,7 +480,11 @@ export default {
           let owen = this.employeeList.filter((x) => {
             return x.key == this.userId;
           })[0];
-          let date = "20/06/63";
+          let apiURL =
+            "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/getTime";
+          let getData = await axios.get(apiURL);
+          let regex = /-/gi;
+          let date = getData.data.date.replace(regex, "/");
           let history = {
             hotelId: owen.hotelId,
             departmentId: owen.departmentId,
