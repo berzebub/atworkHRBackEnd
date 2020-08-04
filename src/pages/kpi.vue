@@ -25,6 +25,8 @@
               style="width:150px"
               dense
               outlined
+              map-options
+              emit-value
               v-model="month"
               :options="monthOption"
             />
@@ -264,8 +266,8 @@ export default {
       levelList: "",
       dialogKpi: false,
       dialogAllKpi: false,
-      month: "มกราคม",
-      year: "2563",
+      month: 1,
+      year: 2563,
       numOfPractice: "",
       numOfPracticeAll: "",
       numOfStarAll: "",
@@ -277,32 +279,69 @@ export default {
       isCheckZeor: false,
       hotelId: this.$q.localStorage.getItem("hotelId"),
       monthOption: [
-        "มกราคม",
-        "กุมภาพันธ์",
-        "มีนาคม",
-        "เมษายน",
-        "พฤษภาคม",
-        "มิถุนายน",
-        "กรกฎาคม",
-        "สิงหาคม",
-        "กันยายน",
-        "ตุลาคม",
-        "พฤศจิกายน",
-        "ธันวาคม",
+        {
+          label: "มกราคม",
+          value: 1,
+        },
+        {
+          label: "กุมภาพันธ์",
+          value: 2,
+        },
+        {
+          label: "มีนาคม",
+          value: 3,
+        },
+        {
+          label: "เมษายน",
+          value: 4,
+        },
+        {
+          label: "พฤษภาคม",
+          value: 5,
+        },
+        {
+          label: "มิถุนายน",
+          value: 6,
+        },
+
+        {
+          label: "กรกฎาคม",
+          value: 7,
+        },
+        {
+          label: "สิงหาคม",
+          value: 8,
+        },
+        {
+          label: "กันยายน",
+          value: 9,
+        },
+        {
+          label: "ตุลาคม",
+          value: 10,
+        },
+        {
+          label: "พฤศจิกายน",
+          value: 11,
+        },
+        {
+          label: "ธันวาคม",
+          value: 12,
+        },
       ],
       yearsOption: [
-        "2563",
-        "2564",
-        "2565",
-        "2566",
-        "2567",
-        "2568",
-        "2569",
-        "2570",
-        "2571",
-        "2572",
-        "2573",
-        "2574",
+        2563,
+        2564,
+        2565,
+        2566,
+        2567,
+        2568,
+        2569,
+        2570,
+        2571,
+        2572,
+        2573,
+        2574,
       ],
     };
   },
