@@ -428,13 +428,14 @@ export default {
     return {
       uploadImg: null,
       pathFile:
-        "https://storage.cloud.google.com/atwork-dee11.appspot.com/image_reward/",
+        "https://storage.googleapis.com/atwork-dee11.appspot.com/image_reward/",
       addReward: {
         reward: "",
         star: "",
         hotelId: "",
-        departmentId: "",
+        // departmentId: "",
         isImage: false,
+        status: true,
       },
       statusReward: false,
       showMode: "person",
@@ -467,9 +468,129 @@ export default {
       isSort: true,
       isHistoryList: false,
       rewardData: "",
+      snapReward: "",
     };
   },
   methods: {
+    updateStatusRewardHotel(val) {
+      db.collection("hotel").doc(val).update({ isReward: this.mode });
+    },
+    // โหลด โรงแรม
+    loadHotel() {
+      this.loadingShow();
+
+      db.collection("hotel")
+        .doc(this.hotelId)
+        .get()
+        .then((doc) => {
+          this.mode = doc.data().isReward;
+          this.loadDepartment();
+        });
+    },
+    // โหลดแผนก และข้อมูลทั้งหมด
+    loadDepartment() {
+      db.collection("department")
+        .where("hotelId", "==", this.hotelId)
+        .get()
+        .then(async (doc) => {
+          if (doc.size) {
+            let key = [];
+            doc.forEach((element) => {
+              key.push(element.id);
+              this.departmentOptions.push({
+                label: element.data().name,
+                value: element.id,
+              });
+            });
+            this.department = this.departmentOptions[0];
+
+            // this.loadUser(key[0]);
+            await this.loadReward();
+            this.loadRewardHistory();
+          } else {
+            this.department = "ไม่มีแผนก";
+            this.loadingHide();
+          }
+        });
+    },
+    // โหลดรางวัล
+    async loadReward() {
+      // this.loadingShow();
+      this.snapReward = await db
+        .collection("reward")
+        .where("hotelId", "==", this.$q.localStorage.getItem("hotelId"))
+        .onSnapshot((doc) => {
+          this.rewardList = [];
+          this.rewardOptions = [];
+          doc.forEach((element) => {
+            let getImage = "";
+            if (element.data().isImage) {
+              getImage = this.pathFile + element.id + ".jpg";
+            }
+            let dataKey = {
+              key: element.id,
+              getURL: getImage,
+              ...element.data(),
+            };
+
+            this.rewardList.push(dataKey);
+          });
+          this.rewardList.sort((a, b) => {
+            return a.star - b.star;
+          });
+          // this.loadingHide();
+        });
+    },
+    // โหลด ประวัติรางวัล
+    loadRewardHistory() {
+      this.rewardHistory = [];
+      db.collection("reward_history")
+        .where("hotelId", "==", this.$q.localStorage.getItem("hotelId"))
+        .get()
+        .then((doc) => {
+          doc.forEach((element) => {
+            let dataKey = {
+              key: element.id,
+            };
+            let final = {
+              ...dataKey,
+              ...element.data(),
+            };
+            this.rewardHistory.push(final);
+          });
+          this.loadEmployee();
+        });
+    },
+    // โหลด ลูกจ้าง
+    loadEmployee() {
+      this.employeeList = [];
+      db.collection("employee")
+        .where("hotelId", "==", this.$q.localStorage.getItem("hotelId"))
+        .get()
+        .then((doc) => {
+          let temp = [];
+          doc.forEach((element) => {
+            let dataKey = {
+              key: element.id,
+            };
+            let final = {
+              ...dataKey,
+              ...element.data(),
+            };
+
+            temp.push(final);
+          });
+          temp.sort((a, b) => {
+            return a.name < b.name ? -1 : 1;
+          });
+          this.employeeList = temp;
+          this.userList = temp.filter((x) => {
+            return x.departmentId == this.department.value;
+          });
+          this.loadingHide();
+        });
+    },
+    ///************************************************ */
     // แลกของรางวัล
     async rewardRedemption() {
       let star = this.user.star - this.user.starAll;
@@ -518,84 +639,11 @@ export default {
         });
       this.isReward = false;
     },
-    // โหลด โรงแรม
-    loadHotel() {
-      this.loadingShow();
-      if (typeof this.rewardData == "function") {
-        this.rewardData();
-      }
-      this.rewardData = db
-        .collection("hotel")
-        .doc(this.hotelId)
-        .get()
-        .then((doc) => {
-          this.mode = doc.data().isReward;
-          this.loadDepartment();
-        });
-    },
-    updateStatusRewardHotel(val) {
-      db.collection("hotel").doc(val).update({ isReward: this.mode });
-    },
-    // โหลด ลูกจ้าง
-    loadEmployee() {
-      this.employeeList = [];
-      db.collection("employee")
-        .get()
-        .then((doc) => {
-          doc.forEach((element) => {
-            let dataKey = {
-              key: element.id,
-            };
-            let final = {
-              ...dataKey,
-              ...element.data(),
-            };
-            this.employeeList.push(final);
-          });
-        });
-    },
-    // โหลด ประวัติรางวัล
-    loadRewardHistory() {
-      this.rewardHistory = [];
-      db.collection("reward_history")
-        .get()
-        .then((doc) => {
-          doc.forEach((element) => {
-            let dataKey = {
-              key: element.id,
-            };
-            let final = {
-              ...dataKey,
-              ...element.data(),
-            };
-            this.rewardHistory.push(final);
-          });
-        });
-    },
     //  โหลดพนักงาน
-    loadUser(val) {
-      db.collection("employee")
-        .where("departmentId", "==", val)
-        .onSnapshot((doc) => {
-          this.userList = [];
-          doc.forEach((element) => {
-            let dataKey = {
-              key: element.id,
-            };
-            let final = {
-              ...dataKey,
-              ...element.data(),
-            };
-            this.userList.push(final);
-          });
-          // this.userList.sort((a, b) => {
-          //   return a.name > b.name ? 1 : -1;
-          // });
-          this.userList.sort((a, b) => {
-            return a.star - b.star;
-          });
-          this.loadingHide();
-        });
+    loadUser() {
+      this.userList = this.employeeList.filter((x) => {
+        return x.departmentId == this.department.value;
+      });
     },
     sortName(val) {
       if (val == "employee") {
@@ -639,54 +687,7 @@ export default {
         });
       }
     },
-    // โหลดรางวัล
-    loadReward() {
-      this.loadingShow();
-      db.collection("reward").onSnapshot(async (doc) => {
-        this.rewardList = [];
-        this.rewardOptions = [];
-        await doc.forEach((element) => {
-          let getImage = "";
-          if (element.data().isImage) {
-            getImage = this.pathFile + element.id + ".jpg";
-          }
-          let dataKey = {
-            key: element.id,
-            getURL: getImage,
-          };
-          let final = {
-            ...dataKey,
-            ...element.data(),
-          };
-          this.rewardList.push(final);
-        });
-        this.rewardList.sort((a, b) => {
-          return a.star - b.star;
-        });
-        this.loadingHide();
-      });
-    },
-    // โหลดแผนก และข้อมูลทั้งหมด
-    loadDepartment() {
-      db.collection("department")
-        .get()
-        .then((doc) => {
-          let key = [];
-          doc.forEach((element) => {
-            key.push(element.id);
-            this.departmentOptions.push({
-              label: element.data().name,
-              value: element.id,
-            });
-          });
-          this.department = this.departmentOptions[0];
 
-          this.loadUser(key[0]);
-          this.loadReward();
-          this.loadRewardHistory();
-          this.loadEmployee();
-        });
-    },
     changeDepartment(val) {
       this.loadUser(val.value);
     },
@@ -835,6 +836,7 @@ export default {
       if (this.addReward.reward == "" || this.addReward.star == "") {
         return;
       } else {
+        this.addReward.hotelId = this.hotelId;
         if (this.uploadImg) {
           this.addReward.isImage = true;
           // if (this.uploadImg.size >= 100000) {
@@ -842,11 +844,13 @@ export default {
           // }
         }
         this.loadingShow();
+
         if (!this.modeAdd) {
+          //เพิ่มรางวัลใหม่
           if (!this.uploadImg) {
             this.addReward.isImage = false;
           }
-          this.addReward.status = true;
+
           let getDb = await db.collection("reward").add(this.addReward);
           if (this.uploadImg) {
             await st
@@ -858,7 +862,8 @@ export default {
           this.dataName = "บันทึกข้อมูลเรียบร้อย";
           this.dialogSuccess = true;
         } else {
-          db.collection("reward").doc(this.userId).set(this.addReward);
+          //แก้ไขรางวัล
+          db.collection("reward").doc(this.userId).update(this.addReward);
           if (this.uploadImg) {
             await st
               .child("/image_reward/" + this.userId + ".jpg")
@@ -887,8 +892,8 @@ export default {
     this.loadHotel();
   },
   beforeDestroy() {
-    if (typeof this.rewardData == "function") {
-      this.rewardData();
+    if (typeof this.snapReward == "function") {
+      this.snapReward();
     }
   },
 };
