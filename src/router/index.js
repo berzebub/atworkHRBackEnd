@@ -43,10 +43,6 @@ Vue.mixin({
     };
   },
   methods: {
-
-
-
-
     loadingShow() {
       this.$q.loading.show({
         delay: 400
