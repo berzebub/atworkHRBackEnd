@@ -141,7 +141,7 @@
           :class="index % 2 == 1 ? 'bg-grey-3' : null"
         >
           <div class="col self-center q-px-md" v-html="item.reward" />
-          <div class="col" align="center">
+          <div class="col" align="center" style="width:150px;">
             <div class="row justify-center">
               <div
                 v-if="!item.isImage"

@@ -116,9 +116,12 @@ export default {
         "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/getAllUser";
       let userData = await axios.get(apiURL);
 
-      let getHRUserData = userData.data.filter((x) =>
-        x.customClaims.accessProgram.includes("HR")
-      );
+      let getHRUserData = userData.data.filter((x) => {
+        return (
+          x.customClaims.accessProgram.includes("HR") &&
+          x.customClaims.hotelId == this.hotelId
+        );
+      });
 
       this.userList = getHRUserData;
       this.isLoadUser = true;
