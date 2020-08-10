@@ -270,6 +270,8 @@ export default {
           doc.forEach((result) => {
             let dataFinal = {
               id: result.id,
+              progressValue: 0,
+              totalStar: 0,
               ...result.data(),
             };
 
