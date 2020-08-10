@@ -5,10 +5,10 @@
         :class="$q.platform.is.desktop?'text-h3':'text-h4'"
         v-if="isLoadUserInfo"
       >{{userInfo.name}}</div>
-      <div class="q-mt-md">"ชีวิตต้องสู้ เพราะกู้มาเยอะ"</div>
+      <!-- <div class="q-mt-md">"ชีวิตต้องสู้ เพราะกู้มาเยอะ"</div> -->
 
       <!-- login button -->
-      <div class="q-mt-md">
+      <div class="q-mt-lg">
         <q-btn
           @click="welcomeBack()"
           label="เข้าสู่ระบบ"
