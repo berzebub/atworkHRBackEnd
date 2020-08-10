@@ -113,6 +113,7 @@ export default {
               let getData = await axios.get(apiURL);
               const customClaims = getData.data.customClaims.accessProgram;
               console.log(customClaims);
+              console.log(customClaims);
               if (customClaims.includes("HR")) {
                 this.$q.localStorage.set(
                   "hotelId",
