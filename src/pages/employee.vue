@@ -118,7 +118,7 @@ import dialogCenter from "../components/dialogSetting";
 
 export default {
   components: {
-    dialogCenter
+    dialogCenter,
   },
   data() {
     return {
@@ -132,7 +132,7 @@ export default {
       currentEmployeeActive: "",
       nameEmployee: "",
       isDialogSucess: false,
-      isSort: true
+      isSort: true,
     };
   },
   methods: {
@@ -141,7 +141,7 @@ export default {
         this.filterEmployeeData();
       } else {
         this.employeeListShow = this.employeeData.filter(
-          x =>
+          (x) =>
             (x.name.startsWith(this.search) ||
               x.email.startsWith(this.search)) &&
             x.departmentId == this.departmentSelect.value
@@ -149,19 +149,24 @@ export default {
       }
     },
     goToPrint() {
-      this.$router.push("/employeePrint/" + this.departmentSelect.value);
+      this.$router.push({
+        name: "employeePrint",
+        params: {
+          data: this.employeeListShow,
+        },
+      });
     },
     loadDepartment() {
       let hotelId = this.$q.localStorage.getItem("hotelId");
       db.collection("department")
         .where("hotelId", "==", hotelId)
         .get()
-        .then(doc => {
+        .then((doc) => {
           let temp = [];
-          doc.forEach(element => {
+          doc.forEach((element) => {
             temp.push({
               value: element.id,
-              label: element.data().name
+              label: element.data().name,
             });
           });
           temp.sort((a, b) => {
@@ -186,10 +191,10 @@ export default {
       this.isResetPasswordDialog = false;
       auth
         .sendPasswordResetEmail(this.currentEmployeeActive.email)
-        .then(function() {
+        .then(function () {
           this.isDialogSucess = true;
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
         });
       this.isDialogSucess = true;
@@ -199,22 +204,26 @@ export default {
       db.collection("employee")
         .where("hotelId", "==", hotelId)
         .get()
-        .then(doc => {
+        .then((doc) => {
           let temp = [];
-          doc.forEach(element => {
+
+          doc.forEach((element) => {
             temp.push({ ...element.data(), employeeId: element.id });
           });
+
+          temp.sort((a, b) => {
+            return a.name > b.name ? 1 : -1;
+          });
+
           this.employeeData = temp;
+
           this.filterEmployeeData();
         });
     },
     filterEmployeeData() {
       this.employeeListShow = this.employeeData.filter(
-        x => x.departmentId == this.departmentSelect.value
+        (x) => x.departmentId == this.departmentSelect.value
       );
-      this.employeeListShow.sort((a, b) => {
-        return a.name > b.name ? 1 : -1;
-      });
     },
     sortName() {
       this.isSort = !this.isSort;
@@ -239,11 +248,11 @@ export default {
     dialogSucess() {
       console.log("555");
       this.isDialogSucess = false;
-    }
+    },
   },
   mounted() {
     this.loadDepartment();
-  }
+  },
 };
 </script>
 

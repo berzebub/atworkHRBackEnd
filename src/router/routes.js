@@ -74,7 +74,7 @@ const routes = [
   },
   // รายงานปริ้น
   {
-    path: "/reportPrint/:departmentId",
+    path: "/reportPrint/",
     name: "reportPrint",
     component: () => import("pages/reportPrint.vue")
   },

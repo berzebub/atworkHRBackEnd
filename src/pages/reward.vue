@@ -786,14 +786,23 @@ export default {
         .then(async (doc) => {
           if (doc.size) {
             let key = [];
+            let temp = [];
             doc.forEach((element) => {
-              key.push(element.id);
-              this.departmentOptions.push({
+              let dataFinal = {
                 label: element.data().name,
                 value: element.id,
-              });
+              };
+
+              temp.push(dataFinal);
             });
-            this.department = this.departmentOptions[0];
+
+            temp.sort((a, b) => {
+              return a.label > b.label ? 1 : -1;
+            });
+
+            this.departmentOptions = temp;
+
+            this.department = temp[0];
 
             await this.loadReward();
             this.loadRewardHistory();
