@@ -71,7 +71,7 @@
         <div
           v-for="(item , index) in employeeList "
           :key="index"
-          class="row items-center q-py-md text-subtitle1"
+          class="row items-center q-py-md text-subtitle1 border"
           :class="index % 2 != 0? 'bg-grey-3':'bg-white'"
         >
           <div class="q-pl-md col-4">{{item.name}}</div>
@@ -447,7 +447,7 @@ export default {
             departmentTemp.push(newData);
           });
           departmentTemp.sort((a, b) => {
-            return a.name > b.name ? 1 : -1;
+            return a.label > b.label ? 1 : -1;
           });
           this.departmentNameList = departmentTemp;
           this.departmentSelect = departmentTemp[0].value;
@@ -603,4 +603,9 @@ export default {
 </script>
 
 <style >
+.border {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  border-left: 1px solid rgba(0, 0, 0, 0.5);
+  border-right: 1px solid rgba(0, 0, 0, 0.5);
+}
 </style>
