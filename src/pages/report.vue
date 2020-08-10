@@ -45,15 +45,15 @@
       >
         <div class="col-5">
           ชื่อ-นามสกุล
-          <i class="fas fa-sort"></i>
+          <i class="fas fa-sort cursor-pointer" @click="sortData('name')"></i>
         </div>
         <div class="col-5" align="center">
           ความก้าวหน้า
-          <i class="fas fa-sort"></i>
+          <i class="fas fa-sort cursor-pointer" @click="sortData('progress')"></i>
         </div>
         <div class="col-2" align="center">
           ดาว
-          <i class="fas fa-sort"></i>
+          <i class="fas fa-sort cursor-pointer" @click="sortData('star')"></i>
         </div>
       </div>
 
@@ -115,9 +115,36 @@ export default {
       whereKpiList: [],
       practiceLogList: [],
       wherePracticeLogList: [],
+
+      isSort: false,
     };
   },
   methods: {
+    sortData(type) {
+      this.isSort = !this.isSort;
+
+      this.showEmployeeList.sort((a, b) => {
+        let mathData = "";
+
+        if (type == "name") {
+          return this.isSort
+            ? a.name > b.name
+              ? 1
+              : -1
+            : a.name < b.name
+            ? 1
+            : -1;
+        } else if (type == "progress") {
+          return this.isSort
+            ? a.progressValue - b.progressValue
+            : b.progressValue - a.progressValue;
+        } else if (type == "star") {
+          return this.isSort
+            ? a.totalStar - b.totalStar
+            : b.totalStar - a.totalStar;
+        }
+      });
+    },
     filterDataList() {
       this.showEmployeeList = this.employeeList.filter(
         (x) => x.departmentId == this.departmentSelect.value

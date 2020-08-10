@@ -40,11 +40,11 @@
       >
         <div class="col-5 q-pl-md">
           ชื่อ-นามสกุล
-          <q-icon @click="sortName()" name="fas fa-sort"></q-icon>
+          <q-icon @click="sortName()" class="cursor-pointer" name="fas fa-sort"></q-icon>
         </div>
         <div class="col-5" align="center">
           อีเมล
-          <q-icon @click="sortEmail()" name="fas fa-sort"></q-icon>
+          <q-icon @click="sortEmail()" class="cursor-pointer" name="fas fa-sort"></q-icon>
         </div>
         <div class="col-2" align="right">ตั้งค่ารหัสผ่านใหม่</div>
       </div>
