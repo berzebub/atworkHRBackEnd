@@ -1,4 +1,13 @@
 /* app global css */
+@font-face {
+  font-family: prompt;
+  src: url(../../public/fonts/Prompt-Regular.ttf);
+}
+
+body {
+  font-family: prompt;
+}
+
 .brx {
   border: 1px solid red;
 }

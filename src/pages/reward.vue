@@ -7,12 +7,12 @@
           <toggle-button
             :labels="{ checked: 'เปิดใช้งาน', unchecked: 'ปิดใช้งาน' }"
             :height="40"
-            :width="140"
+            :width="115"
             :color="{
               checked: ['#0097A7'],
               unchecked: ['#909090']
             }"
-            :font-size="16"
+            :font-size="15"
             v-model="mode"
             :sync="true"
             @input="updateStatusRewardHotel(hotelId)"
@@ -44,7 +44,7 @@
       <div>
         <div v-if="showMode == 'person'" class="q-mb-md">
           <q-select
-            style="width:330px"
+            style="width:300px"
             outlined
             dense
             @input="changeDepartment"
@@ -60,19 +60,18 @@
               addReward.reward = '';
               addReward.star = '';
             "
-            style="width:158px;height:40px"
+            style="width:160px;border-radius:10px;"
             color="cyan-8"
             v-if="showMode == 'reward'"
-            icon
-          >
-            <q-icon size="21px" name="fas fa-plus">
-              <span class="text-subtitle1 q-px-md">เพิ่มของรางวัล</span>
-            </q-icon>
-          </q-btn>
+            no-wrap
+            label="เพิ่มของรางวัล"
+            icon="fas fa-plus"
+            class="text-subtitle1"
+          ></q-btn>
         </div>
       </div>
     </div>
-    <!-- ตาราง  person-->
+    <!-- ตาราง  Employee -->
     <div v-if="showMode == 'person'" class="q-px-md">
       <div
         class="row bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
@@ -82,43 +81,39 @@
           ชื่อ-นามสกุล
           <q-icon @click="sortName('employee')" name="fas fa-sort cursor-pointer"></q-icon>
         </div>
-        <div class="col" align="center">
+        <div class="col-3" style="width:250px" align="center">
           จำนวนดาว
           <q-icon @click="sortStar('starEmployee')" name="fas fa-sort cursor-pointer"></q-icon>
         </div>
-        <div style="width:120px" class="col-2" align="center">ประวัติการแลก</div>
-        <div style="width:120px" class="col-2" align="center">แลกรางวัล</div>
+        <div style="width:150px" class="col-2" align="center">ประวัติการแลก</div>
+        <div style="width:150px" class="col-2" align="center">แลกรางวัล</div>
       </div>
       <!-- เนื้อหา -->
-      <div class="shadow-2 q-pb-sm q-mb-md" style="border-radius: 0px 0px 10px 10px">
+      <div class="shadow-2 bg-white q-mb-md" style="border-radius: 0px 0px 10px 10px">
         <div
-          v-for="item in userList"
+          v-for="(item,index) in userList"
           :key="item.id"
-          class="row bg-white text-black text-subtitle1 q-px-md q-py-sm"
+          class="row text-black text-subtitle1 q-px-md q-py-xs"
+          :class="index % 2 == 1 ? 'bg-grey-3' : null"
         >
           <div class="col self-center q-px-md">{{ item.name }}</div>
-          <div class="col self-center" align="center">{{ item.star }}</div>
-          <div style="width:120px" class="col-2 self-center" align="center">
-            <q-btn
-              @click="historyBtn(item.name, item.key)"
-              icon="fas fa-file-alt"
-              round
-              color="cyan-8"
-            />
+          <div class="col-3 self-center" style="width:250px" align="center">{{ item.star }}</div>
+          <div style="width:150px" class="col-2 self-center" align="center">
+            <q-btn @click="historyBtn(item.name, item.key)" round color="cyan-8">
+              <q-icon name="fas fa-file-alt"></q-icon>
+            </q-btn>
           </div>
-          <div style="width:120px" class="col-2 self-center relative-position" align="center">
-            <q-btn
-              @click="rewardBtn(item.name, item.star, item.key)"
-              icon="fas fa-gift"
-              round
-              color="cyan-8"
-            />
+          <div style="width:150px" class="col-2 self-center relative-position" align="center">
+            <q-btn @click="rewardBtn(item.name, item.star, item.key)" round color="cyan-8">
+              <q-icon name="fas fa-gift"></q-icon>
+            </q-btn>
             <div v-if="!mode" class="absolute-center backDrop"></div>
           </div>
         </div>
       </div>
     </div>
-    <!-- ตาราง  reward-->
+
+    <!-- ตาราง  Reward -->
     <div v-if="showMode == 'reward'" class="q-px-md">
       <div
         class="row bg-blue-10 text-white text-subtitle1 q-px-md q-py-sm"
@@ -138,14 +133,15 @@
         <div style="width:100px" class="col-2" align="center">เปิด/ปิด</div>
       </div>
       <!-- เนื้อหา -->
-      <div class="shadow-2 q-pb-sm q-mb-md" style="border-radius: 0px 0px 10px 10px">
+      <div class="shadow-2 q-mb-md" style="border-radius: 0px 0px 10px 10px">
         <div
-          v-for="item in rewardList"
-          :key="item.id"
+          v-for="(item,index) in rewardList"
+          :key="index"
           class="row bg-white text-black text-subtitle1 q-px-md q-py-sm"
+          :class="index % 2 == 1 ? 'bg-grey-3' : null"
         >
           <div class="col self-center q-px-md" v-html="item.reward" />
-          <div class="col" align="center">
+          <div class="col" align="center" style="width:150px;">
             <div class="row justify-center">
               <div
                 v-if="!item.isImage"
@@ -193,6 +189,7 @@
         </div>
       </div>
     </div>
+
     <!-- ประวัติการแลก  -->
     <q-dialog v-model="isShowHistory" persistent>
       <q-card style="max-width:400px;width:100%">
@@ -298,6 +295,7 @@
         </div>
       </q-card>
     </q-dialog>
+
     <!-- เพิ่มของรางวัล  -->
     <q-dialog v-model="isAddReward" persistent>
       <q-card class="text-subtitle2" style="max-width:400px;width:100%">
@@ -408,6 +406,7 @@
       @emitCancelDelete="isShowDeleteDialog = false"
       @emitConfirmDelete="confirmDelete"
     ></dialog-setting>
+
     <dialog-setting
       :type="2"
       :name="dataName"
@@ -475,122 +474,6 @@ export default {
     updateStatusRewardHotel(val) {
       db.collection("hotel").doc(val).update({ isReward: this.mode });
     },
-    // โหลด โรงแรม
-    loadHotel() {
-      this.loadingShow();
-
-      db.collection("hotel")
-        .doc(this.hotelId)
-        .get()
-        .then((doc) => {
-          this.mode = doc.data().isReward;
-          this.loadDepartment();
-        });
-    },
-    // โหลดแผนก และข้อมูลทั้งหมด
-    loadDepartment() {
-      db.collection("department")
-        .where("hotelId", "==", this.hotelId)
-        .get()
-        .then(async (doc) => {
-          if (doc.size) {
-            let key = [];
-            doc.forEach((element) => {
-              key.push(element.id);
-              this.departmentOptions.push({
-                label: element.data().name,
-                value: element.id,
-              });
-            });
-            this.department = this.departmentOptions[0];
-
-            // this.loadUser(key[0]);
-            await this.loadReward();
-            this.loadRewardHistory();
-          } else {
-            this.department = "ไม่มีแผนก";
-            this.loadingHide();
-          }
-        });
-    },
-    // โหลดรางวัล
-    async loadReward() {
-      // this.loadingShow();
-      this.snapReward = await db
-        .collection("reward")
-        .where("hotelId", "==", this.$q.localStorage.getItem("hotelId"))
-        .onSnapshot((doc) => {
-          this.rewardList = [];
-          this.rewardOptions = [];
-          doc.forEach((element) => {
-            let getImage = "";
-            if (element.data().isImage) {
-              getImage = this.pathFile + element.id + ".jpg";
-            }
-            let dataKey = {
-              key: element.id,
-              getURL: getImage,
-              ...element.data(),
-            };
-
-            this.rewardList.push(dataKey);
-          });
-          this.rewardList.sort((a, b) => {
-            return a.star - b.star;
-          });
-          // this.loadingHide();
-        });
-    },
-    // โหลด ประวัติรางวัล
-    loadRewardHistory() {
-      this.rewardHistory = [];
-      db.collection("reward_history")
-        .where("hotelId", "==", this.$q.localStorage.getItem("hotelId"))
-        .get()
-        .then((doc) => {
-          doc.forEach((element) => {
-            let dataKey = {
-              key: element.id,
-            };
-            let final = {
-              ...dataKey,
-              ...element.data(),
-            };
-            this.rewardHistory.push(final);
-          });
-          this.loadEmployee();
-        });
-    },
-    // โหลด ลูกจ้าง
-    loadEmployee() {
-      this.employeeList = [];
-      db.collection("employee")
-        .where("hotelId", "==", this.$q.localStorage.getItem("hotelId"))
-        .get()
-        .then((doc) => {
-          let temp = [];
-          doc.forEach((element) => {
-            let dataKey = {
-              key: element.id,
-            };
-            let final = {
-              ...dataKey,
-              ...element.data(),
-            };
-
-            temp.push(final);
-          });
-          temp.sort((a, b) => {
-            return a.name < b.name ? -1 : 1;
-          });
-          this.employeeList = temp;
-          this.userList = temp.filter((x) => {
-            return x.departmentId == this.department.value;
-          });
-          this.loadingHide();
-        });
-    },
-    ///************************************************ */
     // แลกของรางวัล
     async rewardRedemption() {
       let star = this.user.star - this.user.starAll;
@@ -639,12 +522,7 @@ export default {
         });
       this.isReward = false;
     },
-    //  โหลดพนักงาน
-    loadUser() {
-      this.userList = this.employeeList.filter((x) => {
-        return x.departmentId == this.department.value;
-      });
-    },
+
     sortName(val) {
       if (val == "employee") {
         this.isSort = !this.isSort;
@@ -689,7 +567,7 @@ export default {
     },
 
     changeDepartment(val) {
-      this.loadUser(val.value);
+      this.searchEmployee(val.value);
     },
     // เปลี่ยน mode พนักงาน กับ รางวัล
     changeMode() {
@@ -886,6 +764,134 @@ export default {
       db.collection("reward").doc(this.userId).update({ isImage: false });
       st.child("/image_reward/" + this.userId + ".jpg").delete();
     },
+
+    /* ************************************************ */
+    // โหลด โรงแรม
+    loadHotel() {
+      this.loadingShow();
+
+      db.collection("hotel")
+        .doc(this.hotelId)
+        .get()
+        .then((doc) => {
+          this.mode = doc.data().isReward;
+          this.loadDepartment();
+        });
+    },
+    // โหลดแผนก และข้อมูลทั้งหมด
+    loadDepartment() {
+      db.collection("department")
+        .where("hotelId", "==", this.hotelId)
+        .get()
+        .then(async (doc) => {
+          if (doc.size) {
+            let key = [];
+            doc.forEach((element) => {
+              key.push(element.id);
+              this.departmentOptions.push({
+                label: element.data().name,
+                value: element.id,
+              });
+            });
+            this.department = this.departmentOptions[0];
+
+            await this.loadReward();
+            this.loadRewardHistory();
+          } else {
+            this.department = "ไม่มีแผนก";
+            this.loadingHide();
+          }
+        });
+    },
+    // โหลดรางวัล
+    async loadReward() {
+      this.snapReward = await db
+        .collection("reward")
+        .where("hotelId", "==", this.hotelId)
+        .onSnapshot((doc) => {
+          let temp = [];
+          doc.forEach((element) => {
+            let getImage = "";
+            if (element.data().isImage) {
+              getImage = this.pathFile + element.id + ".jpg";
+            }
+            let dataKey = {
+              key: element.id,
+              getURL: getImage,
+              ...element.data(),
+            };
+
+            temp.push(dataKey);
+          });
+          temp.sort((a, b) => {
+            return a.star - b.star;
+          });
+
+          this.rewardList = temp;
+        });
+    },
+    // โหลด ประวัติรางวัล
+    loadRewardHistory() {
+      this.rewardHistory = [];
+      db.collection("reward_history")
+        .where("hotelId", "==", this.hotelId)
+        .get()
+        .then((doc) => {
+          let temp = [];
+          doc.forEach((element) => {
+            let dataKey = {
+              key: element.id,
+            };
+            let final = {
+              ...dataKey,
+              ...element.data(),
+            };
+            temp.push(final);
+          });
+          this.rewardHistory = temp;
+
+          this.loadEmployee();
+        });
+    },
+    // โหลด ลูกจ้าง
+    loadEmployee() {
+      db.collection("employee")
+        .where("hotelId", "==", this.hotelId)
+        .get()
+        .then((doc) => {
+          let temp = [];
+          doc.forEach((element) => {
+            let dataKey = {
+              key: element.id,
+            };
+            let final = {
+              ...dataKey,
+              ...element.data(),
+            };
+
+            temp.push(final);
+          });
+
+          temp.sort((a, b) => {
+            return a.name < b.name ? -1 : 1;
+          });
+
+          this.employeeList = temp;
+
+          this.userList = temp.filter((x) => {
+            return x.departmentId == this.department.value;
+          });
+
+          this.loadingHide();
+        });
+    },
+    //  โหลดพนักงาน
+    searchEmployee() {
+      this.userList = this.employeeList.filter((x) => {
+        return x.departmentId == this.department.value;
+      });
+    },
+    /* ************************************************ */
   },
 
   mounted() {
@@ -902,7 +908,6 @@ export default {
 <style scoped>
 .modeBox {
   width: 330px;
-  height: 40px;
   border: 1px solid #9e9e9e;
 }
 .backDrop {

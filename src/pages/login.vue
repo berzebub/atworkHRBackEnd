@@ -128,6 +128,7 @@ export default {
             .catch((error) => {
               this.wrongPasswordDialog();
               this.loadingHide();
+              this.logOut();
             });
         })
         .catch((error) => {});
@@ -141,13 +142,13 @@ export default {
       this.authLogin = auth.onAuthStateChanged(async (user) => {
         if (user) {
           this.$router.push("/welcomeBack");
-          this.loadingHide();
         } else {
           if (typeof this.authLogin == "function") {
             this.authLogin();
           }
-          this.loadingHide();
         }
+
+        this.loadingHide();
       });
     },
   },
