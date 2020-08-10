@@ -1,10 +1,7 @@
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
   "hosting": {
-    "public": "public",
+    "target": "hr",
+    "public": "./dist/pwa",
     "ignore": [
       "firebase.json",
       "**/.*",
