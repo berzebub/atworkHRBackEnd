@@ -1,8 +1,8 @@
 {
-  "name": "atworkhr",
+  "name": "athotelhr",
   "version": "0.0.1",
-  "description": "At Work HR",
-  "productName": "At Work HR",
+  "description": "At Hotel HR",
+  "productName": "At Hotel HR",
   "author": "Tanin <ber_zebub@hotmail.com>",
   "private": true,
   "scripts": {

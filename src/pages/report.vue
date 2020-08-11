@@ -171,6 +171,7 @@ export default {
           let totalStar = 0;
 
           let getKpi = this.whereKpiList.filter((xx) => xx.employeeId == x.id);
+          let kpiLevelId = getKpi[0].levelId;
 
           if (getKpi.length) {
             numOfPractice = Number(getKpi[0].numOfPractice);
@@ -178,7 +179,7 @@ export default {
           }
 
           let getPracticeLog = this.wherePracticeLogList.filter(
-            (xxx) => xxx.employeeId == x.id
+            (xxx) => xxx.employeeId == x.id && xxx.levelid == kpiLevelId
           );
 
           if (getPracticeLog.length) {
