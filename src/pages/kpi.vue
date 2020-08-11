@@ -252,7 +252,7 @@
 </template>
 
 <script>
-import { db } from "../router";
+import { db, axios } from "../router";
 export default {
   data() {
     return {
@@ -432,7 +432,17 @@ export default {
           });
       });
     },
-    loadDepartmentData() {
+    async loadDepartmentData() {
+      let path =
+        "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/getTime";
+
+      let getDate = await axios(path);
+
+      getDate = getDate.data.date.split("-");
+
+      this.month = Number(getDate[1]);
+      this.year = Number(getDate[2]) + Number(543);
+
       let departmentTemp = [];
       db.collection("department")
         .where("hotelId", "==", this.hotelId) //+++++++

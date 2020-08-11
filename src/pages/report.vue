@@ -32,9 +32,14 @@
           ></q-select>
         </div>
         <div class="col" align="right">
-          <q-btn class="q-mx-md" round color="cyan-8" icon="fas fa-file-download" />
+          <!-- <q-btn class="q-mx-md" round color="cyan-8" icon="fas fa-file-download" /> -->
 
-          <q-btn round color="cyan-8" icon="fas fa-print" @click="reportPrint()" />
+          <q-btn
+            round
+            color="cyan-8"
+            icon="fas fa-print"
+            @click="reportPrint()"
+          />
         </div>
       </div>
 
@@ -49,7 +54,10 @@
         </div>
         <div class="col-5" align="center">
           ความก้าวหน้า
-          <i class="fas fa-sort cursor-pointer" @click="sortData('progress')"></i>
+          <i
+            class="fas fa-sort cursor-pointer"
+            @click="sortData('progress')"
+          ></i>
         </div>
         <div class="col-2" align="center">
           ดาว
@@ -60,19 +68,23 @@
       <!-- เนื้อหา -->
       <div
         class="row bg-white text-black text-subtitle1 q-px-md q-py-sm border"
-        v-for="(item,index) in showEmployeeList"
+        v-for="(item, index) in showEmployeeList"
         :key="index"
       >
-        <div class="col-5">{{item.name}}</div>
-        <div class="col-5" align="center">{{item.progressValue > 100 ? '100' : item.progressValue}}%</div>
-        <div class="col-2" align="center">{{item.totalStar > 100 ? '100' : item.totalStar}}%</div>
+        <div class="col-5">{{ item.name }}</div>
+        <div class="col-5" align="center">
+          {{ item.progressValue > 100 ? "100" : item.progressValue }}%
+        </div>
+        <div class="col-2" align="center">
+          {{ item.totalStar > 100 ? "100" : item.totalStar }}%
+        </div>
       </div>
     </div>
   </q-page>
 </template>
 
 <script>
-import { db } from "../router";
+import { db, axios } from "../router";
 export default {
   data() {
     return {
@@ -91,7 +103,7 @@ export default {
         { label: "กันยายน", value: 9 },
         { label: "ตุลาคม", value: 10 },
         { label: "พฤศจิกายน", value: 11 },
-        { label: "ธันวาคม", value: 12 },
+        { label: "ธันวาคม", value: 12 }
       ],
       yearSelect: "2563",
       yaerOptions: [
@@ -106,7 +118,7 @@ export default {
         2571,
         2572,
         2573,
-        2574,
+        2574
       ],
       employeeList: [],
       showEmployeeList: [],
@@ -116,7 +128,7 @@ export default {
       practiceLogList: [],
       wherePracticeLogList: [],
 
-      isSort: false,
+      isSort: false
     };
   },
   methods: {
@@ -147,14 +159,14 @@ export default {
     },
     filterDataList() {
       this.showEmployeeList = this.employeeList.filter(
-        (x) => x.departmentId == this.departmentSelect.value
+        x => x.departmentId == this.departmentSelect.value
       );
 
-      this.whereKpiList = this.kpiList.filter((x) => {
+      this.whereKpiList = this.kpiList.filter(x => {
         return x.month == this.monthSelect && x.year == this.yearSelect;
       });
 
-      this.wherePracticeLogList = this.practiceLogList.filter((x) => {
+      this.wherePracticeLogList = this.practiceLogList.filter(x => {
         return x.month == this.monthSelect && x.year == this.yearSelect;
       });
 
@@ -163,14 +175,14 @@ export default {
 
     progressValue() {
       if (this.kpiList.length) {
-        this.showEmployeeList.map((x) => {
+        this.showEmployeeList.map(x => {
           let sumScore = 0;
           let numOfPractice = 0;
           let numOfStar = 0;
           let totalPractice = 0;
           let totalStar = 0;
 
-          let getKpi = this.whereKpiList.filter((xx) => xx.employeeId == x.id);
+          let getKpi = this.whereKpiList.filter(xx => xx.employeeId == x.id);
           let kpiLevelId = getKpi[0].levelId;
 
           if (getKpi.length) {
@@ -179,7 +191,7 @@ export default {
           }
 
           let getPracticeLog = this.wherePracticeLogList.filter(
-            (xxx) => xxx.employeeId == x.id && xxx.levelid == kpiLevelId
+            xxx => xxx.employeeId == x.id && xxx.levelId == x.startLevelId
           );
 
           if (getPracticeLog.length) {
@@ -187,7 +199,7 @@ export default {
 
             let sumStar = 0;
 
-            getPracticeLog.map((x) => {
+            getPracticeLog.map(x => {
               let sumval = Math.round((x.correct / x.totalQuestion) * 100);
 
               if (sumval == 100) {
@@ -212,18 +224,28 @@ export default {
       }
     },
 
-    loadDepartment() {
+    async loadDepartment() {
       this.loadingShow();
+
+      let path =
+        "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/getTime";
+
+      let getDate = await axios(path);
+
+      getDate = getDate.data.date.split("-");
+
+      this.monthSelect = Number(getDate[1]);
+      this.yearSelect = Number(getDate[2]) + Number(543);
 
       db.collection("department")
         .where("hotelId", "==", this.hotelId)
         .get()
-        .then((doc) => {
+        .then(doc => {
           let temp = [];
-          doc.forEach((element) => {
+          doc.forEach(element => {
             temp.push({
               value: element.id,
-              label: element.data().name,
+              label: element.data().name
             });
           });
 
@@ -241,23 +263,25 @@ export default {
       db.collection("kpiLog")
         .where("hotelId", "==", this.hotelId)
         .get()
-        .then((doc) => {
+        .then(doc => {
           let temp = [];
 
-          doc.forEach((result) => {
-            let dataFinal = {
-              id: result.id,
-              ...result.data(),
-            };
+          if (doc.size) {
+            doc.forEach(result => {
+              let dataFinal = {
+                id: result.id,
+                ...result.data()
+              };
 
-            temp.push(dataFinal);
-          });
+              temp.push(dataFinal);
+            });
 
-          this.kpiList = temp;
+            this.kpiList = temp;
 
-          this.whereKpiList = temp.filter((x) => {
-            return x.month == this.monthSelect && x.year == this.yearSelect;
-          });
+            this.whereKpiList = temp.filter(x => {
+              return x.month == this.monthSelect && x.year == this.yearSelect;
+            });
+          }
 
           this.loadPracticeLog();
         });
@@ -266,23 +290,25 @@ export default {
       db.collection("practice_log")
         .where("hotelId", "==", this.hotelId)
         .get()
-        .then((doc) => {
+        .then(doc => {
           let temp = [];
 
-          doc.forEach((result) => {
-            let dataFinal = {
-              id: result.id,
-              ...result.data(),
-            };
+          if (doc.size) {
+            doc.forEach(result => {
+              let dataFinal = {
+                id: result.id,
+                ...result.data()
+              };
 
-            temp.push(dataFinal);
-          });
+              temp.push(dataFinal);
+            });
 
-          this.practiceLogList = temp;
+            this.practiceLogList = temp;
 
-          this.wherePracticeLogList = temp.filter((x) => {
-            return x.month == this.monthSelect && x.year == this.yearSelect;
-          });
+            this.wherePracticeLogList = temp.filter(x => {
+              return x.month == this.monthSelect && x.year == this.yearSelect;
+            });
+          }
 
           this.loadEmployeeData();
         });
@@ -291,32 +317,34 @@ export default {
       db.collection("employee")
         .where("hotelId", "==", this.hotelId)
         .get()
-        .then((doc) => {
+        .then(doc => {
           let temp = [];
           let tempPractice = [];
 
-          doc.forEach((result) => {
-            let dataFinal = {
-              id: result.id,
-              progressValue: 0,
-              totalStar: 0,
-              ...result.data(),
-            };
+          if (doc.size) {
+            doc.forEach(result => {
+              let dataFinal = {
+                id: result.id,
+                progressValue: 0,
+                totalStar: 0,
+                ...result.data()
+              };
 
-            temp.push(dataFinal);
-          });
+              temp.push(dataFinal);
+            });
 
-          temp.sort((a, b) => {
-            return a.name > b.name ? 1 : -1;
-          });
+            temp.sort((a, b) => {
+              return a.name > b.name ? 1 : -1;
+            });
 
-          this.employeeList = temp;
+            this.employeeList = temp;
 
-          this.showEmployeeList = temp.filter(
-            (x) => x.departmentId == this.departmentSelect.value
-          );
+            this.showEmployeeList = temp.filter(
+              x => x.departmentId == this.departmentSelect.value
+            );
 
-          this.progressValue();
+            this.progressValue();
+          }
 
           this.loadingHide();
         });
@@ -325,14 +353,14 @@ export default {
       this.$router.push({
         name: "reportPrint",
         params: {
-          data: this.showEmployeeList,
-        },
+          data: this.showEmployeeList
+        }
       });
-    },
+    }
   },
   mounted() {
     this.loadDepartment();
-  },
+  }
 };
 </script>
 

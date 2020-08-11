@@ -98,9 +98,9 @@ module.exports = function(/* ctx */) {
       workboxPluginMode: "GenerateSW", // 'GenerateSW' or 'InjectManifest'
       workboxOptions: { skipWaiting: true }, // only for GenerateSW
       manifest: {
-        name: `At Work HR`,
-        short_name: `At Work HR`,
-        description: `At Work HR`,
+        name: `At Hotel HR`,
+        short_name: `At Hotel HR`,
+        description: `At Hotel HR`,
         display: "standalone",
         orientation: "portrait",
         background_color: "#ffffff",
