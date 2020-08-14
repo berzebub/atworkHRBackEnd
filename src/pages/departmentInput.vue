@@ -126,8 +126,6 @@ export default {
       this.department.displayName = this.$route.params.displayName
       this.department.email = this.$route.params.email
       this.department.userGroup = this.$route.params.customClaims.dataEntryPermissions;
-      this.department.hotelId = this.$q.localStorage.getItem("hotelId");
-      console.log(this.department.hotelId);
       if (this.department.userGroup.length == 4) {
         this.all = true;
       }
@@ -196,7 +194,7 @@ export default {
           displayName: this.department.displayName,
           accessProgram: ["HR"],
           dataEntryPermissions: this.department.userGroup, //สิทธิ์การเข้าถึงเมนูในระบบ HR
-          hotelId: this.department.hotelId,
+          hotelId: this.hotelId,
         };
 
         let createUser = await axios.post(apiURL, dataUser);
@@ -225,7 +223,7 @@ export default {
           displayName: this.department.displayName,
           dataEntryPermissions: this.department.userGroup,
           accessProgram: ["HR"],
-          hotelId: this.department.hotelId,
+          hotelId: this.hotelId,
           isHrAdmin: isHrAdmin,
         };
         let postData = await axios.post(apiURL, updateData);
