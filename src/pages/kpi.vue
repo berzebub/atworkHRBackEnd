@@ -45,15 +45,28 @@
           </div>
         </div>
         <!-- KPI ALL  -->
-        <div>
-          <q-btn
-            @click="openDialogALLKpiSetting()"
-            dense
-            class="text-subtitle1"
-            style="width:155px"
-            color="cyan-8"
-            label="ตั้งค่า KPI ทั้งหมด"
-          />
+        <div class="row">
+          <div class="q-pr-md">
+            <q-btn
+              @click="openDialogALLKpiSetting((typeSet = 1))"
+              dense
+              class="text-subtitle1"
+              style="width:155px"
+              color="cyan-8"
+              label="KPI ทั้งโรงแรม"
+            />
+          </div>
+          <!-- KPI ALL  -->
+          <div>
+            <q-btn
+              @click="openDialogALLKpiSetting((typeSet = 2))"
+              dense
+              class="text-subtitle1"
+              style="width:155px"
+              color="cyan-8"
+              label="ตั้งค่า KPI ทั้งแผนก"
+            />
+          </div>
         </div>
       </div>
       <!-- dataTable -->
@@ -69,24 +82,27 @@
           <div class="col-2" align="center">ตั้งค่า</div>
         </div>
         <div
-          v-for="(item , index) in employeeList "
+          v-for="(item, index) in employeeList"
           :key="index"
           class="row items-center q-py-md text-subtitle1 border"
-          :class="index % 2 != 0? 'bg-grey-3':'bg-white'"
+          :class="index % 2 != 0 ? 'bg-grey-3' : 'bg-white'"
         >
-          <div class="q-pl-md col-4">{{item.name}}</div>
+          <div class="q-pl-md col-4">{{ item.name }}</div>
 
           <div class="col" align="center">
-            <span v-if="isLoadEmployee == true">{{item.startLevelId.label}}</span>
+            <span v-if="isLoadEmployee == true">{{
+              item.startLevelId.label
+            }}</span>
           </div>
-          <div
-            class="col"
-            align="center"
-          >{{item.numOfPractice == 0 ? "ไม่ตั้งค่า" :item.numOfPractice }}</div>
-          <div class="col" align="center">{{item.numOfStar == 0 ? "ไม่ตั้งค่า" :item.numOfStar}}</div>
+          <div class="col" align="center">
+            {{ item.numOfPractice == 0 ? "ไม่ตั้งค่า" : item.numOfPractice }}
+          </div>
+          <div class="col" align="center">
+            {{ item.numOfStar == 0 ? "ไม่ตั้งค่า" : item.numOfStar }}
+          </div>
           <div class="col" align="center">
             <q-btn
-              @click="openDialogKpiSetting(index , item)"
+              @click="openDialogKpiSetting(index, item)"
               color="cyan-8"
               text-color="white"
               round
@@ -103,11 +119,13 @@
     <q-dialog v-model="dialogKpi" persistent>
       <q-card style="width: 400px">
         <q-card-section class="bg-blue-10 no-padding">
-          <div class="text-h6 text-white q-pa-sm" align="center">ตั้งค่า KPI</div>
+          <div class="text-h6 text-white q-pa-sm" align="center">
+            ตั้งค่า KPI
+          </div>
         </q-card-section>
 
         <q-card-section>
-          <div align="center" class="text-h6">"{{getEmployeeName}}"</div>
+          <div align="center" class="text-h6">"{{ getEmployeeName }}"</div>
           <div class="q-mt-md text-subtitle1">
             <div>บทเรียนเริ่มต้น</div>
             <div>
@@ -124,14 +142,19 @@
           <div class="q-mt-md text-subtitle1">
             <div class="row items-center">
               <div>จำนวนแบบฝึกหัด</div>
-              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+              <div class="q-px-sm text-grey-5 text-body2">
+                กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0
+              </div>
             </div>
             <div>
               <q-input
                 :rules="[val => !!val]"
                 ref="numOfPractice"
                 v-model.number="numOfPractice"
-                :error="isCheckZeor == true && (numOfPractice == 0 || numOfPractice == '')"
+                :error="
+                  isCheckZeor == true &&
+                    (numOfPractice == 0 || numOfPractice == '')
+                "
                 hide-bottom-space
                 lazy-rules
                 outlined
@@ -143,7 +166,9 @@
           <div class="q-mt-md text-subtitle1">
             <div class="row items-center">
               <div>จำนวนดาว</div>
-              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+              <div class="q-px-sm text-grey-5 text-body2">
+                กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0
+              </div>
             </div>
             <div>
               <q-input
@@ -151,7 +176,9 @@
                 lazy-rules
                 ref="numOfStar"
                 v-model.number="numOfStar"
-                :error="isCheckZeor == true && (numOfStar == 0 || numOfStar == '')"
+                :error="
+                  isCheckZeor == true && (numOfStar == 0 || numOfStar == '')
+                "
                 hide-bottom-space
                 outlined
                 dense
@@ -162,7 +189,14 @@
         </q-card-section>
 
         <q-card-actions align="center" class="q-mb-sm">
-          <q-btn dense style="width:120px" outline color="cyan-8" label="ยกเลิก" v-close-popup />
+          <q-btn
+            dense
+            style="width:120px"
+            outline
+            color="cyan-8"
+            label="ยกเลิก"
+            v-close-popup
+          />
           <q-btn
             @click="savePersonalKpi()"
             dense
@@ -177,11 +211,13 @@
     <q-dialog v-model="dialogAllKpi" persistent>
       <q-card style="width: 400px">
         <q-card-section class="bg-blue-10 no-padding">
-          <div class="text-h6 text-white q-pa-sm" align="center">ตั้งค่า KPI</div>
+          <div class="text-h6 text-white q-pa-sm" align="center">
+            ตั้งค่า KPI
+          </div>
         </q-card-section>
 
         <q-card-section>
-          <div align="center" class="text-h6">"ทุกแผนก"</div>
+          <div align="center" class="text-h6">"{{ typeKpiName }}"</div>
           <div class="q-mt-md text-subtitle1">
             <div>บทเรียนเริ่มต้น</div>
             <div>
@@ -198,7 +234,9 @@
           <div class="q-mt-md text-subtitle1">
             <div class="row items-center">
               <div>จำนวนแบบฝึกหัด</div>
-              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+              <div class="q-px-sm text-grey-5 text-body2">
+                กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0
+              </div>
             </div>
 
             <div>
@@ -207,7 +245,10 @@
                 lazy-rules
                 ref="numOfPracticeAll"
                 v-model="numOfPracticeAll"
-                :error="isCheckZeor == true && (numOfPracticeAll == 0 || numOfPracticeAll == '')"
+                :error="
+                  isCheckZeor == true &&
+                    (numOfPracticeAll == 0 || numOfPracticeAll == '')
+                "
                 hide-bottom-space
                 outlined
                 dense
@@ -218,7 +259,9 @@
           <div class="q-mt-md text-subtitle1">
             <div class="row items-center">
               <div>จำนวนดาว</div>
-              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+              <div class="q-px-sm text-grey-5 text-body2">
+                กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0
+              </div>
             </div>
             <div>
               <q-input
@@ -226,7 +269,10 @@
                 lazy-rules
                 ref="numOfStarAll"
                 v-model="numOfStarAll"
-                :error="isCheckZeor == true && (numOfStarAll == 0 || numOfStarAll == '')"
+                :error="
+                  isCheckZeor == true &&
+                    (numOfStarAll == 0 || numOfStarAll == '')
+                "
                 hide-bottom-space
                 outlined
                 dense
@@ -237,7 +283,14 @@
         </q-card-section>
 
         <q-card-actions align="center" class="q-mb-sm">
-          <q-btn dense style="width:120px" outline color="cyan-8" label="ยกเลิก" v-close-popup />
+          <q-btn
+            dense
+            style="width:120px"
+            outline
+            color="cyan-8"
+            label="ยกเลิก"
+            v-close-popup
+          />
           <q-btn
             @click="saveAllKpi()"
             dense
@@ -257,6 +310,7 @@ export default {
   data() {
     return {
       departmentNameList: [],
+      typeKpiName: "ทั้งแผนก",
       departmentSelect: "",
       getEmployeeName: "",
       getEmployeeId: "",
@@ -281,53 +335,53 @@ export default {
       monthOption: [
         {
           label: "มกราคม",
-          value: 1,
+          value: 1
         },
         {
           label: "กุมภาพันธ์",
-          value: 2,
+          value: 2
         },
         {
           label: "มีนาคม",
-          value: 3,
+          value: 3
         },
         {
           label: "เมษายน",
-          value: 4,
+          value: 4
         },
         {
           label: "พฤษภาคม",
-          value: 5,
+          value: 5
         },
         {
           label: "มิถุนายน",
-          value: 6,
+          value: 6
         },
 
         {
           label: "กรกฎาคม",
-          value: 7,
+          value: 7
         },
         {
           label: "สิงหาคม",
-          value: 8,
+          value: 8
         },
         {
           label: "กันยายน",
-          value: 9,
+          value: 9
         },
         {
           label: "ตุลาคม",
-          value: 10,
+          value: 10
         },
         {
           label: "พฤศจิกายน",
-          value: 11,
+          value: 11
         },
         {
           label: "ธันวาคม",
-          value: 12,
-        },
+          value: 12
+        }
       ],
       yearsOption: [
         2563,
@@ -341,8 +395,8 @@ export default {
         2571,
         2572,
         2573,
-        2574,
-      ],
+        2574
+      ]
     };
   },
   methods: {
@@ -356,11 +410,11 @@ export default {
       db.collection("employee")
         .where("departmentId", "==", this.departmentSelect)
         .get()
-        .then((data) => {
-          data.forEach((element) => {
+        .then(data => {
+          data.forEach(element => {
             employeeTemp.push({
               ...element.data(),
-              employeeId: element.id,
+              employeeId: element.id
             });
           });
 
@@ -370,14 +424,14 @@ export default {
             .where("month", "==", this.month)
             .where("year", "==", this.year)
             .get()
-            .then((data) => {
-              data.forEach((element) => {
+            .then(data => {
+              data.forEach(element => {
                 kpiTemp.push({ ...element.data(), kpiId: element.id });
               });
 
-              employeeTemp.forEach((element) => {
+              employeeTemp.forEach(element => {
                 let filterData = kpiTemp.filter(
-                  (x) =>
+                  x =>
                     x.employeeId == element.employeeId &&
                     x.year == this.year &&
                     x.month == this.month
@@ -387,14 +441,14 @@ export default {
                   element.numOfPractice = filterData[0].numOfPractice;
                   element.numOfStar = filterData[0].numOfStar;
                   element.startLevelId = this.levelList.filter(
-                    (x) => x.value == filterData[0].levelId
+                    x => x.value == filterData[0].levelId
                   )[0];
                   element.kpiId = filterData[0].kpiId;
                 } else {
                   element.numOfPractice = "";
                   element.numOfStar = "";
                   element.startLevelId = this.levelList.filter(
-                    (x) => x.value == element.startLevelId
+                    x => x.value == element.startLevelId
                   )[0];
                 }
               });
@@ -412,12 +466,12 @@ export default {
         let levelTemp = [];
         db.collection("level")
           .get()
-          .then((data) => {
-            data.forEach((element) => {
+          .then(data => {
+            data.forEach(element => {
               let newData = {
                 label: element.data().name,
                 status: element.data().status,
-                value: element.id,
+                value: element.id
               };
               if (newData.status == true) {
                 levelTemp.push(newData);
@@ -447,11 +501,11 @@ export default {
       db.collection("department")
         .where("hotelId", "==", this.hotelId) //+++++++
         .get()
-        .then((data) => {
-          data.forEach((element) => {
+        .then(data => {
+          data.forEach(element => {
             let newData = {
               label: element.data().name,
-              value: element.id,
+              value: element.id
             };
 
             departmentTemp.push(newData);
@@ -474,7 +528,15 @@ export default {
       this.numOfPractice = this.employeeList[index].numOfPractice;
       this.numOfStar = this.employeeList[index].numOfStar;
     },
-    openDialogALLKpiSetting() {
+    openDialogALLKpiSetting(type) {
+      if (type == 1) {
+        this.typeKpiName = "ทั้งโรงแรม";
+      } else {
+        let departName = this.departmentNameList.filter(
+          x => x.value == this.departmentSelect
+        );
+        this.typeKpiName = "ทั้งแผนก" + departName[0].label;
+      }
       (this.numOfPracticeAll = ""), (this.numOfStarAll = "");
       this.dialogAllKpi = true;
       this.isCheckZeor = false;
@@ -497,11 +559,11 @@ export default {
         return;
       }
       let counter = 0;
-      this.employeeList.forEach((element) => {
+      this.employeeList.forEach(element => {
         db.collection("employee")
           .doc(element.employeeId)
           .update({
-            startLevelId: this.levelStartAll,
+            startLevelId: this.levelStartAll
           })
           .then(() => {
             if (element.kpiId) {
@@ -510,7 +572,7 @@ export default {
                 .update({
                   levelId: this.levelStartAll,
                   numOfPractice: this.numOfPracticeAll,
-                  numOfStar: this.numOfStarAll,
+                  numOfStar: this.numOfStarAll
                 })
                 .then(() => {
                   counter++;
@@ -531,7 +593,7 @@ export default {
                   numOfStar: this.numOfStarAll,
                   month: this.month,
                   year: this.year,
-                  filter: "",
+                  filter: ""
                 })
                 .then(() => {
                   counter++;
@@ -570,14 +632,14 @@ export default {
             .where("month", "==", this.month)
             .where("year", "==", this.year)
             .get()
-            .then((data) => {
+            .then(data => {
               if (data.size) {
                 db.collection("kpiLog")
                   .doc(this.getKpiId)
                   .update({
                     levelId: this.levelStart,
                     numOfPractice: this.numOfPractice,
-                    numOfStar: this.numOfStar,
+                    numOfStar: this.numOfStar
                   })
                   .then(() => {
                     this.dialogKpi = false;
@@ -593,7 +655,7 @@ export default {
                   numOfStar: this.numOfStar,
                   month: this.month,
                   year: this.year,
-                  filter: "",
+                  filter: ""
                 };
                 db.collection("kpiLog")
                   .add(addDataTemp)
@@ -604,15 +666,15 @@ export default {
               }
             });
         });
-    },
+    }
   },
   mounted() {
     this.loadDepartmentData();
-  },
+  }
 };
 </script>
 
-<style >
+<style>
 .border {
   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
   border-left: 1px solid rgba(0, 0, 0, 0.5);
