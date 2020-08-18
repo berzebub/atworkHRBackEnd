@@ -43,14 +43,6 @@
           ชื่อ-นามสกุล
           <q-icon @click="sortName()" class="cursor-pointer" name="fas fa-sort"></q-icon>
         </div>
-<<<<<<< HEAD
-        <div class="col-5" align="center">รหัสผ่าน</div>
-=======
-        <div class="col-5" align="center">
-          อีเมล
-          <q-icon @click="sortEmail()" class="cursor-pointer" name="fas fa-sort"></q-icon>
-        </div>
->>>>>>> master
         <div class="col-2" align="right">ตั้งค่ารหัสผ่านใหม่</div>
       </div>
       <!-- เนื้อหา -->
@@ -301,7 +293,6 @@ export default {
     },
 
     confirmResetPassword() {
-<<<<<<< HEAD
       this.$refs.pwd.validate();
       this.$refs.newPwd.validate();
       this.$refs.newPwdAgain.validate();
@@ -345,18 +336,6 @@ export default {
       //     console.log(error);
       //   });
       // this.isDialogSucess = true;
-=======
-      this.isResetPasswordDialog = false;
-      auth
-        .sendPasswordResetEmail(this.currentEmployeeActive.email)
-        .then(function () {
-          this.isDialogSucess = true;
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      this.isDialogSucess = true;
->>>>>>> master
     },
     loadEmployeeData() {
       let hotelId = this.$q.localStorage.getItem("hotelId");
@@ -365,10 +344,6 @@ export default {
         .get()
         .then((doc) => {
           let temp = [];
-<<<<<<< HEAD
-=======
-
->>>>>>> master
           doc.forEach((element) => {
             temp.push({ ...element.data(), employeeId: element.id });
           });
