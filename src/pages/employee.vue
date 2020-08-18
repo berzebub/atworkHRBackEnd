@@ -43,6 +43,7 @@
           ชื่อ-นามสกุล
           <q-icon @click="sortName()" class="cursor-pointer" name="fas fa-sort"></q-icon>
         </div>
+        <div class="col-5" align="center">รหัสผ่าน</div>
         <div class="col-2" align="right">ตั้งค่ารหัสผ่านใหม่</div>
       </div>
       <!-- เนื้อหา -->
@@ -67,39 +68,7 @@
           </div>
         </div>
       </q-card>
-      <!-- dialog reset password-->
-      <div>
-        <!-- <q-dialog persistent v-model="isResetPasswordDialog">
-          <div class="bg-white row q-pa-lg" align="center" style="width:400px ">
-            <div class="col-12 q-pt-md">
-              <q-btn outline round color="blue-10" icon="fas fa-trash-alt" size="12px" />
-              <span class="text-h6 q-pl-md">ยืนยันการตั้งค่ารหัสผ่านใหม่</span>
-            </div>
-            <div
-              class="col-12 text-subtitle1 q-pt-md"
-            >คุณต้องการตั้งค่ารหัสผ่านใหม่ "{{this.nameEmployee}}"</div>
-
-            <div class="col-6 q-pr-sm q-pt-lg" align="right">
-              <q-btn
-                @click="cancelResetPassword()"
-                outline
-                color="secondary"
-                label="ยกเลิก"
-                style="width:120px"
-              />
-            </div>
-            <div class="col-6 q-pl-sm q-pt-lg" align="left">
-              <q-btn
-                @click="confirmResetPassword()"
-                color="secondary"
-                label="ยืนยัน"
-                style="width:120px"
-              />
-            </div>
-          </div>
-        </q-dialog>-->
-      </div>
-      <!-- dialog reset password II -->
+      <!-- dialog reset password  -->
       <div>
         <q-dialog persistent v-model="isResetPasswordDialog">
           <q-card style="max-width:400px;width:100%">
@@ -114,12 +83,12 @@
                 <div>
                   รหัสผ่านปัจจุบัน
                   <q-input
-                    ref="pwd"
+                    ref="password"
                     dense
+                    :class="isPassword? 'box':''"
                     v-model="password"
                     outlined
                     :type="isPwd ? 'password' : ''"
-                    :rules="[ val => !!val || '']"
                   >
                     <template v-slot:append>
                       <q-icon
@@ -145,13 +114,13 @@
                   รหัสผ่านใหม่
                   <span>ตัวเลข 4 หลัก</span>
                   <q-input
-                    ref="newPwd"
+                    ref="newPassword"
                     dense
                     mask="####"
                     v-model="newPassword"
                     outlined
+                    :class="isPassword? 'box':'' || newPassword.length > 0 ? isPassword = false:'' "
                     :type="isPwd ? 'password' : ''"
-                    :rules="[ val => !!val || '']"
                   >
                     <template v-slot:append>
                       <q-icon
@@ -163,13 +132,13 @@
                   </q-input>
                 </div>พิมพ์รหัสผ่านใหม่อีกครั้ง
                 <q-input
-                  ref="newPwdAgain"
+                  ref="newPasswordAgain"
                   dense
                   v-model="newPasswordAgain"
                   outlined
                   mask="####"
+                  :class="isPassword? 'box':''"
                   :type="isPwd ? 'password' : ''"
-                  :rules="[ val => !!val || '']"
                 >
                   <template v-slot:append>
                     <q-icon
@@ -221,6 +190,7 @@ export default {
   },
   data() {
     return {
+      isPassword: false,
       isPwd: true,
       isEroorPassword: false,
       isEroorNewPassword: false,
@@ -283,7 +253,6 @@ export default {
         });
     },
     resetPassword(item) {
-      console.log(item);
       this.nameEmployee = item.name;
       this.isResetPasswordDialog = true;
       this.currentEmployeeActive = item;
@@ -293,37 +262,43 @@ export default {
     },
 
     confirmResetPassword() {
-      this.$refs.pwd.validate();
-      this.$refs.newPwd.validate();
-      this.$refs.newPwdAgain.validate();
       if (
-        this.$refs.pwd.hasError ||
-        this.$refs.newPwd.hasError ||
-        this.$refs.newPwdAgain.hasError
+        this.password == "" ||
+        this.newPassword == "" ||
+        this.newPasswordAgain == ""
       ) {
+        this.isPassword = true;
         return;
-      } else {
-        console.log("5555");
-        db.collection("employee")
-          .where("password", "==", this.password)
-          .get()
-          .then((doc) => {
-            if (doc.size > 0) {
-              if (this.newPassword == this.newPasswordAgain) {
-                db.collection("employee")
-                  .doc("new-format")
-                  .set(this.newPassword);
-                console.log("pass");
-              } else {
-                this.isEroorNewPassword = true;
-                console.log("รหัสผ่านใหม่ไม่ตรงกัน");
-              }
-            } else {
-              this.isEroorPassword = true;
-              console.log("nopass");
-            }
-          });
       }
+      db.collection("employee")
+        .where("password", "==", this.password)
+        .get()
+        .then((doc) => {
+          // เช็ค รหัสผ่าน ตรงกับฐานข้อมูลไหม
+          if (doc.size > 0) {
+            // เช็ครหัสผ่านใหม่ตรงกันไหม
+            if (this.newPassword == this.newPasswordAgain) {
+              db.collection("employee")
+                .doc("new-format")
+                .update({ password: this.newPassword });
+              this.loadEmployeeData();
+              this.isResetPasswordDialog = false;
+              console.log("pass");
+            } else {
+              this.isEroorNewPassword = true;
+              setTimeout(() => {
+                this.isEroorNewPassword = false;
+              }, 2000);
+              console.log("รหัสผ่านใหม่ไม่ตรงกัน");
+            }
+          } else {
+            this.isEroorPassword = true;
+            // setTimeout(() => {
+            //   this.isEroorPassword = false;
+            // }, 2000);
+            console.log("nopass");
+          }
+        });
 
       return;
       // this.isResetPasswordDialog = false;
@@ -393,4 +368,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style  scoped>
+.box {
+  border: 2px solid red;
+  border-radius: 6px;
+}
+</style>
