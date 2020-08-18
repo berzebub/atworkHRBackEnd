@@ -41,9 +41,16 @@
         <div class="col q-pl-md">รหัสผู้ใช้งาน</div>
         <div class="col q-pl-md">
           ชื่อ-นามสกุล
-          <q-icon @click="sortName()" name="fas fa-sort"></q-icon>
+          <q-icon @click="sortName()" class="cursor-pointer" name="fas fa-sort"></q-icon>
         </div>
+<<<<<<< HEAD
         <div class="col-5" align="center">รหัสผ่าน</div>
+=======
+        <div class="col-5" align="center">
+          อีเมล
+          <q-icon @click="sortEmail()" class="cursor-pointer" name="fas fa-sort"></q-icon>
+        </div>
+>>>>>>> master
         <div class="col-2" align="right">ตั้งค่ารหัสผ่านใหม่</div>
       </div>
       <!-- เนื้อหา -->
@@ -255,7 +262,12 @@ export default {
       }
     },
     goToPrint() {
-      this.$router.push("/employeePrint/" + this.departmentSelect.value);
+      this.$router.push({
+        name: "employeePrint",
+        params: {
+          data: this.employeeListShow,
+        },
+      });
     },
     loadDepartment() {
       let hotelId = this.$q.localStorage.getItem("hotelId");
@@ -289,6 +301,7 @@ export default {
     },
 
     confirmResetPassword() {
+<<<<<<< HEAD
       this.$refs.pwd.validate();
       this.$refs.newPwd.validate();
       this.$refs.newPwdAgain.validate();
@@ -332,6 +345,18 @@ export default {
       //     console.log(error);
       //   });
       // this.isDialogSucess = true;
+=======
+      this.isResetPasswordDialog = false;
+      auth
+        .sendPasswordResetEmail(this.currentEmployeeActive.email)
+        .then(function () {
+          this.isDialogSucess = true;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.isDialogSucess = true;
+>>>>>>> master
     },
     loadEmployeeData() {
       let hotelId = this.$q.localStorage.getItem("hotelId");
@@ -340,10 +365,20 @@ export default {
         .get()
         .then((doc) => {
           let temp = [];
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
           doc.forEach((element) => {
             temp.push({ ...element.data(), employeeId: element.id });
           });
+
+          temp.sort((a, b) => {
+            return a.name > b.name ? 1 : -1;
+          });
+
           this.employeeData = temp;
+
           this.filterEmployeeData();
         });
     },
@@ -351,9 +386,6 @@ export default {
       this.employeeListShow = this.employeeData.filter(
         (x) => x.departmentId == this.departmentSelect.value
       );
-      this.employeeListShow.sort((a, b) => {
-        return a.name > b.name ? 1 : -1;
-      });
     },
     sortName() {
       this.isSort = !this.isSort;

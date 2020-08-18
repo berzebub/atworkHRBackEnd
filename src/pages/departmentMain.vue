@@ -45,6 +45,7 @@
                   icon="fas fa-trash-alt"
                   class="q-mx-md"
                   round
+                  v-if="!item2.customClaims.isHrAdmin"
                 />
               </div>
               <div>
@@ -93,6 +94,7 @@ export default {
       userList: [],
       isShowDeleteUserDialog: false,
       tempData: "",
+      userInfo: {},
     };
   },
   methods: {
@@ -112,6 +114,7 @@ export default {
     },
     async loaduserList() {
       this.loadingShow();
+
       const apiURL =
         "https://us-central1-atwork-dee11.cloudfunctions.net/atworkFunctions/user/getAllUser";
       let userData = await axios.get(apiURL);
@@ -145,7 +148,7 @@ export default {
     },
   },
 
-  mounted() {
+  async mounted() {
     this.loaduserList();
   },
 };

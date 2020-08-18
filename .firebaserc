@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "atwork-dee11"
+  },
+  "targets": {
+    "atwork-dee11": {
+      "hosting": {
+        "hr": [
+          "hr-hotel"
+        ]
+      }
+    }
   }
 }
