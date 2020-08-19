@@ -13,8 +13,12 @@ export default {
   },
   methods: {
     test() {
-      db.collection("test").add({ test: 1234 });
-    }
-  }
+      db.collection("employee")
+        .get()
+        .then((data) => {
+          console.log(data);
+        });
+    },
+  },
 };
 </script>

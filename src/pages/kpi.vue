@@ -44,11 +44,11 @@
             />
           </div>
         </div>
-        <!-- KPI ALL  -->
+        <!-- KPI ALL HOTELL  -->
         <div class="row">
           <div class="q-pr-md">
             <q-btn
-              @click="openDialogALLKpiSetting((typeSet = 1))"
+              @click="openDialogAllHotelSetting()"
               dense
               class="text-subtitle1"
               style="width:155px"
@@ -56,10 +56,10 @@
               label="KPI ทั้งโรงแรม"
             />
           </div>
-          <!-- KPI ALL  -->
+          <!-- KPI ALL DEPARTMENT -->
           <div>
             <q-btn
-              @click="openDialogALLKpiSetting((typeSet = 2))"
+              @click="openDialogALLKpiSetting()"
               dense
               class="text-subtitle1"
               style="width:155px"
@@ -90,16 +90,17 @@
           <div class="q-pl-md col-4">{{ item.name }}</div>
 
           <div class="col" align="center">
-            <span v-if="isLoadEmployee == true">{{
+            <span v-if="isLoadEmployee == true">
+              {{
               item.startLevelId.label
-            }}</span>
+              }}
+            </span>
           </div>
-          <div class="col" align="center">
-            {{ item.numOfPractice == 0 ? "ไม่ตั้งค่า" : item.numOfPractice }}
-          </div>
-          <div class="col" align="center">
-            {{ item.numOfStar == 0 ? "ไม่ตั้งค่า" : item.numOfStar }}
-          </div>
+          <div
+            class="col"
+            align="center"
+          >{{ item.numOfPractice == 0 ? "ไม่ตั้งค่า" : item.numOfPractice }}</div>
+          <div class="col" align="center">{{ item.numOfStar == 0 ? "ไม่ตั้งค่า" : item.numOfStar }}</div>
           <div class="col" align="center">
             <q-btn
               @click="openDialogKpiSetting(index, item)"
@@ -119,9 +120,7 @@
     <q-dialog v-model="dialogKpi" persistent>
       <q-card style="width: 400px">
         <q-card-section class="bg-blue-10 no-padding">
-          <div class="text-h6 text-white q-pa-sm" align="center">
-            ตั้งค่า KPI
-          </div>
+          <div class="text-h6 text-white q-pa-sm" align="center">ตั้งค่า KPI</div>
         </q-card-section>
 
         <q-card-section>
@@ -142,9 +141,7 @@
           <div class="q-mt-md text-subtitle1">
             <div class="row items-center">
               <div>จำนวนแบบฝึกหัด</div>
-              <div class="q-px-sm text-grey-5 text-body2">
-                กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0
-              </div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
             </div>
             <div>
               <q-input
@@ -152,7 +149,7 @@
                 ref="numOfPractice"
                 v-model.number="numOfPractice"
                 :error="
-                  isCheckZeor == true &&
+                  isCheckZero == true &&
                     (numOfPractice == 0 || numOfPractice == '')
                 "
                 hide-bottom-space
@@ -166,9 +163,7 @@
           <div class="q-mt-md text-subtitle1">
             <div class="row items-center">
               <div>จำนวนดาว</div>
-              <div class="q-px-sm text-grey-5 text-body2">
-                กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0
-              </div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
             </div>
             <div>
               <q-input
@@ -177,7 +172,7 @@
                 ref="numOfStar"
                 v-model.number="numOfStar"
                 :error="
-                  isCheckZeor == true && (numOfStar == 0 || numOfStar == '')
+                  isCheckZero == true && (numOfStar == 0 || numOfStar == '')
                 "
                 hide-bottom-space
                 outlined
@@ -189,14 +184,7 @@
         </q-card-section>
 
         <q-card-actions align="center" class="q-mb-sm">
-          <q-btn
-            dense
-            style="width:120px"
-            outline
-            color="cyan-8"
-            label="ยกเลิก"
-            v-close-popup
-          />
+          <q-btn dense style="width:120px" outline color="cyan-8" label="ยกเลิก" v-close-popup />
           <q-btn
             @click="savePersonalKpi()"
             dense
@@ -207,13 +195,11 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <!-- KPI-SETTING-ALL -->
-    <q-dialog v-model="dialogAllKpi" persistent>
+    <!-- KPI-SETTING-DEPARTMENT -->
+    <q-dialog v-model="dialogAllDepartment" persistent>
       <q-card style="width: 400px">
         <q-card-section class="bg-blue-10 no-padding">
-          <div class="text-h6 text-white q-pa-sm" align="center">
-            ตั้งค่า KPI
-          </div>
+          <div class="text-h6 text-white q-pa-sm" align="center">ตั้งค่า KPI</div>
         </q-card-section>
 
         <q-card-section>
@@ -234,9 +220,7 @@
           <div class="q-mt-md text-subtitle1">
             <div class="row items-center">
               <div>จำนวนแบบฝึกหัด</div>
-              <div class="q-px-sm text-grey-5 text-body2">
-                กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0
-              </div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
             </div>
 
             <div>
@@ -246,7 +230,7 @@
                 ref="numOfPracticeAll"
                 v-model="numOfPracticeAll"
                 :error="
-                  isCheckZeor == true &&
+                  isCheckZero == true &&
                     (numOfPracticeAll == 0 || numOfPracticeAll == '')
                 "
                 hide-bottom-space
@@ -259,9 +243,7 @@
           <div class="q-mt-md text-subtitle1">
             <div class="row items-center">
               <div>จำนวนดาว</div>
-              <div class="q-px-sm text-grey-5 text-body2">
-                กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0
-              </div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
             </div>
             <div>
               <q-input
@@ -270,7 +252,7 @@
                 ref="numOfStarAll"
                 v-model="numOfStarAll"
                 :error="
-                  isCheckZeor == true &&
+                  isCheckZero == true &&
                     (numOfStarAll == 0 || numOfStarAll == '')
                 "
                 hide-bottom-space
@@ -283,16 +265,77 @@
         </q-card-section>
 
         <q-card-actions align="center" class="q-mb-sm">
+          <q-btn dense style="width:120px" outline color="cyan-8" label="ยกเลิก" v-close-popup />
           <q-btn
+            @click="saveAllKpiDepartment()"
             dense
+            class="bg-cyan-8 text-white"
             style="width:120px"
-            outline
-            color="cyan-8"
-            label="ยกเลิก"
-            v-close-popup
+            label="บันทึก"
           />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <!-- KPI-SETTING-HOTEL -->
+    <q-dialog v-model="dialogAllHotel" persistent>
+      <q-card style="width: 400px">
+        <q-card-section class="bg-blue-10 no-padding">
+          <div class="text-h6 text-white q-pa-sm" align="center">ตั้งค่า KPI</div>
+        </q-card-section>
+
+        <q-card-section>
+          <div align="center" class="text-h6">"ทั้งโรงแรม"</div>
+          <div class="q-mt-md text-subtitle1">
+            <div class="row items-center">
+              <div>จำนวนแบบฝึกหัด</div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+            </div>
+
+            <div>
+              <q-input
+                :rules="[val => !!val]"
+                lazy-rules
+                ref="numOfPracticeAllHotel"
+                v-model="numOfPracticeAllHotel"
+                :error="
+                  isCheckZero == true &&
+                    (numOfPracticeAllHotel == 0 || numOfPracticeAllHotel == '')
+                "
+                hide-bottom-space
+                outlined
+                dense
+                mask="####"
+              />
+            </div>
+          </div>
+          <div class="q-mt-md text-subtitle1">
+            <div class="row items-center">
+              <div>จำนวนดาว</div>
+              <div class="q-px-sm text-grey-5 text-body2">กรุณาใส่ตัวเลขที่มีค่ามากกว่า 0</div>
+            </div>
+            <div>
+              <q-input
+                :rules="[val => !!val]"
+                lazy-rules
+                ref="numOfStarAllHotel"
+                v-model="numOfStarAllHotel"
+                :error="
+                  isCheckZero == true &&
+                    (numOfStarAllHotel == 0 || numOfStarAllHotel == '')
+                "
+                hide-bottom-space
+                outlined
+                dense
+                mask="####"
+              />
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="center" class="q-mb-sm">
+          <q-btn dense style="width:120px" outline color="cyan-8" label="ยกเลิก" v-close-popup />
           <q-btn
-            @click="saveAllKpi()"
+            @click="saveAllKpiHotel()"
             dense
             class="bg-cyan-8 text-white"
             style="width:120px"
@@ -310,7 +353,7 @@ export default {
   data() {
     return {
       departmentNameList: [],
-      typeKpiName: "ทั้งแผนก",
+      typeKpiName: "",
       departmentSelect: "",
       getEmployeeName: "",
       getEmployeeId: "",
@@ -319,69 +362,73 @@ export default {
       kpiLogList: "",
       levelList: "",
       dialogKpi: false,
-      dialogAllKpi: false,
+      dialogAllDepartment: false,
+      dialogAllHotel: false,
       month: 1,
       year: 2563,
       numOfPractice: "",
       numOfPracticeAll: "",
+      numOfPracticeAllHotel: "",
       numOfStarAll: "",
+      numOfStarAllHotel: "",
       numOfStar: "",
       levelStart: "",
       levelStartAll: "",
       isLoadLevel: true,
       isLoadEmployee: false,
-      isCheckZeor: false,
+      isCheckZero: false,
       hotelId: this.$q.localStorage.getItem("hotelId"),
+      allEmployee: "",
       monthOption: [
         {
           label: "มกราคม",
-          value: 1
+          value: 1,
         },
         {
           label: "กุมภาพันธ์",
-          value: 2
+          value: 2,
         },
         {
           label: "มีนาคม",
-          value: 3
+          value: 3,
         },
         {
           label: "เมษายน",
-          value: 4
+          value: 4,
         },
         {
           label: "พฤษภาคม",
-          value: 5
+          value: 5,
         },
         {
           label: "มิถุนายน",
-          value: 6
+          value: 6,
         },
 
         {
           label: "กรกฎาคม",
-          value: 7
+          value: 7,
         },
         {
           label: "สิงหาคม",
-          value: 8
+          value: 8,
         },
         {
           label: "กันยายน",
-          value: 9
+          value: 9,
         },
         {
           label: "ตุลาคม",
-          value: 10
+          value: 10,
         },
         {
           label: "พฤศจิกายน",
-          value: 11
+          value: 11,
         },
         {
           label: "ธันวาคม",
-          value: 12
-        }
+          value: 12,
+        },
       ],
       yearsOption: [
         2563,
@@ -395,8 +442,8 @@ export default {
         2571,
         2572,
         2573,
-        2574
-      ]
+        2574,
+      ],
     };
   },
   methods: {
@@ -408,15 +455,19 @@ export default {
       await this.loadLevelData();
 
       db.collection("employee")
-        .where("departmentId", "==", this.departmentSelect)
+        .where("hotelId", "==", this.hotelId)
         .get()
-        .then(data => {
-          data.forEach(element => {
+        .then((data) => {
+          data.forEach((element) => {
             employeeTemp.push({
               ...element.data(),
-              employeeId: element.id
+              employeeId: element.id,
             });
           });
+          this.allEmployee = employeeTemp;
+          employeeTemp = employeeTemp.filter(
+            (x) => x.departmentId == this.departmentSelect
+          );
 
           db.collection("kpiLog")
             .where("departmentId", "==", this.departmentSelect)
@@ -424,14 +475,14 @@ export default {
             .where("month", "==", this.month)
             .where("year", "==", this.year)
             .get()
-            .then(data => {
-              data.forEach(element => {
+            .then((data) => {
+              data.forEach((element) => {
                 kpiTemp.push({ ...element.data(), kpiId: element.id });
               });
 
-              employeeTemp.forEach(element => {
+              employeeTemp.forEach((element) => {
                 let filterData = kpiTemp.filter(
-                  x =>
+                  (x) =>
                     x.employeeId == element.employeeId &&
                     x.year == this.year &&
                     x.month == this.month
@@ -441,14 +492,14 @@ export default {
                   element.numOfPractice = filterData[0].numOfPractice;
                   element.numOfStar = filterData[0].numOfStar;
                   element.startLevelId = this.levelList.filter(
-                    x => x.value == filterData[0].levelId
+                    (x) => x.value == filterData[0].levelId
                   )[0];
                   element.kpiId = filterData[0].kpiId;
                 } else {
                   element.numOfPractice = "";
                   element.numOfStar = "";
                   element.startLevelId = this.levelList.filter(
-                    x => x.value == element.startLevelId
+                    (x) => x.value == element.startLevelId
                   )[0];
                 }
               });
@@ -466,12 +517,12 @@ export default {
         let levelTemp = [];
         db.collection("level")
           .get()
-          .then(data => {
-            data.forEach(element => {
+          .then((data) => {
+            data.forEach((element) => {
               let newData = {
                 label: element.data().name,
                 status: element.data().status,
-                value: element.id
+                value: element.id,
               };
               if (newData.status == true) {
                 levelTemp.push(newData);
@@ -501,11 +552,11 @@ export default {
       db.collection("department")
         .where("hotelId", "==", this.hotelId) //+++++++
         .get()
-        .then(data => {
-          data.forEach(element => {
+        .then((data) => {
+          data.forEach((element) => {
             let newData = {
               label: element.data().name,
-              value: element.id
+              value: element.id,
             };
 
             departmentTemp.push(newData);
@@ -518,8 +569,9 @@ export default {
           this.loadEmployeeData();
         });
     },
+    // เปิด Dialog KPi รายบุคคล
     openDialogKpiSetting(index, item) {
-      this.isCheckZeor = false;
+      this.isCheckZero = false;
       this.dialogKpi = true;
       this.getEmployeeName = this.employeeList[index].name;
       this.levelStart = item.startLevelId.value;
@@ -528,21 +580,91 @@ export default {
       this.numOfPractice = this.employeeList[index].numOfPractice;
       this.numOfStar = this.employeeList[index].numOfStar;
     },
-    openDialogALLKpiSetting(type) {
-      if (type == 1) {
-        this.typeKpiName = "ทั้งโรงแรม";
-      } else {
-        let departName = this.departmentNameList.filter(
-          x => x.value == this.departmentSelect
-        );
-        this.typeKpiName = "ทั้งแผนก" + departName[0].label;
-      }
-      (this.numOfPracticeAll = ""), (this.numOfStarAll = "");
-      this.dialogAllKpi = true;
-      this.isCheckZeor = false;
+    // เปิด Dialog KPI ทั้งโรงแรม
+    openDialogAllHotelSetting() {
+      this.dialogAllHotel = true;
+      this.numOfPracticeAllHotel = "";
+      this.numOfStarAllHotel = "";
+      this.isCheckZero = false;
+    },
+    //เปิด Dialog KPI ทั้งแผนก
+    openDialogALLKpiSetting() {
+      this.isAllSettingHotel = true;
+      // หาชื่อของแผนก
+      let departName = this.departmentNameList.filter(
+        (x) => x.value == this.departmentSelect
+      );
+      this.typeKpiName = "ทั้งแผนก" + departName[0].label;
+
+      this.numOfPracticeAll = "";
+      this.numOfStarAll = "";
+      this.dialogAllDepartment = true;
+      this.isCheckZero = false;
       this.levelStartAll = this.levelList[0].value;
     },
-    saveAllKpi() {
+    // ----------------------------------------------------------------------------
+
+    //บันทึกการตั้งค่า KPI ทั้งโรงแรม
+    saveAllKpiHotel() {
+      this.loadingShow();
+      this.$refs.numOfPracticeAllHotel.validate();
+      this.$refs.numOfStarAllHotel.validate();
+      if (
+        ((this.$refs.numOfPracticeAllHotel.hasError ||
+          this.numOfPracticeAllHotel == 0) &&
+          (this.$refs.numOfStarAllHotel.hasError ||
+            this.numOfStarAllHotel == 0)) ||
+        this.numOfPracticeAllHotel == 0 ||
+        this.numOfStarAllHotel == 0 ||
+        this.$refs.numOfPracticeAllHotel.hasError ||
+        this.$refs.numOfStarAllHotel.hasError
+      ) {
+        this.isCheckZero = true;
+        this.loadingHide();
+        return;
+      }
+      this.allEmployee.forEach((element) => {
+        db.collection("kpiLog")
+          .where("month", "==", this.month)
+          .where("year", "==", this.year)
+          .where("employeeId", "==", element.employeeId)
+          .get()
+          .then((data) => {
+            if (data.size) {
+              db.collection("kpiLog")
+                .doc(data.docs[0].id)
+                .update({
+                  numOfPractice: this.numOfPracticeAllHotel,
+                  numOfStar: this.numOfStarAllHotel,
+                })
+                .then(() => {
+                  this.loadEmployeeData();
+                  this.dialogAllHotel = false;
+                  this.loadingHide();
+                });
+            } else {
+              db.collection("kpiLog")
+                .add({
+                  numOfPractice: this.numOfPracticeAllHotel,
+                  numOfStar: this.numOfStarAllHotel,
+                  departmentId: element.departmentId,
+                  employeeId: element.employeeId,
+                  hotelId: this.hotelId,
+                  levelId: element.startLevelId,
+                  month: this.month,
+                  year: this.year,
+                })
+                .then(() => {
+                  this.loadEmployeeData();
+                  this.dialogAllHotel = false;
+                  this.loadingHide();
+                });
+            }
+          });
+      });
+    },
+    //บันทึกการตั้งค่า KPI ทั้งแผนก
+    saveAllKpiDepartment() {
       this.loadingShow();
       this.$refs.numOfPracticeAll.validate();
       this.$refs.numOfStarAll.validate();
@@ -554,16 +676,17 @@ export default {
         this.$refs.numOfPracticeAll.hasError ||
         this.$refs.numOfStarAll.hasError
       ) {
-        this.isCheckZeor = true;
+        this.isCheckZero = true;
         this.loadingHide();
         return;
       }
+
       let counter = 0;
-      this.employeeList.forEach(element => {
+      this.employeeList.forEach((element) => {
         db.collection("employee")
           .doc(element.employeeId)
           .update({
-            startLevelId: this.levelStartAll
+            startLevelId: this.levelStartAll,
           })
           .then(() => {
             if (element.kpiId) {
@@ -572,12 +695,12 @@ export default {
                 .update({
                   levelId: this.levelStartAll,
                   numOfPractice: this.numOfPracticeAll,
-                  numOfStar: this.numOfStarAll
+                  numOfStar: this.numOfStarAll,
                 })
                 .then(() => {
                   counter++;
                   if (counter == this.employeeList.length) {
-                    this.dialogAllKpi = false;
+                    this.dialogAllDepartment = false;
                     this.loadingHide();
                     this.loadEmployeeData();
                   }
@@ -593,12 +716,12 @@ export default {
                   numOfStar: this.numOfStarAll,
                   month: this.month,
                   year: this.year,
-                  filter: ""
+                  filter: "",
                 })
                 .then(() => {
                   counter++;
                   if (counter == this.employeeList.length) {
-                    this.dialogAllKpi = false;
+                    this.dialogAllDepartment = false;
                     this.loadingHide();
                     this.loadEmployeeData();
                   }
@@ -607,6 +730,7 @@ export default {
           });
       });
     },
+    // บันทึกการตั้งค่า KPI รายบุคคล
     savePersonalKpi() {
       this.loadingShow();
       this.$refs.numOfPractice.validate();
@@ -619,7 +743,7 @@ export default {
         this.$refs.numOfPractice.hasError ||
         this.$refs.numOfStar.hasError
       ) {
-        this.isCheckZeor = true;
+        this.isCheckZero = true;
         this.loadingHide();
         return;
       }
@@ -632,14 +756,14 @@ export default {
             .where("month", "==", this.month)
             .where("year", "==", this.year)
             .get()
-            .then(data => {
+            .then((data) => {
               if (data.size) {
                 db.collection("kpiLog")
                   .doc(this.getKpiId)
                   .update({
                     levelId: this.levelStart,
                     numOfPractice: this.numOfPractice,
-                    numOfStar: this.numOfStar
+                    numOfStar: this.numOfStar,
                   })
                   .then(() => {
                     this.dialogKpi = false;
@@ -655,7 +779,7 @@ export default {
                   numOfStar: this.numOfStar,
                   month: this.month,
                   year: this.year,
-                  filter: ""
+                  filter: "",
                 };
                 db.collection("kpiLog")
                   .add(addDataTemp)
@@ -666,11 +790,11 @@ export default {
               }
             });
         });
-    }
+    },
   },
   mounted() {
     this.loadDepartmentData();
-  }
+  },
 };
 </script>
 
